@@ -1,0 +1,636 @@
+{
+  "dataset": "Visit2Value Nusa Table synthetic fixture",
+  "notes": "Human-reviewable expected behavior for selected cases. Theme assignments are hypotheses for testing; evidence quotes are exact substrings of the original review text. Similar topics remain branch-scoped.",
+  "reviews": [
+    {
+      "reviewId": "review-001",
+      "hasSpecificUsefulBusinessFeedback": false,
+      "expectedObservations": []
+    },
+    {
+      "reviewId": "review-003",
+      "hasSpecificUsefulBusinessFeedback": false,
+      "expectedObservations": []
+    },
+    {
+      "reviewId": "review-004",
+      "hasSpecificUsefulBusinessFeedback": false,
+      "expectedObservations": []
+    },
+    {
+      "reviewId": "review-010",
+      "hasSpecificUsefulBusinessFeedback": false,
+      "expectedObservations": []
+    },
+    {
+      "reviewId": "review-012",
+      "hasSpecificUsefulBusinessFeedback": false,
+      "expectedObservations": []
+    },
+    {
+      "reviewId": "review-016",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The fried rice had that smoky wok aroma and stayed fluffy instead of greasy.",
+          "normalizedSummary": "Fried rice has a pleasant wok aroma and texture.",
+          "expectedThemeId": "fried-rice-praise"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-018",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "Nasi goreng dia wangi, portion pun ngam untuk makan tengah hari.",
+          "normalizedSummary": "The fried rice is fragrant and a suitable lunch portion.",
+          "expectedThemeId": "fried-rice-praise"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-020",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "staff",
+          "aspect": "attentiveness",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The server noticed we were sharing and brought extra small plates before we asked.",
+          "normalizedSummary": "Staff anticipated a need and brought sharing plates.",
+          "expectedThemeId": "staff-attentiveness"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-031",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "table_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "Our table rocked whenever anyone leaned on it",
+          "normalizedSummary": "A table rocks when leaned on.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "furniture",
+          "aspect": "chair_condition",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "one chair also had a loose leg.",
+          "normalizedSummary": "A chair has a loose leg.",
+          "expectedThemeId": "sunway-seating"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-032",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "chair_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The chair tilted to one side and felt unsafe",
+          "normalizedSummary": "A chair tilts and feels unsafe.",
+          "expectedThemeId": "sunway-seating"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-033",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "the soup dumplings arrived lukewarm",
+          "normalizedSummary": "Soup dumplings arrived lukewarm.",
+          "expectedThemeId": "bangsar-dumpling-temperature",
+          "groupingNote": "Keep this evidence scoped to Bangsar; do not merge it into a Sunway-only theme."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-036",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The soup dumplings were barely warm by the time they reached us.",
+          "normalizedSummary": "Soup dumplings were cooler than expected.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-037",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "Several dumplings were cool in the middle",
+          "normalizedSummary": "Several soup dumplings were cool inside.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-038",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "kulit dumpling dah sejuk masa sampai.",
+          "normalizedSummary": "The dumpling skins were cold when served.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-040",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "bill_wait_time",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "Service was very slow even after we waved twice to get the bill.",
+          "normalizedSummary": "It took repeated requests and a long time to receive the bill.",
+          "expectedThemeId": "busy-period-service"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-039",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "order_wait_time",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "My noodles took nearly forty minutes to arrive after we ordered.",
+          "normalizedSummary": "Noodle order took nearly forty minutes.",
+          "expectedThemeId": "busy-period-service"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-041",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "drink_wait_time",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "Minuman lambat sampai, lepas makanan pula. Kami tunggu agak lama.",
+          "normalizedSummary": "Drinks arrived after food following a long wait.",
+          "expectedThemeId": "busy-period-service"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-046",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "the soup dumplings were only warm on the outside.",
+          "normalizedSummary": "Soup dumplings were not hot throughout.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        },
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The fried rice was excellent.",
+          "normalizedSummary": "Fried rice was excellent.",
+          "expectedThemeId": "fried-rice-praise"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-047",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "drink_and_bill_timing",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "our drinks came late and the bill took ages.",
+          "normalizedSummary": "Drinks and bill were delayed during lunch.",
+          "expectedThemeId": "busy-period-service"
+        },
+        {
+          "category": "food",
+          "aspect": "vegetables",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The greens were fresh, though.",
+          "normalizedSummary": "Greens were fresh."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-048",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "chair_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The chair near the window shifted every time I moved.",
+          "normalizedSummary": "A chair shifts when the diner moves.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The vegetable noodles were lovely",
+          "normalizedSummary": "Vegetable noodles were enjoyable."
+        },
+        {
+          "category": "amenity",
+          "aspect": "bag_hook",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "maybe add a hook for bags.",
+          "normalizedSummary": "Consider adding bag hooks."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-049",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "ambience",
+          "aspect": "noise",
+          "kind": "other",
+          "sentiment": "negative",
+          "evidenceQuote": "The dining room was quite noisy by the counter.",
+          "normalizedSummary": "The counter area was noisy."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-051",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "Nasi goreng sedap",
+          "normalizedSummary": "Fried rice was tasty.",
+          "expectedThemeId": "fried-rice-praise"
+        },
+        {
+          "category": "furniture",
+          "aspect": "seat_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "bangku saya senget dan asyik bergerak.",
+          "normalizedSummary": "The seat was uneven and kept moving.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "beverage",
+          "aspect": "iced_tea_sweetness",
+          "kind": "other",
+          "sentiment": "negative",
+          "evidenceQuote": "Teh ais pun agak manis.",
+          "normalizedSummary": "Iced tea was somewhat sweet."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-052",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "a few were cooler than the rest.",
+          "normalizedSummary": "Some soup dumplings were cooler than others.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        },
+        {
+          "category": "beverage",
+          "aspect": "tea_refill",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The tea refill took a while.",
+          "normalizedSummary": "Tea refill was delayed."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-053",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "seat_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The seat felt loose when I leaned back.",
+          "normalizedSummary": "A seat felt loose when leaned back.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "food",
+          "aspect": "noodles",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "the noodles were great.",
+          "normalizedSummary": "Noodles were enjoyable."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-054",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "busy_period_consistency",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "service slowed down once the dinner crowd arrived.",
+          "normalizedSummary": "Service slowed as dinner became busy.",
+          "expectedThemeId": "busy-period-service"
+        },
+        {
+          "category": "process",
+          "aspect": "queue_clarity",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "A clearer queue would help.",
+          "normalizedSummary": "Make the queue process clearer."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-055",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "noodles",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The noodles were tasty",
+          "normalizedSummary": "Noodles tasted good."
+        },
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "Dumplings came lukewarm",
+          "normalizedSummary": "Soup dumplings arrived lukewarm.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-056",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "order_wait_time",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "we waited about half an hour for two bowls of noodles.",
+          "normalizedSummary": "Two noodle bowls took about half an hour.",
+          "expectedThemeId": "busy-period-service"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-057",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "tableware",
+          "aspect": "utensil_condition",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The spoon was slightly bent",
+          "normalizedSummary": "A spoon was slightly bent."
+        },
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "soup dumplings were piping hot, just as they should be.",
+          "normalizedSummary": "Soup dumplings were served piping hot.",
+          "groupingNote": "This is a positive mention of temperature; do not count it as cold-dumpling complaint evidence."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-061",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "service",
+          "aspect": "order_timing",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "satu hidangan sampai jauh lebih lambat.",
+          "normalizedSummary": "One dish arrived substantially later than others.",
+          "expectedThemeId": "busy-period-service"
+        },
+        {
+          "category": "food",
+          "aspect": "vegetables",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "Sayur pula rangup dan segar.",
+          "normalizedSummary": "Vegetables were crisp and fresh."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-062",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "Fried rice was a hit with my kids.",
+          "normalizedSummary": "Children enjoyed the fried rice.",
+          "expectedThemeId": "fried-rice-praise"
+        },
+        {
+          "category": "furniture",
+          "aspect": "seat_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "My seat rocked a little",
+          "normalizedSummary": "The seat rocked.",
+          "expectedThemeId": "sunway-seating"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-063",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "food",
+          "aspect": "soup_dumplings_temperature",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "the middle was cool.",
+          "normalizedSummary": "Soup dumpling middle was cool.",
+          "expectedThemeId": "sunway-dumpling-temperature"
+        },
+        {
+          "category": "menu",
+          "aspect": "sharing_description",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "The menu could say they arrive in a bamboo basket to share.",
+          "normalizedSummary": "Clarify the dumpling serving style on the menu."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-067",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "chair_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "A chair rocked on the tile",
+          "normalizedSummary": "A chair rocked on the floor.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "staff",
+          "aspect": "response_to_issue",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "The team found us a steadier seat straight away.",
+          "normalizedSummary": "Staff promptly found a steadier seat."
+        }
+      ]
+    },
+    {
+      "reviewId": "review-071",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "menu",
+          "aspect": "vegetarian_variety",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "Could you add one or two more vegetarian mains?",
+          "normalizedSummary": "Consider adding more vegetarian main dishes.",
+          "expectedThemeId": "vegetarian-options"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-072",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "menu",
+          "aspect": "vegetarian_variety",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "Boleh tambah pilihan sayur atau tofu yang lebih mengenyangkan?",
+          "normalizedSummary": "Consider more filling vegetable or tofu choices.",
+          "expectedThemeId": "vegetarian-options"
+        }
+      ]
+    },
+    {
+      "reviewId": "review-076",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "menu",
+          "aspect": "lunch_set_size_price",
+          "kind": "suggestion",
+          "sentiment": "neutral",
+          "evidenceQuote": "Boleh sediakan set makan tengah hari yang lebih kecil dan murah?",
+          "normalizedSummary": "Consider a smaller lower-priced lunch set."
+        }
+      ]
+    },
+    {
+      "reviewId": "demo-review-001",
+      "hasSpecificUsefulBusinessFeedback": true,
+      "expectedObservations": [
+        {
+          "category": "furniture",
+          "aspect": "booth_stability",
+          "kind": "operational_complaint",
+          "sentiment": "negative",
+          "evidenceQuote": "The booth rocked when I leaned back",
+          "normalizedSummary": "A booth rocks when the diner leans back.",
+          "expectedThemeId": "sunway-seating"
+        },
+        {
+          "category": "food",
+          "aspect": "fried_rice",
+          "kind": "specific_praise",
+          "sentiment": "positive",
+          "evidenceQuote": "the fried rice was beautifully smoky.",
+          "normalizedSummary": "Fried rice had a smoky flavour.",
+          "expectedThemeId": "fried-rice-praise"
+        }
+      ]
+    }
+  ]
+}

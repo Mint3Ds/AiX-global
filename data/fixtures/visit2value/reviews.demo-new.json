@@ -1,0 +1,57 @@
+[
+  {
+    "id": "demo-review-001",
+    "businessId": "nusa-table",
+    "branchId": "sunway",
+    "source": "Demo Feedback Form",
+    "sourceReviewId": "synthetic-demo-source-001",
+    "rating": 4,
+    "reviewedAt": "2026-10-16T13:05:00+08:00",
+    "text": "The booth rocked when I leaned back, but the fried rice was beautifully smoky.",
+    "isSynthetic": true
+  },
+  {
+    "id": "demo-review-002",
+    "businessId": "nusa-table",
+    "branchId": "sunway",
+    "source": "Demo Feedback Form",
+    "sourceReviewId": "synthetic-demo-source-002",
+    "rating": 5,
+    "reviewedAt": "2026-10-17T14:05:00+08:00",
+    "text": "A pleasant visit.",
+    "isSynthetic": true
+  },
+  {
+    "id": "demo-review-003",
+    "businessId": "nusa-table",
+    "branchId": "sunway",
+    "source": "Demo Feedback Form",
+    "sourceReviewId": "synthetic-demo-source-003",
+    "rating": 5,
+    "reviewedAt": "2026-10-18T15:05:00+08:00",
+    "text": "The noodles had a lovely springy texture.",
+    "isSynthetic": true
+  },
+  {
+    "id": "demo-review-004",
+    "businessId": "nusa-table",
+    "branchId": "sunway",
+    "source": "Demo Feedback Form",
+    "sourceReviewId": "synthetic-demo-source-004",
+    "rating": 4,
+    "reviewedAt": "2026-10-19T16:05:00+08:00",
+    "text": "Could you offer a smaller tea size at a lower price?",
+    "isSynthetic": true
+  },
+  {
+    "id": "demo-review-005",
+    "businessId": "nusa-table",
+    "branchId": "sunway",
+    "source": "Demo Feedback Form",
+    "sourceReviewId": "synthetic-demo-source-005",
+    "rating": 4,
+    "reviewedAt": "2026-10-20T17:05:00+08:00",
+    "text": "Pilihan tanpa daging boleh ditambah lagi; staf pun sangat mesra.",
+    "isSynthetic": true
+  }
+]
