@@ -1,6 +1,6 @@
 /** Clean, human-crafted typography-driven IssuesView */
 import React, { useState } from "react";
-import type { Theme, Observation, Membership, Review } from "./ReviewsView";
+import { formatSourceName, type Theme, type Observation, type Membership, type Review } from "./ReviewsView";
 
 export type Employee = {
   id: string;
@@ -38,6 +38,7 @@ export function IssuesView({
   onSetStatus,
   onProposeTask,
   onCorrectMembership,
+  onJumpToReview,
   dateFormatter,
   busy,
 }: {
@@ -64,6 +65,7 @@ export function IssuesView({
     },
   ) => Promise<void>;
   onCorrectMembership: (observationId: string, themeId: string | null) => Promise<void>;
+  onJumpToReview?: (reviewId: string) => void;
   dateFormatter: (d: string | null) => string;
   busy?: string;
 }) {
@@ -355,39 +357,108 @@ export function IssuesView({
                 </div>
 
                 {currentThemeObs.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {currentThemeObs.map((obs) => {
                       const parentReview = reviews.find((r) => r.id === obs.reviewId);
                       return (
                         <div
                           key={obs.id}
-                          className="rounded-xl border border-neutral-200/70 bg-neutral-50/40 p-4 space-y-2.5"
+                          className="rounded-xl border border-neutral-200/80 bg-white p-5 space-y-4 shadow-2xs hover:border-neutral-300 transition-all"
                         >
-                          <div className="flex items-center justify-between text-xs text-neutral-500">
-                            <span className="font-medium text-neutral-700">
-                              {parentReview ? `${parentReview.source.replace(/\s*\[Simulated\]/i, "")} · ${parentReview.rating}★` : "Source Review"}
-                            </span>
-                            <span>{dateFormatter(parentReview?.reviewedAt || null)}</span>
+                          {/* 1. Top Section — "Jev Review / Extracted Observation" (First) */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mr-1">
+                                  Jev extracted observation
+                                </span>
+                                <span
+                                  className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                    obs.kind === "operational_complaint"
+                                      ? "bg-amber-50 text-amber-900 border border-amber-200/80"
+                                      : obs.kind === "suggestion"
+                                        ? "bg-blue-50 text-blue-800 border border-blue-200/80"
+                                        : "bg-emerald-50 text-emerald-800 border border-emerald-200/80"
+                                  }`}
+                                >
+                                  {formatSentenceCase(obs.kind)}
+                                </span>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                                  {formatSentenceCase(obs.category)}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-neutral-400 font-medium">
+                                {obs.provider === "jev_pipeline" ? "Screened by Jev" : "Verified fixture"}
+                              </span>
+                            </div>
+
+                            {/* Normalized Summary Rationale in clean readable primary text */}
+                            <p className="text-sm text-neutral-900 font-medium leading-relaxed">
+                              {obs.normalizedDescription || obs.summary}
+                            </p>
                           </div>
 
-                          {/* Signature Exact Supporting Quote Callout Box */}
-                          <blockquote className="rounded-xl bg-white border border-neutral-200/70 px-4 py-3 italic text-neutral-700 text-sm leading-relaxed">
-                            “{obs.evidenceQuote}”
-                          </blockquote>
+                          {/* 2. Middle Section — "Exact Supporting Quote" (Second) */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-xs text-neutral-500">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-semibold text-neutral-800">
+                                  {parentReview ? formatSourceName(parentReview.source) : "Source Review"}
+                                </span>
+                                {parentReview && (
+                                  <>
+                                    <span className="text-neutral-300">·</span>
+                                    <span className="font-semibold text-neutral-800">{parentReview.rating}★</span>
+                                  </>
+                                )}
+                                {obs.aspect && (
+                                  <>
+                                    <span className="text-neutral-300">·</span>
+                                    <span className="text-neutral-500 text-[11px]">Context: {obs.aspect}</span>
+                                  </>
+                                )}
+                              </div>
+                              <span className="text-[11px] text-neutral-400">
+                                {dateFormatter(parentReview?.reviewedAt || null)}
+                              </span>
+                            </div>
 
-                          <div className="flex items-center justify-between text-xs text-neutral-500 pt-1">
-                            <span className="text-[11px] text-neutral-400">
-                              Aspect: {obs.aspect || obs.category}
-                            </span>
-                            {owner && (
-                              <button
-                                type="button"
-                                onClick={() => void onCorrectMembership(obs.id, null)}
-                                className="link text-xs text-neutral-500 hover:text-red-600 cursor-pointer"
-                              >
-                                Remove from issue
-                              </button>
-                            )}
+                            {/* Exact Quote highlighted with signature left accent border */}
+                            <blockquote className="rounded-xl bg-neutral-50/80 border-l-4 border-l-neutral-900 border border-neutral-200/60 px-4 py-3 italic text-neutral-800 text-sm leading-relaxed">
+                              “{obs.evidenceQuote}”
+                            </blockquote>
+                          </div>
+
+                          {/* 3. Bottom Section — "Original Review" (At the End) */}
+                          <div className="border-t border-neutral-100 pt-3 space-y-2">
+                            <h6 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+                              Original review
+                            </h6>
+                            <p className="text-xs sm:text-[13px] text-neutral-700 leading-relaxed font-normal">
+                              {parentReview?.originalText || "No original text available."}
+                            </p>
+
+                            <div className="flex items-center justify-between pt-2 text-xs">
+                              {parentReview && onJumpToReview ? (
+                                <button
+                                  type="button"
+                                  onClick={() => onJumpToReview(parentReview.id)}
+                                  className="link text-xs font-semibold text-[#0071e3] hover:underline cursor-pointer"
+                                >
+                                  View in Reviews →
+                                </button>
+                              ) : <div />}
+
+                              {owner && (
+                                <button
+                                  type="button"
+                                  onClick={() => void onCorrectMembership(obs.id, null)}
+                                  className="link text-xs text-neutral-400 hover:text-red-600 transition-colors cursor-pointer"
+                                >
+                                  Remove from issue
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );

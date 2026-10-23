@@ -778,6 +778,7 @@ export function Workspace() {
               onCorrectMembership={async (observationId, themeId) => {
                 await act("membership", { observationId, themeId });
               }}
+              onJumpToReview={openReview}
               dateFormatter={date}
               busy={busy}
             />
