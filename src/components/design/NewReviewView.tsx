@@ -49,7 +49,12 @@ export function NewReviewView({
 
   const handleSelectPrepared = (p: PreparedReview) => {
     setSelectedBranch(p.branchId);
-    setSelectedSource(`${p.source} (Simulated)`);
+    const cleanSource = p.source
+      .replace(/\s*\(Simulated\)/gi, "")
+      .replace(/\s*\[Simulated\]/gi, "")
+      .replace(/^simulated\s+/i, "")
+      .trim();
+    setSelectedSource(`${cleanSource} (Simulated)`);
     setSelectedRating(p.rating);
     setReviewText(p.text);
     setPreparedReviewId(p.id);
