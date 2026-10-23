@@ -1,12 +1,12 @@
 :root {
-  --paper: #f5f5f7;
+  --paper: #f6f4ee;
   --paper-light: #ffffff;
-  --paper-deep: #ececef;
+  --paper-deep: #eae5dc;
   --surface: #ffffff;
-  --surface-alt: #f8f8fa;
+  --surface-alt: #faf9f6;
   --ink: #1d1d1f;
   --muted: #6e6e73;
-  --line: #d2d2d7;
+  --line: #ded9ce;
   --violet: #1d1d1f;
   --violet-light: #f5f5f7;
   --violet-on-dark: #ffffff;

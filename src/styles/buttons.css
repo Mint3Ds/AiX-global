@@ -1,5 +1,5 @@
 /* Apple-inspired monotone buttons */
-main button:not(.link):not(.review-row),
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary),
 .notice button {
   border: 1px solid #1d1d1f;
   border-radius: 9999px;
@@ -13,23 +13,24 @@ main button:not(.link):not(.review-row),
   transition: all 0.15s ease;
   cursor: pointer;
 }
-main button:not(.link):not(.review-row):hover,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):hover,
 .notice button:hover {
   background: #000000;
   border-color: #000000;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
-main button:not(.link):not(.review-row):active,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):active,
 .notice button:active {
   transform: scale(0.98);
 }
-main button:not(.link):not(.review-row):disabled,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):disabled,
 .notice button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
+main button.secondary:not(.link),
 button.secondary:not(.link) {
   border: 1px solid #e5e5ea;
   border-radius: 9999px;
@@ -37,6 +38,7 @@ button.secondary:not(.link) {
   color: #1d1d1f;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
+main button.secondary:not(.link):hover,
 button.secondary:not(.link):hover {
   background: #f5f5f7;
   border-color: #d2d2d7;

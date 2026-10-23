@@ -370,7 +370,8 @@ export function Workspace() {
     .filter(
       (item) =>
         item.type === "operational_issue" &&
-        ["suggested", "recurrence"].includes(item.status),
+        ["suggested", "recurrence"].includes(item.status) &&
+        (branch === "all" || item.branchId === branch),
     )
     .sort((a, b) => {
       return (
@@ -431,6 +432,9 @@ export function Workspace() {
           setSearch("");
           setTab("dashboard");
         }}
+        branches={state?.branches || []}
+        selectedBranch={branch}
+        onBranchChange={setBranch}
         tab={tab}
         role={role}
         onTabChange={setTab}
@@ -463,40 +467,74 @@ export function Workspace() {
                   ?.name || "Business"
               }
               metrics={[
-                { title: "Total reviews", value: state.reviews.length },
+                {
+                  title: "Total reviews",
+                  value: state.reviews.filter(
+                    (review) => branch === "all" || review.branchId === branch,
+                  ).length,
+                  caption: "Across simulated sources",
+                  color: "blue",
+                  onClick: () => setTab("reviews"),
+                },
                 {
                   title: "New today",
                   value: state.reviews.filter(
                     (review) =>
+                      (branch === "all" || review.branchId === branch) &&
                       new Date(review.reviewedAt).toDateString() ===
-                      new Date().toDateString(),
+                        new Date().toDateString(),
                   ).length,
+                  caption: "Synced last 24 hours",
+                  color: "green",
+                  onClick: () => setTab("reviews"),
                 },
                 {
                   title: "Specific feedback",
                   value: state.reviews.filter(
-                    (review) => review.processingStatus === "complete",
+                    (review) =>
+                      (branch === "all" || review.branchId === branch) &&
+                      review.processingStatus === "complete",
                   ).length,
+                  caption: "Screened by Jev & AI",
+                  color: "purple",
+                  onClick: () => setTab("reviews"),
                 },
                 {
                   title: "Issues needing attention",
                   value: state.themes.filter(
                     (theme) =>
+                      (branch === "all" || theme.branchId === branch) &&
                       theme.type === "operational_issue" &&
                       ["suggested", "recurrence"].includes(theme.status),
                   ).length,
+                  caption: "Urgent & recurring prioritized",
+                  color: "amber",
+                  onClick: () => setTab("issues"),
                 },
                 {
                   title: "Open approved tasks",
                   value: state.tasks.filter(
-                    (task) => task.status === "approved_open",
+                    (task) =>
+                      (branch === "all" ||
+                        state.themes.find((t) => t.id === task.themeId)?.branchId === branch) &&
+                      task.status === "approved_open",
                   ).length,
+                  caption: "Orbyte handoff ready",
+                  color: "indigo",
+                  onClick: () => setTab("tasks"),
                 },
                 {
                   title: "Replies to approve",
                   value: state.replies.filter(
-                    (reply) => reply.status === "draft",
+                    (reply) =>
+                      (branch === "all" ||
+                        state.reviews.find((r) => r.id === reply.reviewId)
+                          ?.branchId === branch) &&
+                      reply.status === "draft",
                   ).length,
+                  caption: "Drafted & awaiting signoff",
+                  color: "teal",
+                  onClick: () => setTab("replies"),
                 },
               ]}
               spotlight={
@@ -505,16 +543,122 @@ export function Workspace() {
                       id: spotlight.id,
                       title: spotlight.title,
                       priority: spotlight.priority,
+                      priorityReason: spotlight.priorityReason,
+                      category: spotlightEvidence?.category || "Accessibility",
                       branchId: branchName(spotlight.branchId),
                       support: state.themeSupport[spotlight.id] || 0,
                       evidenceQuote: spotlightEvidence?.evidenceQuote,
+                      severity: spotlight.severity,
                     }
                   : null
               }
+              simulatedSources={[
+                ...new Set(
+                  state.reviews
+                    .filter((r) => branch === "all" || r.branchId === branch)
+                    .map((r) => r.source),
+                ),
+              ]
+                .slice(0, 3)
+                .map((s) => `${s} [Simulated]`)}
+              hasPreparedDemo={preparedReviews.length > 0}
+              onLoadPreparedDemo={() => {
+                if (preparedReviews.length > 0) {
+                  const rev = preparedReviews[0];
+                  setNewBranch(rev.branchId);
+                  setNewRating(rev.rating);
+                  setNewText(rev.text);
+                  setPreparedReviewId(rev.id);
+                }
+                setTab("new");
+              }}
+              otherIssues={state.themes
+                .filter(
+                  (item) =>
+                    item.type === "operational_issue" &&
+                    ["suggested", "recurrence"].includes(item.status) &&
+                    (!spotlight || item.id !== spotlight.id) &&
+                    (branch === "all" || item.branchId === branch),
+                )
+                .sort((a, b) => {
+                  return (
+                    priorityRank(b.priority) - priorityRank(a.priority) ||
+                    b.severity - a.severity ||
+                    (state.themeSupport[b.id] || 0) -
+                      (state.themeSupport[a.id] || 0)
+                  );
+                })
+                .slice(0, 3)
+                .map((item) => ({
+                  id: item.id,
+                  title: item.title,
+                  priority: item.priority,
+                  branchName: branchName(item.branchId),
+                  support: state.themeSupport[item.id] || 0,
+                  severity: item.severity,
+                }))}
+              recentActivities={(() => {
+                const mappedEvents = [...state.events]
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt || 0).getTime() -
+                      new Date(a.createdAt || 0).getTime(),
+                  )
+                  .map((evt) => ({
+                    id: evt.id,
+                    type: evt.type,
+                    description: evt.description,
+                    actor:
+                      evt.actor === "demo owner"
+                        ? "Owner"
+                        : state.employees.find((e) => e.id === evt.actor)
+                            ?.name || evt.actor,
+                    timeAgo: evt.createdAt
+                      ? date(evt.createdAt)
+                      : "Recently",
+                  }));
+
+                const simulatedFallbacks = [
+                  {
+                    id: "act-jev",
+                    type: "jev_screening",
+                    description:
+                      "Screened source reviews for operational feedback signals",
+                    actor: "Jev Screening Pipeline",
+                    timeAgo: "Today",
+                  },
+                  {
+                    id: "act-orbyte",
+                    type: "orbyte_simulation",
+                    description:
+                      "Local Orbyte work order handoff channel ready for approved tasks",
+                    actor: "Orbyte Simulator",
+                    timeAgo: "Ready",
+                  },
+                  {
+                    id: "act-intake",
+                    type: "system_intake",
+                    description:
+                      "Synthetic review streams initialized across 3 platforms",
+                    actor: "Visit2Value Engine",
+                    timeAgo: "Live",
+                  },
+                ];
+
+                return [...mappedEvents, ...simulatedFallbacks].slice(0, 3);
+              })()}
               onNewReview={() => setTab("new")}
               onInspect={openTheme}
+              onProposeTask={async (themeId) => {
+                const result = (await act("propose_task", {
+                  themeId,
+                })) as Task | null;
+                if (result) openTask(result.id);
+              }}
+              onNavigate={(destTab) => setTab(destTab)}
             />
           )}
+
           {tab === "new" && (
             <section>
               <h2>New review</h2>
