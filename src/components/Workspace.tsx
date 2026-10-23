@@ -405,9 +405,6 @@ export function Workspace() {
       setTab("reviews");
     }
   };
-  const selected = state?.reviews.find(
-    (review) => review.id === selectedReview,
-  );
   const theme = state?.themes.find((item) => item.id === selectedTheme);
   const task = state?.tasks.find((item) => item.id === selectedTask);
   const themeObservations = useMemo(
@@ -518,6 +515,8 @@ export function Workspace() {
       }) || [],
     [state, search, branch, rating, category, status],
   );
+  const selected =
+    filtered.find((review) => review.id === selectedReview) || filtered[0];
   const reviewPoints =
     selected && state
       ? state.observations.filter(
@@ -571,20 +570,23 @@ export function Workspace() {
   const owner = role === "owner";
   const branchName = (id: string) =>
     state?.branches.find((item) => item.id === id)?.name || id;
-  const spotlight = state?.themes
-    .filter(
-      (item) =>
-        item.type === "operational_issue" &&
-        isOwnerVisibleTheme(item, state.themeSupport[item.id] || 0) &&
-        ["suggested", "recurrence"].includes(item.status),
-    )
-    .sort((a, b) => {
-      return (
-        priorityRank(b.priority) - priorityRank(a.priority) ||
-        b.severity - a.severity ||
-        (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0)
-      );
-    })[0];
+  const priorityIssues =
+    state?.themes
+      .filter(
+        (item) =>
+          item.type === "operational_issue" &&
+          isOwnerVisibleTheme(item, state.themeSupport[item.id] || 0) &&
+          ["suggested", "recurrence"].includes(item.status),
+      )
+      .sort((a, b) => {
+        return (
+          priorityRank(b.priority) - priorityRank(a.priority) ||
+          b.severity - a.severity ||
+          (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0)
+        );
+      })
+      .slice(0, 4) || [];
+  const spotlight = priorityIssues[0];
   const spotlightEvidence =
     spotlight && state
       ? state.observations.find((point) =>
@@ -595,6 +597,18 @@ export function Workspace() {
           ),
         )
       : null;
+  const recentActivity: Event[] = [];
+  const seenActivity = new Set<string>();
+  for (const item of [...(state?.events || [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )) {
+    if (item.type === "handoff_simulated") continue;
+    const signature = `${item.type}:${item.description}`;
+    if (seenActivity.has(signature)) continue;
+    seenActivity.add(signature);
+    recentActivity.push(item);
+    if (recentActivity.length === 3) break;
+  }
 
   return (
     <div className="shell">
@@ -674,12 +688,13 @@ export function Workspace() {
         <main>
           {tab === "dashboard" && (
             <DashboardView
-              businessName={
-                state.businesses.find((business) => business.id === businessId)
-                  ?.name || "Business"
-              }
               metrics={[
-                { title: "Total reviews", value: state.reviews.length },
+                {
+                  title: "Total reviews",
+                  value: state.reviews.length,
+                  hint: "All saved reviews",
+                  destination: "reviews",
+                },
                 {
                   title: "New today",
                   value: state.reviews.filter(
@@ -687,12 +702,16 @@ export function Workspace() {
                       new Date(review.reviewedAt).toDateString() ===
                       new Date().toDateString(),
                   ).length,
+                  hint: "Received today",
+                  destination: "reviews",
                 },
                 {
                   title: "Specific feedback",
                   value: state.reviews.filter(
                     (review) => review.processingStatus === "complete",
                   ).length,
+                  hint: "Analysis complete",
+                  destination: "reviews",
                 },
                 {
                   title: "Issues needing attention",
@@ -705,34 +724,46 @@ export function Workspace() {
                       ) &&
                       ["suggested", "recurrence"].includes(theme.status),
                   ).length,
+                  hint: "Ready for your review",
+                  destination: "issues",
                 },
                 {
                   title: "Open approved tasks",
                   value: state.tasks.filter(
                     (task) => task.status === "approved_open",
                   ).length,
+                  hint: "Work in progress",
+                  destination: "tasks",
                 },
                 {
                   title: "Replies to approve",
                   value: state.replies.filter(
                     (reply) => reply.status === "draft",
                   ).length,
+                  hint: "Awaiting sign-off",
+                  destination: "replies",
                 },
               ]}
-              spotlight={
-                spotlight
-                  ? {
-                      id: spotlight.id,
-                      title: spotlight.title,
-                      priority: spotlight.priority,
-                      branchId: branchName(spotlight.branchId),
-                      support: state.themeSupport[spotlight.id] || 0,
-                      evidenceQuote: spotlightEvidence?.evidenceQuote,
-                    }
-                  : null
-              }
+              issues={priorityIssues.map((item) => ({
+                id: item.id,
+                title: item.title,
+                priority: item.priority,
+                branchName: branchName(item.branchId),
+                support: state.themeSupport[item.id] || 0,
+                evidenceQuote:
+                  item.id === spotlight?.id
+                    ? spotlightEvidence?.evidenceQuote
+                    : undefined,
+              }))}
+              activity={recentActivity.map((item) => ({
+                id: item.id,
+                title: label(item.type),
+                description: item.description,
+                date: date(item.createdAt),
+              }))}
               onNewReview={() => setTab("new")}
               onInspect={openTheme}
+              onNavigate={setTab}
             />
           )}
           {tab === "new" && (
@@ -817,23 +848,22 @@ export function Workspace() {
             </section>
           )}
           {tab === "reviews" && (
-            <section>
+            <section className="reviews-page">
               <h2>Source reviews</h2>
               <p className="muted">
-                All saved reviews remain searchable, including generic and
-                pending ones.
+                Search and inspect feedback from every property.
               </p>
               <div className="filters">
                 <label>
-                  Search
+                  Search text
                   <input
-                    placeholder="Review text or observation"
+                    placeholder="Search original words or quotes..."
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
                 </label>
                 <label>
-                  Property or branch
+                  Property
                   <select
                     value={branch}
                     onChange={(event) => setBranch(event.target.value)}
@@ -875,7 +905,7 @@ export function Workspace() {
                   </select>
                 </label>
                 <label>
-                  Status
+                  Screening status
                   <select
                     value={status}
                     onChange={(event) => setStatus(event.target.value)}
@@ -896,23 +926,33 @@ export function Workspace() {
                   </select>
                 </label>
               </div>
-              <p>{filtered.length} reviews</p>
+              <p className="reviews-result-count">
+                Showing {filtered.length} of {state.reviews.length} reviews
+              </p>
               <div className="split">
                 <div className="review-list">
                   {filtered.length ? (
                     filtered.map((review) => (
                       <button
                         key={review.id}
-                        className={`review-row ${selectedReview === review.id ? "chosen" : ""}`}
+                        className={`review-row ${selected?.id === review.id ? "chosen" : ""}`}
                         onClick={() => setSelectedReview(review.id)}
                       >
-                        <span>
-                          <b>{review.rating}★</b> ·{" "}
-                          {branchName(review.branchId)} ·{" "}
-                          {label(review.processingStatus)}
+                        <span className="review-list-head">
+                          <span>
+                            <b>{review.rating}★</b> ·{" "}
+                            {branchName(review.branchId)}
+                          </span>
+                          <small className="review-list-status">
+                            {label(review.processingStatus)}
+                          </small>
                         </span>
-                        <small>{date(review.reviewedAt)}</small>
-                        <span>{review.originalText}</span>
+                        <span className="review-list-meta">
+                          <small>{date(review.reviewedAt)}</small>
+                        </span>
+                        <span className="review-list-excerpt">
+                          {review.originalText}
+                        </span>
                       </button>
                     ))
                   ) : (
@@ -1009,47 +1049,43 @@ export function Workspace() {
             </section>
           )}
           {tab === "issues" && (
-            <section>
+            <section className="issues-page">
               <h2>Issues and insights</h2>
               <p className="muted">
                 Recurring issues appear after four reviews. Urgent and confirmed
                 issues appear sooner; individual feedback stays in Reviews.
               </p>
+              <div
+                className="issue-category-tabs"
+                role="group"
+                aria-label="Issue category"
+              >
+                {(["operational_issue", "suggestion"] as const).map((type) => {
+                  const count = state.themes.filter(
+                    (item) =>
+                      item.type === type &&
+                      isOwnerVisibleTheme(
+                        item,
+                        state.themeSupport[item.id] || 0,
+                      ),
+                  ).length;
+                  const active = issueType === type;
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      className={active ? "active" : ""}
+                      aria-pressed={active}
+                      onClick={() => changeIssueType(type)}
+                    >
+                      {type === "operational_issue" ? "Issues" : "Suggestions"}
+                      <span>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <div className="split">
                 <div className="issue-list-panel">
-                  <div
-                    className="issue-category-tabs"
-                    role="group"
-                    aria-label="Issue category"
-                  >
-                    {(["operational_issue", "suggestion"] as const).map(
-                      (type) => {
-                        const count = state.themes.filter(
-                          (item) =>
-                            item.type === type &&
-                            isOwnerVisibleTheme(
-                              item,
-                              state.themeSupport[item.id] || 0,
-                            ),
-                        ).length;
-                        const active = issueType === type;
-                        return (
-                          <button
-                            key={type}
-                            type="button"
-                            className={active ? "active" : ""}
-                            aria-pressed={active}
-                            onClick={() => changeIssueType(type)}
-                          >
-                            {type === "operational_issue"
-                              ? "Issues"
-                              : "Suggestions"}
-                            <span>{count}</span>
-                          </button>
-                        );
-                      },
-                    )}
-                  </div>
                   <div className="review-list issue-list-paginated">
                     {visibleIssues.length ? (
                       visibleIssues.map((item) => (
@@ -1061,15 +1097,24 @@ export function Workspace() {
                             setEvidencePage(0);
                           }}
                         >
-                          <span className="issue-row-heading">
-                            <b>{item.title}</b>
-                            <PriorityBadge priority={item.priority} />
+                          <span className="issue-row-top">
+                            <span
+                              className={`priority-chip priority-chip-${item.priority.toLowerCase()}`}
+                            >
+                              {item.priority}
+                            </span>
+                            <span className="neutral-chip">
+                              {branchName(item.branchId)}
+                            </span>
+                            <small>{label(item.status)}</small>
                           </span>
-                          <span className="issue-row-meta">
-                            {branchName(item.branchId)} ·{" "}
-                            {state.themeSupport[item.id] || 0} reviews
+                          <b className="issue-row-title">{item.title}</b>
+                          <span className="issue-row-bottom">
+                            <span>
+                              {state.themeSupport[item.id] || 0} reviews
+                            </span>
+                            <small>Severity {item.severity}/3</small>
                           </span>
-                          <small>{label(item.status)}</small>
                         </button>
                       ))
                     ) : (
@@ -1145,6 +1190,7 @@ export function Workspace() {
                           {theme.status === "suggested" && (
                             <div className="issue-decision-actions">
                               <button
+                                className="issue-confirm-button"
                                 onClick={() =>
                                   void act("theme_status", {
                                     themeId: theme.id,
