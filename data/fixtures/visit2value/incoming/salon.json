@@ -1,0 +1,485 @@
+[
+  {
+    "sourceReviewId": "salon-new-001",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-05-23T10:50:00+08:00",
+    "text": "I booked a trim for Saturday morning and showed a photo of the length I wanted. The cut ended well above my shoulders, despite asking to keep it below. The stylist offered to adjust the shape, but there was no length left to work with. I went home disappointed with how little we had communicated."
+  },
+  {
+    "sourceReviewId": "salon-new-002",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-06-11T14:40:00+08:00",
+    "text": "My appointment was at 2 pm, yet I sat for nearly forty minutes without an update. Once the colour service began, it felt rushed, and the tone at the roots looked noticeably warmer than the rest. The staff were polite when I pointed it out, but I had already spent much longer there than planned."
+  },
+  {
+    "sourceReviewId": "salon-new-003",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-06-30T17:30:00+08:00",
+    "text": "Went in for a wash and blowout before a family event. The shampoo felt hurried, and the dryer was uncomfortably hot near my scalp even after I mentioned it. By the time I reached the venue, the style had fallen flat. For the price, I expected better attention and a result that lasted."
+  },
+  {
+    "sourceReviewId": "salon-new-004",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-07-19T11:20:00+08:00",
+    "text": "I asked for a simple fringe tidy, showing where it usually sits against my eyebrows. The first cut was uneven, then repeated corrections made it shorter than I wanted. The stylist apologised, but I still had to pin it back for weeks. This was meant to be a quick, low-stress appointment."
+  },
+  {
+    "sourceReviewId": "salon-new-005",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-08-07T13:10:00+08:00",
+    "text": "The booking confirmation listed a treatment and cut at one price. At checkout, several add-ons appeared on the bill that had not been explained during the service. The treatment itself felt ordinary, and my hair was still dry at the ends. Staff removed one charge after I asked, but the experience left me uneasy."
+  },
+  {
+    "sourceReviewId": "salon-new-006",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-08-26T15:00:00+08:00",
+    "text": "My partner and I booked back-to-back haircuts. We arrived on time, but the second appointment began almost an hour late. The waiting area was crowded and no one explained the delay. My cut was also uneven around the ears, so I had to ask for another pass before leaving."
+  },
+  {
+    "sourceReviewId": "salon-new-007",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-09-14T14:50:00+08:00",
+    "text": "I requested a soft, natural-looking colour and brought reference pictures from different angles. The result was much darker than we discussed, with obvious patches around the front. They invited me back for a correction, which I appreciated, but the first visit consumed most of my afternoon and did not match the plan."
+  },
+  {
+    "sourceReviewId": "salon-new-008",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-10-03T11:40:00+08:00",
+    "text": "The salon looked clean at first glance, but there was hair on the chair and counter when I was seated. I asked for a tidy-up and waited while the tools were prepared. My haircut then took much less time than quoted and the layers looked choppy. The whole visit felt inattentive."
+  },
+  {
+    "sourceReviewId": "salon-new-009",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-05-10T13:30:00+08:00",
+    "text": "Asked for a trim, got a much shorter cut."
+  },
+  {
+    "sourceReviewId": "salon-new-010",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-05-29T15:20:00+08:00",
+    "text": "Long wait and no update. Frustrating."
+  },
+  {
+    "sourceReviewId": "salon-new-011",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-06-17T17:10:00+08:00",
+    "text": "Colour at the roots looks patchy."
+  },
+  {
+    "sourceReviewId": "salon-new-012",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-07-06T11:00:00+08:00",
+    "text": "My fringe is uneven. Really unhappy."
+  },
+  {
+    "sourceReviewId": "salon-new-013",
+    "branchId": "salon-main",
+    "rating": 1,
+    "reviewedAt": "2026-07-25T13:50:00+08:00",
+    "text": "Too expensive for such a rushed wash."
+  },
+  {
+    "sourceReviewId": "salon-new-014",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-08-13T15:40:00+08:00",
+    "text": "I liked the initial consultation, but the haircut did not follow it closely. We agreed on light layers and only a small trim; I left with a heavier shape and shorter ends. The stylist was friendly and offered to restyle it, yet I needed to get back to work by then."
+  },
+  {
+    "sourceReviewId": "salon-new-015",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-09-01T12:30:00+08:00",
+    "text": "Booked a root touch-up during my lunch break after being told it would fit the slot. The colour looked fine, but the appointment ran over by almost fifty minutes because I waited between stages. No one gave me a revised finish time. I had to cancel another errand and felt rushed leaving."
+  },
+  {
+    "sourceReviewId": "salon-new-016",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-09-20T11:20:00+08:00",
+    "text": "The wash was relaxing and the staff offered tea, which was nice. Unfortunately, my blowout had far more volume than the reference photo, and the curls dropped unevenly within a few hours. It was usable after I brushed it out myself, but not the polished event style I paid for."
+  },
+  {
+    "sourceReviewId": "salon-new-017",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-10-09T14:10:00+08:00",
+    "text": "I came for a men's cut on a quiet weekday afternoon. The sides were neat, but the top was cut shorter than I requested. I mentioned the difference when shown the mirror; the stylist listened, though there was little to fix. The service was courteous, just not well matched to my instructions."
+  },
+  {
+    "sourceReviewId": "salon-new-018",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-05-16T15:00:00+08:00",
+    "text": "The salon had a pleasant atmosphere, and I appreciated being offered a seat right away. My scalp treatment was explained vaguely, however, and the final bill was higher than the price shown at booking. After I asked, staff clarified the extra step. I wish that choice had been offered before it started."
+  },
+  {
+    "sourceReviewId": "salon-new-019",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-06-04T17:50:00+08:00",
+    "text": "I asked for subtle highlights and showed a photo with soft blending. The result was brighter and more striped than expected near my face. Staff said the colour would settle after washes, but I had hoped to like it immediately. The team was kind, so the poor match was especially frustrating."
+  },
+  {
+    "sourceReviewId": "salon-new-020",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-06-27T11:40:00+08:00",
+    "text": "There was a good range of appointment times, but my Saturday slot started twenty-five minutes late. The hair wash and cut were fine; the finishing style felt rushed because the next client had arrived. I left with damp sections at the back. It was acceptable overall, but poor value for a full-service booking."
+  },
+  {
+    "sourceReviewId": "salon-new-021",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-07-12T13:30:00+08:00",
+    "text": "My daughter needed a straightforward trim before school started. The stylist spoke kindly to her and checked the length with me, yet the two sides were not even when we got home. We returned for a quick correction, which they did without fuss. Still, two trips for one trim was inconvenient."
+  },
+  {
+    "sourceReviewId": "salon-new-022",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-07-31T15:20:00+08:00",
+    "text": "Pleasant staff, but the blowout fell flat quickly."
+  },
+  {
+    "sourceReviewId": "salon-new-023",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-08-19T17:10:00+08:00",
+    "text": "The cut is okay, just shorter than requested."
+  },
+  {
+    "sourceReviewId": "salon-new-024",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-09-07T11:00:00+08:00",
+    "text": "Nice space; the appointment ran very late."
+  },
+  {
+    "sourceReviewId": "salon-new-025",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-09-26T13:50:00+08:00",
+    "text": "Colour was brighter than the sample photo."
+  },
+  {
+    "sourceReviewId": "salon-new-026",
+    "branchId": "salon-main",
+    "rating": 2,
+    "reviewedAt": "2026-10-15T15:40:00+08:00",
+    "text": "I wish the extra treatment cost had been clearer."
+  },
+  {
+    "sourceReviewId": "salon-new-027",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-05-22T17:30:00+08:00",
+    "text": "Came for a wash and cut after work. The shampoo was thorough and the stylist asked sensible questions about how I usually wear my hair. The cut was close to what I wanted, though the face-framing pieces were shorter than expected. Checkout was quick and the price was fair."
+  },
+  {
+    "sourceReviewId": "salon-new-028",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-06-10T11:20:00+08:00",
+    "text": "The colour consultation was clear and the stylist did a strand check before starting. My brown shade came out nicely in daylight, but the appointment ran much longer than estimated and the waiting chair was uncomfortable. I liked the final result enough to return, provided I have more time."
+  },
+  {
+    "sourceReviewId": "salon-new-029",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-06-29T17:10:00+08:00",
+    "text": "I booked a blowout before dinner and arrived ten minutes early. Service began on time, and the smooth finish looked good in the mirror. It did not hold as well in the humidity outside, which may be unavoidable. The staff were friendly, but I might request a different product next time."
+  },
+  {
+    "sourceReviewId": "salon-new-030",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-07-18T15:00:00+08:00",
+    "text": "My fringe trim was quick and inexpensive. The shape looked even, and the stylist showed me how to dry it at home. The salon was noisier than I expected, with several dryers running close together. Good enough for a practical appointment, less ideal if you want a relaxing break."
+  },
+  {
+    "sourceReviewId": "salon-new-031",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-08-06T17:50:00+08:00",
+    "text": "I went with my mum for separate haircuts. Her stylist finished on time and she loved the shape. Mine started late and ended up a little too blunt at the back. Staff offered to soften it, and that helped. We had mixed results, though everyone we spoke with was pleasant."
+  },
+  {
+    "sourceReviewId": "salon-new-032",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-08-25T11:40:00+08:00",
+    "text": "The scalp treatment felt soothing and the rinse water was a comfortable temperature. I could not see much difference afterward, but the accompanying blow-dry was neat. The service description could explain the expected result more clearly. The space was tidy, and the bill matched what I booked."
+  },
+  {
+    "sourceReviewId": "salon-new-033",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-09-13T13:30:00+08:00",
+    "text": "A friend recommended this salon for layers. The stylist took time to discuss my thick hair and made the cut lighter without taking much length. I liked the shape, although the finish used more product than I prefer. It washed out easily later, so I would consider another visit."
+  },
+  {
+    "sourceReviewId": "salon-new-034",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-10-02T14:20:00+08:00",
+    "text": "Had a colour refresh and a trim on a rainy afternoon. The appointment was comfortable, and the colour covered my roots evenly. The trim was slightly shorter than my usual preference, but still manageable. I waited at the counter for a while to pay because the receptionist was helping someone else."
+  },
+  {
+    "sourceReviewId": "salon-new-035",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-05-09T17:10:00+08:00",
+    "text": "Decent trim. Waiting room was crowded."
+  },
+  {
+    "sourceReviewId": "salon-new-036",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-05-28T11:00:00+08:00",
+    "text": "Warna okay, cuma tunggu agak lama."
+  },
+  {
+    "sourceReviewId": "salon-new-037",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-06-16T13:50:00+08:00",
+    "text": "Good wash, average blow-dry."
+  },
+  {
+    "sourceReviewId": "salon-new-038",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-07-05T15:40:00+08:00",
+    "text": "Haircut works, but I need to style it carefully."
+  },
+  {
+    "sourceReviewId": "salon-new-039",
+    "branchId": "salon-main",
+    "rating": 3,
+    "reviewedAt": "2026-07-24T17:30:00+08:00",
+    "text": "还可以，剪发仔细，就是店里有点吵。"
+  },
+  {
+    "sourceReviewId": "salon-new-040",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-08-12T11:20:00+08:00",
+    "text": "I brought a few reference photos for a shoulder-length cut, and the stylist talked through what would work with my hair texture. The layers sit well without much styling at home. There was a short wait despite my booking, but someone updated me and offered water, which I appreciated."
+  },
+  {
+    "sourceReviewId": "salon-new-041",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-08-31T13:10:00+08:00",
+    "text": "Booked a root touch-up before a work trip. The colour blended neatly with the rest of my hair, and the stylist checked the shade in natural light before finishing. My appointment stayed close to the estimated time. The only small drawback was the limited space to put my bag."
+  },
+  {
+    "sourceReviewId": "salon-new-042",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-09-19T15:00:00+08:00",
+    "text": "My wash and blow-dry felt like a proper treat after a long week. The water temperature was right, the brushwork was gentle, and the finish stayed smooth through dinner. It was a little loud during the busy hour, but staff still heard my preferences and checked the result with me."
+  },
+  {
+    "sourceReviewId": "salon-new-043",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-10-08T17:50:00+08:00",
+    "text": "I asked for a tidy men's cut that would grow out well. The stylist left enough length on top, cleaned up the neckline, and showed me how to style it quickly. The salon was clean and the booking process was simple. I waited about ten minutes, otherwise it was smooth."
+  },
+  {
+    "sourceReviewId": "salon-new-044",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-05-15T14:40:00+08:00",
+    "text": "Took my teenager for a trim after school. The stylist spoke directly to her about the length and confirmed with me before cutting. Both of us liked the result, and the ends looked much healthier. The music was slightly loud near our chairs, but the appointment felt considerate and unhurried."
+  },
+  {
+    "sourceReviewId": "salon-new-045",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-06-03T13:30:00+08:00",
+    "text": "The consultation for a subtle colour change was thoughtful. I was told what the shade might look like under warm indoor lighting, which matched what I saw later. The final blow-dry was polished and the price was explained up front. I only wish the waiting area had more seats."
+  },
+  {
+    "sourceReviewId": "salon-new-046",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-06-22T10:20:00+08:00",
+    "text": "Went in for a scalp treatment and a simple cut. The treatment was relaxing, and the stylist gave practical advice without pushing products. My layers were even and easy to manage the next morning. The appointment cost a bit more than my usual place, but I felt it was worthwhile."
+  },
+  {
+    "sourceReviewId": "salon-new-047",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-07-11T10:10:00+08:00",
+    "text": "I booked online for an early Saturday slot and was seated promptly. The stylist listened when I asked to keep my fringe long, then checked before taking off more. The cut had movement without looking thin. Checkout took a little while because the counter was busy, but I left happy."
+  },
+  {
+    "sourceReviewId": "salon-new-048",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-07-30T11:00:00+08:00",
+    "text": "We came for two family haircuts and were glad the salon could seat us at nearby stations. Both stylists checked the requested lengths and kept the appointments moving. My blowout had a soft finish, while my partner's shorter cut looked neat. A clear bill made paying straightforward."
+  },
+  {
+    "sourceReviewId": "salon-new-049",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-08-18T13:50:00+08:00",
+    "text": "Nice cut and friendly service."
+  },
+  {
+    "sourceReviewId": "salon-new-050",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-09-06T15:40:00+08:00",
+    "text": "Blowout held well. I'd book again."
+  },
+  {
+    "sourceReviewId": "salon-new-051",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-09-25T17:30:00+08:00",
+    "text": "Potongan kemas, harga pun jelas."
+  },
+  {
+    "sourceReviewId": "salon-new-052",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-10-14T11:20:00+08:00",
+    "text": "Good colour match, slight wait at the start."
+  },
+  {
+    "sourceReviewId": "salon-new-053",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-05-21T13:10:00+08:00",
+    "text": "Clean salon and a careful stylist."
+  },
+  {
+    "sourceReviewId": "salon-new-054",
+    "branchId": "salon-main",
+    "rating": 4,
+    "reviewedAt": "2026-06-09T15:00:00+08:00",
+    "text": "The fringe trim was exactly what I needed."
+  },
+  {
+    "sourceReviewId": "salon-new-055",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-06-28T10:50:00+08:00",
+    "text": "The stylist understood exactly why I wanted a low-maintenance cut. We discussed my usual morning routine before she shaped the layers, and the result still looked good after I washed it myself. The salon was bright and tidy, my appointment started on time, and the price matched the booking."
+  },
+  {
+    "sourceReviewId": "salon-new-056",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-07-17T11:40:00+08:00",
+    "text": "I booked a colour refresh and worried about losing the natural look of my hair. The consultation covered shade, upkeep, and timing, then the result came out soft and even. Staff checked whether I was comfortable throughout the appointment. I left with the colour I had hoped for."
+  },
+  {
+    "sourceReviewId": "salon-new-057",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-08-05T17:30:00+08:00",
+    "text": "A lovely wash and blowout before a friend's wedding. The stylist asked about my outfit and whether I wanted volume or a smoother finish, then worked carefully around my fringe. The style held through the evening. I also appreciated that the bill was explained before any products were used."
+  },
+  {
+    "sourceReviewId": "salon-new-058",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-08-24T15:20:00+08:00",
+    "text": "My son was nervous about getting his hair cut, and the team made the visit easy. They showed him the tools, let him settle into the chair, and checked the length with us. The cut looked neat, he was smiling by the end, and we were finished on schedule."
+  },
+  {
+    "sourceReviewId": "salon-new-059",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-09-12T17:10:00+08:00",
+    "text": "Came in with long hair that felt heavy and asked to keep the length while adding movement. The stylist showed me where the layers would start before cutting. I love how light it feels now. The wash was relaxing, the station was clean, and there was no pressure to buy products."
+  },
+  {
+    "sourceReviewId": "salon-new-060",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-10-01T11:00:00+08:00",
+    "text": "I had a last-minute opening before a presentation and booked a simple blow-dry. They started promptly, kept the style natural as requested, and made sure the back looked smooth as well as the front. It stayed tidy through a humid commute. Friendly service and a fair price."
+  },
+  {
+    "sourceReviewId": "salon-new-061",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-05-08T13:50:00+08:00",
+    "text": "My mum and I booked appointments together and both left pleased. Her root colour blended beautifully, while my trim kept the shape I wanted. The staff checked our preferences rather than assuming we wanted the same thing. We had tea while waiting and the timing worked out well."
+  },
+  {
+    "sourceReviewId": "salon-new-062",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-05-27T15:40:00+08:00",
+    "text": "The scalp treatment was comfortable from start to finish. The stylist explained each step in plain language, checked the water temperature, and gave me time to relax. My hair felt soft afterward and the finishing cut was precise. The charge matched the quoted amount, so there were no surprises."
+  },
+  {
+    "sourceReviewId": "salon-new-063",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-06-15T17:30:00+08:00",
+    "text": "I showed a photo of a textured short cut, and the stylist explained how it would sit with my natural hair pattern. The finished shape looks great even without much product. The appointment began on time, the tools and station were tidy, and I felt listened to throughout."
+  },
+  {
+    "sourceReviewId": "salon-new-064",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-07-04T11:20:00+08:00",
+    "text": "Love my new layers!"
+  },
+  {
+    "sourceReviewId": "salon-new-065",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-07-23T13:10:00+08:00",
+    "text": "Fast appointment, beautiful finish."
+  },
+  {
+    "sourceReviewId": "salon-new-066",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-08-11T15:00:00+08:00",
+    "text": "Cantik sangat hasilnya. Terima kasih!"
+  },
+  {
+    "sourceReviewId": "salon-new-067",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-08-30T17:50:00+08:00",
+    "text": "Great cut and no fuss at checkout."
+  },
+  {
+    "sourceReviewId": "salon-new-068",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-09-18T11:40:00+08:00",
+    "text": "Colour looks natural and even."
+  },
+  {
+    "sourceReviewId": "salon-new-069",
+    "branchId": "salon-main",
+    "rating": 5,
+    "reviewedAt": "2026-10-07T13:30:00+08:00",
+    "text": "服务细心，发型很好看。"
+  }
+]

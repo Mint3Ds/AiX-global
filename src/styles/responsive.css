@@ -47,6 +47,11 @@
   .review-list {
     max-height: 390px;
   }
+  .issue-list-paginated {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
   .filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -85,6 +90,31 @@
   }
   .hero-copy h2 {
     font-size: clamp(42px, 12vw, 62px);
+  }
+  .reply-review-option {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .reply-review-option > button {
+    width: 100%;
+  }
+  .issue-decision-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .issue-decision-header label {
+    flex-basis: auto;
+  }
+  .issue-decision-header select {
+    width: 100%;
+  }
+  .issue-decision-actions button {
+    flex: 1 1 120px;
+  }
+  .issue-list-footer,
+  .evidence-page-footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .hero-actions button {
     width: 100%;

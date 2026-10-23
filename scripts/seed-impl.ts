@@ -27,6 +27,7 @@ import {
 import { priorityFor, priorityRules } from "../src/config/priority";
 import { verifyEvidence } from "../src/domain/analysis";
 import { detectReviewLanguage } from "../src/domain/language";
+const seedLegacyReviews = process.env.SEED_LEGACY_REVIEWS === "yes";
 try {
   for (const config of businessConfigs)
     await db
@@ -155,11 +156,9 @@ try {
         priorityReason: "Awaiting evidence count.",
       })
       .onConflictDoNothing();
-  for (const review of [
-    ...seedReviews,
-    ...hotelSeedReviews,
-    ...salonSeedReviews,
-  ]) {
+  for (const review of seedLegacyReviews
+    ? [...seedReviews, ...hotelSeedReviews, ...salonSeedReviews]
+    : []) {
     await db
       .insert(reviews)
       .values({
@@ -258,36 +257,40 @@ try {
       .set({ priority: p.priority, priorityReason: p.reason })
       .where(eq(themes.id, id));
   }
-  await db
-    .insert(tasks)
-    .values({
-      id: "task-sunway-seating",
-      themeId: "sunway-seating",
-      branchId: "sunway",
-      title: "Inspect and repair unstable seating",
-      description:
-        "Inspect seating at the Sunway branch; repair or replace any unsafe items found. Record what was actually done.",
-      assigneeRole: "floor manager",
-      status: "proposed",
-    })
-    .onConflictDoNothing();
-  await db
-    .insert(events)
-    .values({
-      id: "event-seed-v1",
-      actor: "seed process",
-      role: "system",
-      type: "dataset_seeded",
-      entityType: "business",
-      entityId: "nusa-table",
-      description:
-        "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-      businessId: restaurantConfig.businessId,
-      metadata: { reviewCount: seedReviews.length },
-    })
-    .onConflictDoNothing();
+  if (seedLegacyReviews)
+    await db
+      .insert(tasks)
+      .values({
+        id: "task-sunway-seating",
+        themeId: "sunway-seating",
+        branchId: "sunway",
+        title: "Inspect and repair unstable seating",
+        description:
+          "Inspect seating at the Sunway branch; repair or replace any unsafe items found. Record what was actually done.",
+        assigneeRole: "floor manager",
+        status: "proposed",
+      })
+      .onConflictDoNothing();
+  if (seedLegacyReviews)
+    await db
+      .insert(events)
+      .values({
+        id: "event-seed-v1",
+        actor: "seed process",
+        role: "system",
+        type: "dataset_seeded",
+        entityType: "business",
+        entityId: "nusa-table",
+        description:
+          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
+        businessId: restaurantConfig.businessId,
+        metadata: { reviewCount: seedReviews.length },
+      })
+      .onConflictDoNothing();
   console.log(
-    `Seed ready: ${seedReviews.length} restaurant, ${hotelSeedReviews.length} hotel, ${salonSeedReviews.length} salon reviews; separate demo reviews were not inserted.`,
+    seedLegacyReviews
+      ? `Seed ready: ${seedReviews.length} restaurant, ${hotelSeedReviews.length} hotel, ${salonSeedReviews.length} salon reviews; separate demo reviews were not inserted.`
+      : "Business, branch, employee, and theme records ready for new review batches.",
   );
 } finally {
   await pool.end();

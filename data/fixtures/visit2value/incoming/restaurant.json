@@ -1,0 +1,926 @@
+[
+  {
+    "sourceReviewId": "restaurant-new-001",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-05-22T19:10:00+08:00",
+    "text": "We stopped in after a movie on Friday and waited nearly half an hour before anyone took our order. The mushroom soup arrived lukewarm, then my grilled chicken came after my partner had finished eating. The server apologised, but there was no explanation and the bill still included the full service charge."
+  },
+  {
+    "sourceReviewId": "restaurant-new-002",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-06-07T15:20:00+08:00",
+    "text": "I ordered takeaway for a late lunch and checked the bag only when I reached the office. The rice bowl was there, but the side salad and extra sauce I paid for were missing. The chicken had cooled down and the packaging had leaked into the paper bag, so it was a disappointing meal."
+  },
+  {
+    "sourceReviewId": "restaurant-new-003",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-06-24T19:30:00+08:00",
+    "text": "The dining area looked inviting from outside, but our table had crumbs and sticky patches when we sat down. We asked for it to be wiped and waited while staff walked past twice. After that, my noodles were extremely salty and the vegetables seemed tired. The visit never really recovered."
+  },
+  {
+    "sourceReviewId": "restaurant-new-004",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-07-11T19:40:00+08:00",
+    "text": "Booked a table for four to celebrate my sister's birthday. We were seated late beside the kitchen door, where people kept brushing past our chairs. Two mains arrived with the wrong sides, and the replacements took so long that we skipped dessert. Everyone was polite, but the evening felt messy and rushed."
+  },
+  {
+    "sourceReviewId": "restaurant-new-005",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-07-28T19:50:00+08:00",
+    "text": "My vegetarian friend asked which dishes could be made without meat stock. The person taking our order said they would check, then returned with no clear answer. We chose a plain pasta, which came with bits of chicken. They replaced it, but the uncertainty and delay made dinner stressful."
+  },
+  {
+    "sourceReviewId": "restaurant-new-006",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-08-14T18:00:00+08:00",
+    "text": "I picked the fish set because the menu photo showed a substantial portion. What arrived was a small piece with a scoop of rice and barely warm vegetables. The sauce tasted flat, and at that price I expected much more. Even the iced tea was mostly ice when I reached the table."
+  },
+  {
+    "sourceReviewId": "restaurant-new-007",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-09-06T19:10:00+08:00",
+    "text": "Sunday dinner with the kids was harder than it needed to be. We waited for a high chair, then the children's meal appeared after all the adult plates. It was cold by the time we could settle everyone. Staff were pleasant enough, but service seemed badly coordinated throughout our visit."
+  },
+  {
+    "sourceReviewId": "restaurant-new-008",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-09-17T12:20:00+08:00",
+    "text": "Went in for a quick meal before an appointment and asked whether twenty minutes was realistic. We were told yes, yet the sandwiches took forty minutes and arrived toasted on one side only. I had to eat in a hurry and still paid a price that suggested much better care."
+  },
+  {
+    "sourceReviewId": "restaurant-new-009",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-10-04T13:30:00+08:00",
+    "text": "The first table offered to us was close to a loud speaker, so we asked to move. That was sorted, but nobody came back to take our order for ages. My beef dish was chewy, my friend's fries were cold, and the bill included a drink we never received."
+  },
+  {
+    "sourceReviewId": "restaurant-new-010",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-05-08T19:40:00+08:00",
+    "text": "We ordered two mains and a starter around 7 pm. The starter never came, and after repeated questions the mains arrived nearly an hour later. One had the wrong sauce and both were only warm. They removed the missing item from the bill, yet the whole dinner felt poorly handled."
+  },
+  {
+    "sourceReviewId": "restaurant-new-011",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-05-25T19:50:00+08:00",
+    "text": "The promotion board at the entrance made the set meal look appealing. At checkout we learned the offer did not apply on that evening, although the sign had no visible restriction. The food itself was bland and the portions were small, so paying the higher amount felt especially frustrating."
+  },
+  {
+    "sourceReviewId": "restaurant-new-012",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-06-11T19:00:00+08:00",
+    "text": "Our delivery was meant for a family dinner at home. The containers were stacked poorly, leaving gravy across the dessert box, and one rice portion was absent. The remaining food was cool and needed reheating. Support offered an apology, but it did not fix dinner for the person left without a meal."
+  },
+  {
+    "sourceReviewId": "restaurant-new-013",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-06-28T13:10:00+08:00",
+    "text": "I visited alone at lunchtime and watched several later tables get served first. When I asked about my order, it seemed to have been missed entirely. The replacement plate came fast but tasted rushed: oily noodles and barely cooked greens. I left hungry despite paying for a full meal."
+  },
+  {
+    "sourceReviewId": "restaurant-new-014",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-07-15T15:20:00+08:00",
+    "text": "It was a quiet afternoon, so the long wait was surprising. We asked for no chilli on one dish, but it arrived heavily spiced. The server offered another plate; that one came after the rest of us had finished. We appreciated the offer, though the original request should have been recorded."
+  },
+  {
+    "sourceReviewId": "restaurant-new-015",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-08-01T19:30:00+08:00",
+    "text": "A group of us tried this place after shopping. The tables were cramped, and the air conditioning blew directly onto our food while we waited for the final main. Mine was cold, the chicken was dry, and the restroom needed attention. Nothing disastrous, just too many basics missed in one visit."
+  },
+  {
+    "sourceReviewId": "restaurant-new-016",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-08-18T13:40:00+08:00",
+    "text": "Waited forever for lunch, then got a cold plate. Very disappointing."
+  },
+  {
+    "sourceReviewId": "restaurant-new-017",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-09-04T13:50:00+08:00",
+    "text": "Wrong order twice. I gave up."
+  },
+  {
+    "sourceReviewId": "restaurant-new-018",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-09-21T18:00:00+08:00",
+    "text": "The rice was dry and the bill too high."
+  },
+  {
+    "sourceReviewId": "restaurant-new-019",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-10-08T19:10:00+08:00",
+    "text": "Sticky table, lukewarm soup, no thanks."
+  },
+  {
+    "sourceReviewId": "restaurant-new-020",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-05-12T12:20:00+08:00",
+    "text": "My missing side was still on the receipt."
+  },
+  {
+    "sourceReviewId": "restaurant-new-021",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-05-29T13:30:00+08:00",
+    "text": "Too noisy to enjoy a meal and service crawled."
+  },
+  {
+    "sourceReviewId": "restaurant-new-022",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-06-15T18:40:00+08:00",
+    "text": "Small portion, big price."
+  },
+  {
+    "sourceReviewId": "restaurant-new-023",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-07-02T19:50:00+08:00",
+    "text": "Food came after we asked three times. Tak best lah."
+  },
+  {
+    "sourceReviewId": "restaurant-new-024",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-07-19T12:00:00+08:00",
+    "text": "The takeaway bag leaked all over my car seat."
+  },
+  {
+    "sourceReviewId": "restaurant-new-025",
+    "branchId": "sunway",
+    "rating": 1,
+    "reviewedAt": "2026-08-05T13:10:00+08:00",
+    "text": "Could not get anyone to clarify the vegetarian options."
+  },
+  {
+    "sourceReviewId": "restaurant-new-026",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-08-22T13:20:00+08:00",
+    "text": "The lunch menu had several appealing choices, but the item I wanted was unavailable and nobody mentioned it until after we had ordered drinks. My second choice, a rice plate, arrived slightly cold. The server was kind when I raised it, although the replacement took another twenty minutes and tasted average."
+  },
+  {
+    "sourceReviewId": "restaurant-new-027",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-09-08T19:30:00+08:00",
+    "text": "We came during a weekday evening when only a few tables were occupied. It still took a while to get water, and our two dishes arrived far apart. The pasta sauce was fine, but the chicken on top was dry. For the bill we received, the meal felt underwhelming."
+  },
+  {
+    "sourceReviewId": "restaurant-new-028",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-09-25T13:40:00+08:00",
+    "text": "I liked the look of the bright dining room, yet the music was loud enough that my colleague and I kept repeating ourselves. The vegetable bowl was fresh, but there was hardly any dressing and the bread was stale. We ate quickly and chose somewhere quieter for coffee."
+  },
+  {
+    "sourceReviewId": "restaurant-new-029",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-10-12T19:50:00+08:00",
+    "text": "My takeaway order was packed neatly and still warm when I got home. Unfortunately the requested extra vegetables were missing and the curry was much sweeter than expected. I called about the missing add-on and they offered a refund, which was fair, but dinner itself was not satisfying."
+  },
+  {
+    "sourceReviewId": "restaurant-new-030",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-05-16T19:00:00+08:00",
+    "text": "Sat near the window with my parents for an early dinner. Service started well, then it became difficult to find anyone once the crowd arrived. The soup was pleasant; both main courses came with lukewarm rice and small portions of protein. We left feeling the price was out of line."
+  },
+  {
+    "sourceReviewId": "restaurant-new-031",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-06-02T13:10:00+08:00",
+    "text": "The waiter repeated our order correctly, including my request to leave out onions. My plate arrived with onions anyway. They made a fresh one, but my friend had finished by then. The new dish was acceptable, just rather oily, and the delay made our short lunch break awkward."
+  },
+  {
+    "sourceReviewId": "restaurant-new-032",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-06-19T12:20:00+08:00",
+    "text": "A weekend queue is understandable, but the estimated ten-minute wait became nearly thirty with little communication. Once seated, we found a smear on one spoon and asked for another. The noodles were tasty enough, although too salty toward the end. Overall I would hesitate to return on a busy day."
+  },
+  {
+    "sourceReviewId": "restaurant-new-033",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-07-06T13:30:00+08:00",
+    "text": "The menu promised a grilled fish with seasonal vegetables. My fish was nicely cooked, but the vegetables were a few soft pieces sitting in watery sauce. My partner's burger was also small for the price. Staff checked on us politely; I wish the kitchen matched that effort."
+  },
+  {
+    "sourceReviewId": "restaurant-new-034",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-07-23T19:40:00+08:00",
+    "text": "Ordered a snack and two drinks before a film. The drinks arrived quickly, but the snack was forgotten until we reminded someone. It then came almost thirty minutes later with the wrong dip. We were offered the correct dip, though by that point we had no time to enjoy it."
+  },
+  {
+    "sourceReviewId": "restaurant-new-035",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-08-09T13:50:00+08:00",
+    "text": "We chose the set lunch because it seemed like decent value. At payment, a service charge and an unclear drink upgrade made the total higher than expected. The food was passable, but my soup was tepid and the rice was dry. A clearer menu would have helped."
+  },
+  {
+    "sourceReviewId": "restaurant-new-036",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-08-26T12:00:00+08:00",
+    "text": "I visited with a friend who wanted a vegetarian main. There were a couple of options, but one had sold out and the other was heavily seasoned with pepper. My chicken dish was fine, if a little tough. The team was friendly, yet the choices and food quality disappointed us."
+  },
+  {
+    "sourceReviewId": "restaurant-new-037",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-09-12T19:10:00+08:00",
+    "text": "Our family ordered delivery on a rainy evening. The driver handoff was smooth, but the restaurant packaging let the sauce escape into the bag. One side was missing as well. The main dishes still tasted reasonable after reheating, so this rating is mostly for the packing and order check."
+  },
+  {
+    "sourceReviewId": "restaurant-new-038",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-09-29T18:20:00+08:00",
+    "text": "The corner booth was comfortable, and the staff greeted us warmly. The trouble began with the food: the starter was greasy, and my beef rice had more rice than beef. A request for extra sauce was forgotten. We paid without complaint, but it did not feel like good value."
+  },
+  {
+    "sourceReviewId": "restaurant-new-039",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-10-16T15:30:00+08:00",
+    "text": "Tried a late lunch when the place was mostly empty. The floor around our table had bits of food, and the menu felt sticky. My noodles had good flavour at first, then an uneven amount of salt in the final bites. It seemed like an off day, but those details matter."
+  },
+  {
+    "sourceReviewId": "restaurant-new-040",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-05-20T19:40:00+08:00",
+    "text": "The dessert display persuaded us to stay after dinner. We waited twenty minutes for a slice of cake that arrived dry and cold from the fridge. The mains had been okay, with generous rice portions, but dessert and the slow checkout soured the visit. Staff were apologetic when we mentioned it."
+  },
+  {
+    "sourceReviewId": "restaurant-new-041",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-06-06T19:50:00+08:00",
+    "text": "Friendly greeting, but dinner was bland."
+  },
+  {
+    "sourceReviewId": "restaurant-new-042",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-06-23T15:00:00+08:00",
+    "text": "The wait was long for such a quiet afternoon."
+  },
+  {
+    "sourceReviewId": "restaurant-new-043",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-07-10T19:10:00+08:00",
+    "text": "My pasta was okay; the side salad looked tired."
+  },
+  {
+    "sourceReviewId": "restaurant-new-044",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-07-27T12:20:00+08:00",
+    "text": "Nice room, disappointing portions."
+  },
+  {
+    "sourceReviewId": "restaurant-new-045",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-08-13T13:30:00+08:00",
+    "text": "Chicken was dry and the sauce barely covered it."
+  },
+  {
+    "sourceReviewId": "restaurant-new-046",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-08-30T18:40:00+08:00",
+    "text": "They fixed the bill, but I had to spot the extra drink first."
+  },
+  {
+    "sourceReviewId": "restaurant-new-047",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-09-16T19:50:00+08:00",
+    "text": "Packaging held up, yet the food had gone cool."
+  },
+  {
+    "sourceReviewId": "restaurant-new-048",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-10-03T12:00:00+08:00",
+    "text": "Too much ice in the drink for that price."
+  },
+  {
+    "sourceReviewId": "restaurant-new-049",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-05-07T13:10:00+08:00",
+    "text": "The table felt cramped and the music was loud."
+  },
+  {
+    "sourceReviewId": "restaurant-new-050",
+    "branchId": "sunway",
+    "rating": 2,
+    "reviewedAt": "2026-05-24T18:20:00+08:00",
+    "text": "Noodles arrived with chilli after I asked for none."
+  },
+  {
+    "sourceReviewId": "restaurant-new-051",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-06-10T13:30:00+08:00",
+    "text": "Came for lunch with two coworkers and got a table straight away. My chicken rice was flavorful and the portion was sensible, but one colleague's pasta arrived almost fifteen minutes after ours. The dining room was also quite noisy. We would try it again, just not when pressed for time."
+  },
+  {
+    "sourceReviewId": "restaurant-new-052",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-06-27T12:40:00+08:00",
+    "text": "The vegetable curry had a nice aroma and enough heat for me, while my partner thought the tofu was a little soft. Service was warm at first, then slowed when a large group arrived. We had to ask twice for water. Still, the meal felt fair for the price."
+  },
+  {
+    "sourceReviewId": "restaurant-new-053",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-18T15:50:00+08:00",
+    "text": "I ordered a burger and fries on a Saturday afternoon. The patty was juicy and the bun held together well, but the fries were barely warm. Staff brought a fresh portion after I pointed it out. The fix was appreciated, though it meant eating the burger and fries separately."
+  },
+  {
+    "sourceReviewId": "restaurant-new-054",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-31T19:00:00+08:00",
+    "text": "We picked this restaurant because everyone could find something on the menu. The grilled fish was fresh, and the pasta had a pleasant sauce. My vegetarian cousin had fewer choices than expected, and the bill was a bit steep once drinks were added. Overall an okay group dinner."
+  },
+  {
+    "sourceReviewId": "restaurant-new-055",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-08-17T19:10:00+08:00",
+    "text": "This was a quick solo dinner after shopping. The noodles arrived fast with plenty of vegetables, although the broth needed more seasoning. I liked the clean table and soft lighting. A nearby birthday group made conversation difficult, but that was only part of the evening."
+  },
+  {
+    "sourceReviewId": "restaurant-new-056",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-09-03T12:20:00+08:00",
+    "text": "Our takeaway was ready at the stated time and the containers were sturdy. The chicken dish travelled well; the crispy side lost its texture under the lid. There was also less sauce than usual for two portions. Convenient enough, but I would probably eat in next time."
+  },
+  {
+    "sourceReviewId": "restaurant-new-057",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-09-20T09:30:00+08:00",
+    "text": "Breakfast service was friendly and the coffee came hot. My eggs were cooked as requested, but the toast was oddly tough at the edges. The room was comfortable before the rush, then queues formed near our table. A decent stop, with some small things to improve."
+  },
+  {
+    "sourceReviewId": "restaurant-new-058",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-10-07T19:40:00+08:00",
+    "text": "We arrived without a booking and waited about ten minutes for a table, which seemed reasonable. The rice bowl was filling and pleasantly spicy. My friend's fish was cooler than mine, and it took a while to flag someone down for the bill. Neither issue spoiled the night."
+  },
+  {
+    "sourceReviewId": "restaurant-new-059",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-05-11T19:50:00+08:00",
+    "text": "The set meal looked like good value on the menu. I enjoyed the soup and the main had fresh vegetables, but the dessert was a tiny portion. Staff explained the promotion clearly and the bill was accurate. This is a reasonable option when nearby places are full."
+  },
+  {
+    "sourceReviewId": "restaurant-new-060",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-05-28T19:00:00+08:00",
+    "text": "Went with my mum for an early dinner. She liked the mild curry, while I found my grilled chicken a touch dry. We were seated near the service station, which was busy but not unbearable. The server checked on us once and brought extra water without fuss."
+  },
+  {
+    "sourceReviewId": "restaurant-new-061",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-06-14T13:10:00+08:00",
+    "text": "I was pleased that the kitchen could leave chilli out of my noodles. The order was correct and the noodles had a good texture, but the accompanying vegetables were overcooked. Music was pleasant, though tables were close enough to hear every word next door. Mixed, but acceptable."
+  },
+  {
+    "sourceReviewId": "restaurant-new-062",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-01T13:20:00+08:00",
+    "text": "A friend recommended the lunch special, so four of us gave it a go. Food arrived in two batches and one drink was delayed. The portions were generous and the sauces were tasty, but the dining area felt warm by the window. We left satisfied rather than impressed."
+  },
+  {
+    "sourceReviewId": "restaurant-new-063",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-18T19:30:00+08:00",
+    "text": "The starter came quickly and had a crisp texture. Our mains took longer, perhaps because the restaurant filled up suddenly. My pasta was nicely seasoned, but my partner's rice was clumpy and cool. The staff offered to replace it; we declined because we needed to leave."
+  },
+  {
+    "sourceReviewId": "restaurant-new-064",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-08-04T19:40:00+08:00",
+    "text": "Ordered delivery for a quiet night in. Everything was labelled clearly and the correct items arrived. The soup was still hot, whereas the fried item had gone soggy and the portion looked smaller than in the restaurant. It worked for convenience, though dining in would likely be better."
+  },
+  {
+    "sourceReviewId": "restaurant-new-065",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-08-21T15:50:00+08:00",
+    "text": "We stopped by around 3 pm, between the lunch and dinner crowds. The place was clean and quiet, and the waiter helped us choose from the menu. One dish had lovely spice, the other was a little bland. Prices were reasonable, so I can see myself returning."
+  },
+  {
+    "sourceReviewId": "restaurant-new-066",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-09-07T13:00:00+08:00",
+    "text": "Decent lunch. Fish was good, rice a little dry."
+  },
+  {
+    "sourceReviewId": "restaurant-new-067",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-09-24T19:10:00+08:00",
+    "text": "Service was pleasant but slow today."
+  },
+  {
+    "sourceReviewId": "restaurant-new-068",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-10-11T12:20:00+08:00",
+    "text": "Okay lah, portions average and flavours fine."
+  },
+  {
+    "sourceReviewId": "restaurant-new-069",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-05-15T13:30:00+08:00",
+    "text": "The curry was tasty; seating was a squeeze."
+  },
+  {
+    "sourceReviewId": "restaurant-new-070",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-06-01T18:40:00+08:00",
+    "text": "Clean place, limited vegetarian choices."
+  },
+  {
+    "sourceReviewId": "restaurant-new-071",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-06-18T19:50:00+08:00",
+    "text": "Not bad. I'd ask for more sauce next time."
+  },
+  {
+    "sourceReviewId": "restaurant-new-072",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-05T12:00:00+08:00",
+    "text": "One dish hot, one just warm. Odd."
+  },
+  {
+    "sourceReviewId": "restaurant-new-073",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-07-22T13:10:00+08:00",
+    "text": "Price felt fair until the drinks were added."
+  },
+  {
+    "sourceReviewId": "restaurant-new-074",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-08-08T18:20:00+08:00",
+    "text": "还可以，面条不错，等菜稍微久了。"
+  },
+  {
+    "sourceReviewId": "restaurant-new-075",
+    "branchId": "sunway",
+    "rating": 3,
+    "reviewedAt": "2026-08-25T13:30:00+08:00",
+    "text": "The lunch set works if you're nearby."
+  },
+  {
+    "sourceReviewId": "restaurant-new-076",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-09-11T19:40:00+08:00",
+    "text": "Dinner with my parents went smoothly even though the restaurant was busy. We shared a crisp starter, then had fish, noodles, and a rice bowl. Everything arrived hot, with the fish especially well seasoned. The only snag was a short wait for the final drink, which staff corrected quickly."
+  },
+  {
+    "sourceReviewId": "restaurant-new-077",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-09-28T13:50:00+08:00",
+    "text": "I came in for a weekday lunch and found a quiet seat near the window. The chicken was tender and the rice had good flavour without being greasy. Staff explained the set options clearly, including the drink upgrade. The bill matched the menu and I was out on time."
+  },
+  {
+    "sourceReviewId": "restaurant-new-078",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-10-15T18:00:00+08:00",
+    "text": "Tried the vegetarian pasta after asking about the sauce ingredients. The server checked with the kitchen and came back with a clear answer. It had plenty of vegetables and a bright flavour. My friend's grilled meal was also good. Seating was close together, so conversation was occasionally difficult."
+  },
+  {
+    "sourceReviewId": "restaurant-new-079",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-05-19T19:10:00+08:00",
+    "text": "We ordered takeaway for four after a long drive. The paper bag was packed neatly, sauces were separate, and each box had a label. Even the fried side stayed fairly crisp. One portion could have used more vegetables, but the order was correct and dinner was easy."
+  },
+  {
+    "sourceReviewId": "restaurant-new-080",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-06T11:20:00+08:00",
+    "text": "A pleasant Saturday brunch with my sister. We waited about fifteen minutes for a table, then drinks came quickly. The eggs were soft, toast warm, and fruit fresh. The room grew louder as families arrived, but the staff kept checking whether we needed anything without hovering."
+  },
+  {
+    "sourceReviewId": "restaurant-new-081",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-22T19:30:00+08:00",
+    "text": "The curry had deep flavour and a comfortable level of spice. I liked that the rice came hot and the portion was enough for a proper dinner. My partner's noodles were a little softer than preferred, yet still tasty. Service was efficient and the price seemed fair."
+  },
+  {
+    "sourceReviewId": "restaurant-new-082",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-07-09T19:40:00+08:00",
+    "text": "We booked for an early birthday dinner and were seated in a roomy corner. The team brought mains together, remembered the no-chilli request, and gave us time to talk. My chicken was juicy with a crisp edge. Dessert was good too, though the coffee took longer than expected."
+  },
+  {
+    "sourceReviewId": "restaurant-new-083",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-07-26T15:50:00+08:00",
+    "text": "Dropped in alone during a rainy afternoon. The soup was warming, bread fresh, and the dining area tidy. A server offered a seat away from the door before I asked. There was a brief mix-up with the drink size on the bill, fixed immediately at the counter."
+  },
+  {
+    "sourceReviewId": "restaurant-new-084",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-08-12T13:00:00+08:00",
+    "text": "My colleague and I split a starter and ordered separate rice plates. Both had balanced seasoning and generous vegetables; the fish on mine was especially moist. The lunch crowd made service slightly slower, but staff gave us a realistic estimate. That made the wait easy to manage."
+  },
+  {
+    "sourceReviewId": "restaurant-new-085",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-08-29T13:10:00+08:00",
+    "text": "The menu has enough variety for our group of five without feeling endless. We tried noodles, a grilled dish, and a vegetarian bowl; each tasted freshly made. Staff handled our separate bills accurately. The table was a little narrow for all the plates, but the meal was enjoyable."
+  },
+  {
+    "sourceReviewId": "restaurant-new-086",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-09-15T19:20:00+08:00",
+    "text": "We needed a quick bite before the cinema. The server suggested dishes that would arrive soon and was right about the timing. My pasta was hot with a rich sauce, and my friend's salad was crisp. Drinks were expensive for their size, otherwise a solid stop."
+  },
+  {
+    "sourceReviewId": "restaurant-new-087",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-10-02T19:30:00+08:00",
+    "text": "Ordered dinner to take home and was glad the soup lid stayed secure. The hot dishes were still warm after a fifteen-minute drive, and the sauces had not soaked the rice. A side vegetable portion was modest, but everything tasted fresh and the pickup process was simple."
+  },
+  {
+    "sourceReviewId": "restaurant-new-088",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-05-06T12:40:00+08:00",
+    "text": "I liked the soft lighting and the fact that we could hear each other despite a full room. Our starter was nicely seasoned and the grilled chicken had a good smoky edge. One plate came a few minutes late, with an apology before we had to ask. Fair value overall."
+  },
+  {
+    "sourceReviewId": "restaurant-new-089",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-05-23T13:50:00+08:00",
+    "text": "We visited with a toddler and appreciated the staff bringing a high chair promptly. The children's portion was sensible, and our noodles and fish were served hot. The table could have been wiped more thoroughly before seating, but someone cleaned it straight away when we asked."
+  },
+  {
+    "sourceReviewId": "restaurant-new-090",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-09T13:00:00+08:00",
+    "text": "Had a relaxed lunch here with a friend. The tofu bowl was filling, with vegetables that still had bite, and the iced drink was not overly sweet. The restroom was clean. We waited a while to pay because the counter was busy, but everything else was handled well."
+  },
+  {
+    "sourceReviewId": "restaurant-new-091",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-26T13:10:00+08:00",
+    "text": "Good flavours and quick service at lunch."
+  },
+  {
+    "sourceReviewId": "restaurant-new-092",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-07-13T12:20:00+08:00",
+    "text": "Really liked the fish. Dessert was only so-so."
+  },
+  {
+    "sourceReviewId": "restaurant-new-093",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-07-30T13:30:00+08:00",
+    "text": "Sedap, portion pun okay. Would come back."
+  },
+  {
+    "sourceReviewId": "restaurant-new-094",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-08-16T18:40:00+08:00",
+    "text": "Warm food, clean table, kind staff."
+  },
+  {
+    "sourceReviewId": "restaurant-new-095",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-09-02T19:50:00+08:00",
+    "text": "Our order was right and the packaging stayed tidy."
+  },
+  {
+    "sourceReviewId": "restaurant-new-096",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-09-19T12:00:00+08:00",
+    "text": "A bit busy, but the curry was worth waiting for."
+  },
+  {
+    "sourceReviewId": "restaurant-new-097",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-10-06T13:10:00+08:00",
+    "text": "Nice atmosphere for a quiet weekday meal."
+  },
+  {
+    "sourceReviewId": "restaurant-new-098",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-05-10T18:20:00+08:00",
+    "text": "Fresh salad and a properly hot soup."
+  },
+  {
+    "sourceReviewId": "restaurant-new-099",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-05-27T19:30:00+08:00",
+    "text": "价格合理，服务也亲切。"
+  },
+  {
+    "sourceReviewId": "restaurant-new-100",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-13T12:40:00+08:00",
+    "text": "The set menu is a good deal."
+  },
+  {
+    "sourceReviewId": "restaurant-new-101",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-06-30T13:50:00+08:00",
+    "text": "Enjoyed the noodles, though the chairs were firm."
+  },
+  {
+    "sourceReviewId": "restaurant-new-102",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-07-17T18:00:00+08:00",
+    "text": "Fast checkout and no mistakes on the bill."
+  },
+  {
+    "sourceReviewId": "restaurant-new-103",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-08-03T19:10:00+08:00",
+    "text": "Good vegetarian bowl, plenty of texture."
+  },
+  {
+    "sourceReviewId": "restaurant-new-104",
+    "branchId": "sunway",
+    "rating": 4,
+    "reviewedAt": "2026-08-20T12:20:00+08:00",
+    "text": "Will return for the grilled chicken."
+  },
+  {
+    "sourceReviewId": "restaurant-new-105",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-09-06T19:30:00+08:00",
+    "text": "Our family dinner was lovely from the first greeting. We were seated quickly despite the weekend crowd, and the server confirmed the children's mild order before sending it through. The noodles arrived steaming and the grilled fish was tender. Portions were generous, and the bill had no surprises."
+  },
+  {
+    "sourceReviewId": "restaurant-new-106",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-09-23T19:40:00+08:00",
+    "text": "I stopped in after work for a solo meal and chose the vegetable curry with rice. The sauce had a layered, gentle heat and the vegetables were fresh rather than mushy. Water was refilled without asking. It was calm enough to read, and I left feeling well looked after."
+  },
+  {
+    "sourceReviewId": "restaurant-new-107",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-10-10T13:50:00+08:00",
+    "text": "Had lunch with three colleagues and expected a delay because every table was occupied. The team gave us an honest wait estimate and kept it. Our dishes came together, hot and correctly prepared. My chicken was juicy, the salad crisp, and we had time to get back to work."
+  },
+  {
+    "sourceReviewId": "restaurant-new-108",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-05-14T13:00:00+08:00",
+    "text": "The takeaway experience was excellent. I asked for sauce on the side and each container was labelled, sealed, and packed upright. After a short drive, the rice was warm and the fried side still had crunch. They included the requested cutlery, so lunch at the office was easy."
+  },
+  {
+    "sourceReviewId": "restaurant-new-109",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-05-31T19:10:00+08:00",
+    "text": "We celebrated my mum's birthday with an early dinner. Staff helped us choose a quieter table and brought water right away. The soup was fragrant, the fish perfectly cooked, and even the simple vegetables tasted fresh. We lingered over dessert without being rushed out."
+  },
+  {
+    "sourceReviewId": "restaurant-new-110",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-06-17T18:20:00+08:00",
+    "text": "The menu had a useful range for our mixed group, including a satisfying vegetarian bowl. I asked about an ingredient and the server checked instead of guessing. Food arrived at a steady pace; the noodles had great texture and the dessert was light. Everyone found something they enjoyed."
+  },
+  {
+    "sourceReviewId": "restaurant-new-111",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-04T11:30:00+08:00",
+    "text": "A really pleasant brunch. The room was bright but not glaring, tables were clean, and we had enough space for a stroller. My eggs were cooked just how I requested and the toast was warm. Coffee came promptly, with friendly service throughout our slow morning."
+  },
+  {
+    "sourceReviewId": "restaurant-new-112",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-21T19:40:00+08:00",
+    "text": "Came during the dinner rush with no reservation. They quoted a twenty-minute wait, called us in sooner, and never made us feel hurried. The rice bowls had plenty of protein and lively seasoning. Our extra sauce request was remembered, and the total felt fair for the portions."
+  },
+  {
+    "sourceReviewId": "restaurant-new-113",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-08-07T19:50:00+08:00",
+    "text": "I ordered delivery for a small family gathering. Every box arrived intact and labelled, with hot food separated from the chilled dessert. The curry remained fragrant and the rice was fluffy. Nothing was missing, and the portions stretched comfortably among us. Easy, tasty dinner."
+  },
+  {
+    "sourceReviewId": "restaurant-new-114",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-08-25T18:00:00+08:00",
+    "text": "First visit on a quiet Tuesday and it left a great impression. The server described the spice level accurately, so I chose a dish that suited me. My chicken had a crisp outside and tender middle. The bill was clear, and checkout took less than a minute."
+  },
+  {
+    "sourceReviewId": "restaurant-new-115",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-09-10T19:10:00+08:00",
+    "text": "We shared a starter before ordering fish and pasta. The starter was crisp without being oily, the fish flaked nicely, and the pasta sauce tasted fresh. Staff timed the courses so we could enjoy them without waiting around. The atmosphere stayed comfortable even as the room filled."
+  },
+  {
+    "sourceReviewId": "restaurant-new-116",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-09-27T13:20:00+08:00",
+    "text": "I brought my dad for lunch because he prefers milder food. The kitchen made his noodles without chilli and confirmed the change when serving. He enjoyed them, while my spicier rice dish had plenty of flavour. We both appreciated the attentive service and comfortable seating."
+  },
+  {
+    "sourceReviewId": "restaurant-new-117",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-10-14T19:30:00+08:00",
+    "text": "Quick dinner after shopping, and everything clicked. We found a table immediately, received cold water, and had two hot mains within a reasonable wait. The vegetables were crisp, the sauce balanced, and neither portion felt skimpy. Even the restroom was clean and well stocked."
+  },
+  {
+    "sourceReviewId": "restaurant-new-118",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-05-18T18:40:00+08:00",
+    "text": "We ordered three different dishes for takeaway and checked them at pickup. All were present, including the extra side and a special request for less sauce. At home, the packaging opened neatly and nothing had spilled. The food tasted as good as when we eat there."
+  },
+  {
+    "sourceReviewId": "restaurant-new-119",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-06-04T15:50:00+08:00",
+    "text": "A late lunch turned into a nice break from errands. The staff found us a quiet booth, explained the lunch set, and let us take our time. My soup was hot and the rice plate had generous vegetables. The final bill matched exactly what we expected."
+  },
+  {
+    "sourceReviewId": "restaurant-new-120",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-06-21T12:00:00+08:00",
+    "text": "Excellent meal, and the staff were lovely."
+  },
+  {
+    "sourceReviewId": "restaurant-new-121",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-08T13:10:00+08:00",
+    "text": "Fresh, hot, and full of flavour."
+  },
+  {
+    "sourceReviewId": "restaurant-new-122",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-25T18:20:00+08:00",
+    "text": "Sedap sangat. Service pun laju!"
+  },
+  {
+    "sourceReviewId": "restaurant-new-123",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-08-11T13:30:00+08:00",
+    "text": "Perfect little lunch after shopping."
+  },
+  {
+    "sourceReviewId": "restaurant-new-124",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-08-28T12:40:00+08:00",
+    "text": "The takeaway was packed with real care."
+  },
+  {
+    "sourceReviewId": "restaurant-new-125",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-09-14T13:50:00+08:00",
+    "text": "Loved the curry and generous rice portion."
+  },
+  {
+    "sourceReviewId": "restaurant-new-126",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-10-01T19:00:00+08:00",
+    "text": "Great spot for a relaxed family dinner."
+  },
+  {
+    "sourceReviewId": "restaurant-new-127",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-05-05T19:10:00+08:00",
+    "text": "服务很好，食物也很新鲜。"
+  },
+  {
+    "sourceReviewId": "restaurant-new-128",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-05-22T12:20:00+08:00",
+    "text": "The no-chilli request was followed exactly."
+  },
+  {
+    "sourceReviewId": "restaurant-new-129",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-06-08T13:30:00+08:00",
+    "text": "Comfortable seating and a delicious dessert."
+  },
+  {
+    "sourceReviewId": "restaurant-new-130",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-06-25T18:40:00+08:00",
+    "text": "We all cleared our plates. Will be back."
+  },
+  {
+    "sourceReviewId": "restaurant-new-131",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-12T19:50:00+08:00",
+    "text": "Fast service, fair bill, happy customers."
+  },
+  {
+    "sourceReviewId": "restaurant-new-132",
+    "branchId": "sunway",
+    "rating": 5,
+    "reviewedAt": "2026-07-29T12:00:00+08:00",
+    "text": "The vegetables were crisp and beautifully seasoned."
+  }
+]

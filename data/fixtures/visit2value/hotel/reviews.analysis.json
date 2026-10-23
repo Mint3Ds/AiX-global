@@ -642,8 +642,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "I noticed that longer pool hours would help guests arriving late.",
+        "summary": "I noticed that longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -658,8 +658,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -684,8 +684,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 337 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 337 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -700,8 +700,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 338 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 338 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -721,8 +721,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 340.",
+        "summary": "We waited at reception before we could get the key for room 340",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -737,8 +737,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 341 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 341 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -753,8 +753,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -769,8 +769,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 343 late at night.",
+        "summary": "We could hear traffic through the window of room 343 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -785,8 +785,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "We felt that the concierge helped us find an accessible taxi.",
+        "summary": "We felt that the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -801,8 +801,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 345 moved very slowly.",
+        "summary": "Our Saturday check-in for room 345 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -827,8 +827,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "We felt that the breakfast surcharge felt high for the choices offered.",
+        "summary": "We felt that the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -843,8 +843,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 347 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 347 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -859,8 +859,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -875,8 +875,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "We felt that the mattress was firm and comfortable.",
+        "summary": "We felt that the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -891,8 +891,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 350 check-in barely moved.",
+        "summary": "The queue for our room 350 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -907,8 +907,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 351 moved very slowly.",
+        "summary": "Our Saturday check-in for room 351 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -928,8 +928,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "The street sounds carried into room 353 while we were trying to sleep.",
+        "summary": "The street sounds carried into room 353 while we were trying to sleep",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -944,8 +944,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -970,8 +970,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "During our stay, longer pool hours would help guests arriving late.",
+        "summary": "During our stay, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -986,8 +986,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "During our stay, the breakfast surcharge felt high for the choices offered.",
+        "summary": "During our stay, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -1002,8 +1002,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 357 moved very slowly.",
+        "summary": "Our Saturday check-in for room 357 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1018,8 +1018,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "I kept losing the internet connection while working from room 358.",
+        "summary": "I kept losing the internet connection while working from room 358",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -1034,8 +1034,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "During our stay, the mattress was firm and comfortable.",
+        "summary": "During our stay, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -1050,8 +1050,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1066,8 +1066,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "We found streaks on the mirror in room 361 at check-in.",
+        "summary": "We found streaks on the mirror in room 361 at check-in",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -1082,8 +1082,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "For our visit, please add another vegetarian breakfast option.",
+        "summary": "For our visit, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -1098,8 +1098,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 363 moved very slowly.",
+        "summary": "Our Saturday check-in for room 363 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -1124,8 +1124,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "For our visit, the concierge helped us find an accessible taxi.",
+        "summary": "For our visit, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -1145,8 +1145,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1161,8 +1161,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 367 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 367 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -1177,8 +1177,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 368 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 368 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -1193,8 +1193,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 369 moved very slowly.",
+        "summary": "Our Saturday check-in for room 369 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1209,8 +1209,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 370.",
+        "summary": "We waited at reception before we could get the key for room 370",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -1225,8 +1225,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 371 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 371 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -1241,8 +1241,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -1267,8 +1267,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 373 late at night.",
+        "summary": "We could hear traffic through the window of room 373 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -1283,8 +1283,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "This time, the concierge helped us find an accessible taxi.",
+        "summary": "This time, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -1299,8 +1299,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 375 moved very slowly.",
+        "summary": "Our Saturday check-in for room 375 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1315,8 +1315,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "This time, the breakfast surcharge felt high for the choices offered.",
+        "summary": "This time, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -1331,8 +1331,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 377 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 377 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -1352,8 +1352,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "This time, the mattress was firm and comfortable.",
+        "summary": "This time, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -1368,8 +1368,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 380 check-in barely moved.",
+        "summary": "The queue for our room 380 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -1384,8 +1384,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 381 moved very slowly.",
+        "summary": "Our Saturday check-in for room 381 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -1410,8 +1410,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "I noticed that please add another vegetarian breakfast option.",
+        "summary": "I noticed that please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -1426,8 +1426,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "The street sounds carried into room 383 while we were trying to sleep.",
+        "summary": "The street sounds carried into room 383 while we were trying to sleep",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -1442,8 +1442,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1458,8 +1458,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "I noticed that longer pool hours would help guests arriving late.",
+        "summary": "I noticed that longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -1474,8 +1474,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "I noticed that the breakfast surcharge felt high for the choices offered.",
+        "summary": "I noticed that the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -1490,8 +1490,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 387 moved very slowly.",
+        "summary": "Our Saturday check-in for room 387 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1506,8 +1506,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "I kept losing the internet connection while working from room 388.",
+        "summary": "I kept losing the internet connection while working from room 388",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -1522,8 +1522,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "I noticed that the mattress was firm and comfortable.",
+        "summary": "I noticed that the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -1538,8 +1538,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -1569,8 +1569,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "We felt that please add another vegetarian breakfast option.",
+        "summary": "We felt that please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -1585,8 +1585,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 393 moved very slowly.",
+        "summary": "Our Saturday check-in for room 393 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1601,8 +1601,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "We felt that the concierge helped us find an accessible taxi.",
+        "summary": "We felt that the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -1617,8 +1617,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "We felt that longer pool hours would help guests arriving late.",
+        "summary": "We felt that longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -1633,8 +1633,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1649,8 +1649,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 397 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 397 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -1665,8 +1665,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 398 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 398 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -1681,8 +1681,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 399 moved very slowly.",
+        "summary": "Our Saturday check-in for room 399 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -1707,8 +1707,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 400.",
+        "summary": "We waited at reception before we could get the key for room 400",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -1723,8 +1723,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 401 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 401 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -1739,8 +1739,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1755,8 +1755,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 403 late at night.",
+        "summary": "We could hear traffic through the window of room 403 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -1776,8 +1776,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 405 moved very slowly.",
+        "summary": "Our Saturday check-in for room 405 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1792,8 +1792,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "During our stay, the breakfast surcharge felt high for the choices offered.",
+        "summary": "During our stay, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -1808,8 +1808,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 407 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 407 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -1824,8 +1824,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -1850,8 +1850,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "During our stay, the mattress was firm and comfortable.",
+        "summary": "During our stay, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -1866,8 +1866,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 410 check-in barely moved.",
+        "summary": "The queue for our room 410 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -1882,8 +1882,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 411 moved very slowly.",
+        "summary": "Our Saturday check-in for room 411 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -1898,8 +1898,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "For our visit, please add another vegetarian breakfast option.",
+        "summary": "For our visit, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -1914,8 +1914,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "The street sounds carried into room 413 while we were trying to sleep.",
+        "summary": "The street sounds carried into room 413 while we were trying to sleep",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -1930,8 +1930,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -1946,8 +1946,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "For our visit, longer pool hours would help guests arriving late.",
+        "summary": "For our visit, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -1962,8 +1962,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "For our visit, the breakfast surcharge felt high for the choices offered.",
+        "summary": "For our visit, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -1983,8 +1983,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "I kept losing the internet connection while working from room 418.",
+        "summary": "I kept losing the internet connection while working from room 418",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -1999,8 +1999,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "For our visit, the mattress was firm and comfortable.",
+        "summary": "For our visit, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -2015,8 +2015,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2031,8 +2031,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "We found streaks on the mirror in room 421 at check-in.",
+        "summary": "We found streaks on the mirror in room 421 at check-in",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -2047,8 +2047,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "This time, please add another vegetarian breakfast option.",
+        "summary": "This time, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -2063,8 +2063,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 423 moved very slowly.",
+        "summary": "Our Saturday check-in for room 423 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2079,8 +2079,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "This time, the concierge helped us find an accessible taxi.",
+        "summary": "This time, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -2095,8 +2095,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "This time, longer pool hours would help guests arriving late.",
+        "summary": "This time, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -2111,8 +2111,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -2137,8 +2137,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 427 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 427 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -2153,8 +2153,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 428 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 428 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -2169,8 +2169,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 429 moved very slowly.",
+        "summary": "Our Saturday check-in for room 429 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2190,8 +2190,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 431 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 431 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -2206,8 +2206,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2222,8 +2222,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 433 late at night.",
+        "summary": "We could hear traffic through the window of room 433 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -2238,8 +2238,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "I noticed that the concierge helped us find an accessible taxi.",
+        "summary": "I noticed that the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -2254,8 +2254,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 435 moved very slowly.",
+        "summary": "Our Saturday check-in for room 435 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -2280,8 +2280,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "I noticed that the breakfast surcharge felt high for the choices offered.",
+        "summary": "I noticed that the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -2296,8 +2296,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 437 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 437 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -2312,8 +2312,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2328,8 +2328,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "I noticed that the mattress was firm and comfortable.",
+        "summary": "I noticed that the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -2344,8 +2344,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 440 check-in barely moved.",
+        "summary": "The queue for our room 440 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -2360,8 +2360,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 441 moved very slowly.",
+        "summary": "Our Saturday check-in for room 441 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2376,8 +2376,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "We felt that please add another vegetarian breakfast option.",
+        "summary": "We felt that please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -2397,8 +2397,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -2423,8 +2423,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "We felt that longer pool hours would help guests arriving late.",
+        "summary": "We felt that longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -2439,8 +2439,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "We felt that the breakfast surcharge felt high for the choices offered.",
+        "summary": "We felt that the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -2455,8 +2455,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 447 moved very slowly.",
+        "summary": "Our Saturday check-in for room 447 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2471,8 +2471,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "I kept losing the internet connection while working from room 448.",
+        "summary": "I kept losing the internet connection while working from room 448",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -2487,8 +2487,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "We felt that the mattress was firm and comfortable.",
+        "summary": "We felt that the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -2503,8 +2503,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2519,8 +2519,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "We found streaks on the mirror in room 451 at check-in.",
+        "summary": "We found streaks on the mirror in room 451 at check-in",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -2535,8 +2535,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "During our stay, please add another vegetarian breakfast option.",
+        "summary": "During our stay, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -2551,8 +2551,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 453 moved very slowly.",
+        "summary": "Our Saturday check-in for room 453 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -2577,8 +2577,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "During our stay, the concierge helped us find an accessible taxi.",
+        "summary": "During our stay, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -2593,8 +2593,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "During our stay, longer pool hours would help guests arriving late.",
+        "summary": "During our stay, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -2614,8 +2614,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 457 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 457 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -2630,8 +2630,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 458 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 458 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -2646,8 +2646,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 459 moved very slowly.",
+        "summary": "Our Saturday check-in for room 459 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2662,8 +2662,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 460.",
+        "summary": "We waited at reception before we could get the key for room 460",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -2678,8 +2678,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 461 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 461 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -2694,8 +2694,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -2720,8 +2720,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 463 late at night.",
+        "summary": "We could hear traffic through the window of room 463 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -2736,8 +2736,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "For our visit, the concierge helped us find an accessible taxi.",
+        "summary": "For our visit, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -2752,8 +2752,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 465 moved very slowly.",
+        "summary": "Our Saturday check-in for room 465 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2768,8 +2768,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "For our visit, the breakfast surcharge felt high for the choices offered.",
+        "summary": "For our visit, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -2784,8 +2784,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 467 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 467 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -2800,8 +2800,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2821,8 +2821,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 470 check-in barely moved.",
+        "summary": "The queue for our room 470 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -2837,8 +2837,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 471 moved very slowly.",
+        "summary": "Our Saturday check-in for room 471 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -2863,8 +2863,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "This time, please add another vegetarian breakfast option.",
+        "summary": "This time, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -2879,8 +2879,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "The street sounds carried into room 473 while we were trying to sleep.",
+        "summary": "The street sounds carried into room 473 while we were trying to sleep",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -2895,8 +2895,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -2911,8 +2911,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "This time, longer pool hours would help guests arriving late.",
+        "summary": "This time, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -2927,8 +2927,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "This time, the breakfast surcharge felt high for the choices offered.",
+        "summary": "This time, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -2943,8 +2943,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 477 moved very slowly.",
+        "summary": "Our Saturday check-in for room 477 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -2959,8 +2959,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "I kept losing the internet connection while working from room 478.",
+        "summary": "I kept losing the internet connection while working from room 478",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -2975,8 +2975,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "This time, the mattress was firm and comfortable.",
+        "summary": "This time, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -2991,8 +2991,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -3017,8 +3017,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "We found streaks on the mirror in room 481 at check-in.",
+        "summary": "We found streaks on the mirror in room 481 at check-in",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -3038,8 +3038,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 483 moved very slowly.",
+        "summary": "Our Saturday check-in for room 483 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3054,8 +3054,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "I noticed that the concierge helped us find an accessible taxi.",
+        "summary": "I noticed that the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -3070,8 +3070,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "I noticed that longer pool hours would help guests arriving late.",
+        "summary": "I noticed that longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -3086,8 +3086,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3102,8 +3102,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 487 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 487 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -3118,8 +3118,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 488 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 488 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -3134,8 +3134,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 489 moved very slowly.",
+        "summary": "Our Saturday check-in for room 489 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -3160,8 +3160,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 490.",
+        "summary": "We waited at reception before we could get the key for room 490",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -3176,8 +3176,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "Room 491 looked tidy, but the bathroom mirror had not been wiped properly.",
+        "summary": "Room 491 looked tidy, but the bathroom mirror had not been wiped properly",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -3192,8 +3192,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3208,8 +3208,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "We could hear traffic through the window of room 493 late at night.",
+        "summary": "We could hear traffic through the window of room 493 late at night",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -3224,8 +3224,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "We felt that the concierge helped us find an accessible taxi.",
+        "summary": "We felt that the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -3245,8 +3245,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "We felt that the breakfast surcharge felt high for the choices offered.",
+        "summary": "We felt that the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -3261,8 +3261,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "I needed help pressing the lift button by room 497 because it was out of reach from my wheelchair.",
+        "summary": "I needed help pressing the lift button by room 497 because it was out of reach from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -3277,8 +3277,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -3303,8 +3303,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "We felt that the mattress was firm and comfortable.",
+        "summary": "We felt that the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -3319,8 +3319,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "The queue for our room 500 check-in barely moved.",
+        "summary": "The queue for our room 500 check-in barely moved",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -3335,8 +3335,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 501 moved very slowly.",
+        "summary": "Our Saturday check-in for room 501 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3351,8 +3351,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "During our stay, please add another vegetarian breakfast option.",
+        "summary": "During our stay, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -3367,8 +3367,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Traffic noise came through the window late at night.",
-        "summary": "Traffic noise came through the window late at night",
+        "evidenceQuote": "The street sounds carried into room 503 while we were trying to sleep.",
+        "summary": "The street sounds carried into room 503 while we were trying to sleep",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-central-noise"
       }
@@ -3383,8 +3383,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3399,8 +3399,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "During our stay, longer pool hours would help guests arriving late.",
+        "summary": "During our stay, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -3415,8 +3415,8 @@
         "aspect": "price",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
-        "summary": "The breakfast surcharge felt high for the choices offered",
+        "evidenceQuote": "During our stay, the breakfast surcharge felt high for the choices offered.",
+        "summary": "During our stay, the breakfast surcharge felt high for the choices offered",
         "normalizedDescription": "price feedback",
         "expectedThemeId": "hotel-central-pricing"
       }
@@ -3431,8 +3431,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 507 moved very slowly.",
+        "summary": "Our Saturday check-in for room 507 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       },
@@ -3462,8 +3462,8 @@
         "aspect": "beds",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The mattress was firm and comfortable.",
-        "summary": "The mattress was firm and comfortable",
+        "evidenceQuote": "During our stay, the mattress was firm and comfortable.",
+        "summary": "During our stay, the mattress was firm and comfortable",
         "normalizedDescription": "beds feedback",
         "expectedThemeId": "hotel-central-beds"
       }
@@ -3478,8 +3478,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "During our stay, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "During our stay, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3494,8 +3494,8 @@
         "aspect": "cleanliness",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
-        "summary": "The bathroom mirror still had marks when we entered",
+        "evidenceQuote": "We found streaks on the mirror in room 511 at check-in.",
+        "summary": "We found streaks on the mirror in room 511 at check-in",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-central-cleanliness"
       }
@@ -3510,8 +3510,8 @@
         "aspect": "breakfast",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Please add another vegetarian breakfast option.",
-        "summary": "Please add another vegetarian breakfast option",
+        "evidenceQuote": "For our visit, please add another vegetarian breakfast option.",
+        "summary": "For our visit, please add another vegetarian breakfast option",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-central-breakfast"
       }
@@ -3526,8 +3526,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 513 moved very slowly.",
+        "summary": "Our Saturday check-in for room 513 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3542,8 +3542,8 @@
         "aspect": "staff_helpfulness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The concierge helped us find an accessible taxi.",
-        "summary": "The concierge helped us find an accessible taxi",
+        "evidenceQuote": "For our visit, the concierge helped us find an accessible taxi.",
+        "summary": "For our visit, the concierge helped us find an accessible taxi",
         "normalizedDescription": "staff helpfulness feedback",
         "expectedThemeId": "hotel-central-staff-praise"
       }
@@ -3558,8 +3558,8 @@
         "aspect": "pool",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "Longer pool hours would help guests arriving late.",
-        "summary": "Longer pool hours would help guests arriving late",
+        "evidenceQuote": "For our visit, longer pool hours would help guests arriving late.",
+        "summary": "For our visit, longer pool hours would help guests arriving late",
         "normalizedDescription": "pool feedback",
         "expectedThemeId": "hotel-central-pool"
       }
@@ -3574,8 +3574,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       },
@@ -3600,8 +3600,8 @@
         "aspect": "accessibility",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
-        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "evidenceQuote": "The lift call button outside room 517 sat too high for me to press from my wheelchair.",
+        "summary": "The lift call button outside room 517 sat too high for me to press from my wheelchair",
         "normalizedDescription": "accessibility feedback",
         "expectedThemeId": "hotel-central-accessibility"
       }
@@ -3616,8 +3616,8 @@
         "aspect": "wifi",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
-        "summary": "The Wi-Fi disconnected several times during a video call",
+        "evidenceQuote": "A video call from room 518 froze repeatedly because the Wi-Fi cut out.",
+        "summary": "A video call from room 518 froze repeatedly because the Wi-Fi cut out",
         "normalizedDescription": "wifi feedback",
         "expectedThemeId": "hotel-central-wifi"
       }
@@ -3632,8 +3632,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "Our Saturday check-in for room 519 moved very slowly.",
+        "summary": "Our Saturday check-in for room 519 moved very slowly",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3648,8 +3648,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
-        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "evidenceQuote": "We waited at reception before we could get the key for room 520.",
+        "summary": "We waited at reception before we could get the key for room 520",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-central-checkin"
       }
@@ -3664,8 +3664,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "For our visit, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "For our visit, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3680,8 +3680,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Music from the street carried into our room after midnight.",
-        "summary": "Music from the street carried into our room after midnight",
+        "evidenceQuote": "Street music reached room 522 after midnight.",
+        "summary": "Street music reached room 522 after midnight",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-garden-noise"
       }
@@ -3696,8 +3696,8 @@
         "aspect": "cleanliness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The room and bathroom were spotless on arrival.",
-        "summary": "The room and bathroom were spotless on arrival",
+        "evidenceQuote": "This time, the room and bathroom were spotless on arrival.",
+        "summary": "This time, the room and bathroom were spotless on arrival",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-garden-clean-praise"
       }
@@ -3712,8 +3712,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "The reception line held us up when we arrived for room 524.",
+        "summary": "The reception line held us up when we arrived for room 524",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3728,8 +3728,8 @@
         "aspect": "amenity",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "A water refill station on each floor would be useful.",
-        "summary": "A water refill station on each floor would be useful",
+        "evidenceQuote": "This time, a water refill station on each floor would be useful.",
+        "summary": "This time, a water refill station on each floor would be useful",
         "normalizedDescription": "amenity feedback",
         "expectedThemeId": "hotel-garden-water"
       }
@@ -3744,8 +3744,8 @@
         "aspect": "air_conditioning",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
-        "summary": "The AC in room 508 made a loud clicking sound",
+        "evidenceQuote": "A repeated clicking sound came from the AC in room 526.",
+        "summary": "A repeated clicking sound came from the AC in room 526",
         "normalizedDescription": "air conditioning feedback",
         "expectedThemeId": "hotel-garden-ac-noise"
       }
@@ -3760,8 +3760,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "This time, the breakfast spread had fresh fruit and warm bread.",
+        "summary": "This time, the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3776,8 +3776,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Music from the street carried into our room after midnight.",
-        "summary": "Music from the street carried into our room after midnight",
+        "evidenceQuote": "Street music reached room 528 after midnight.",
+        "summary": "Street music reached room 528 after midnight",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-garden-noise"
       }
@@ -3792,8 +3792,8 @@
         "aspect": "cleanliness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The room and bathroom were spotless on arrival.",
-        "summary": "The room and bathroom were spotless on arrival",
+        "evidenceQuote": "I noticed that the room and bathroom were spotless on arrival.",
+        "summary": "I noticed that the room and bathroom were spotless on arrival",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-garden-clean-praise"
       }
@@ -3808,8 +3808,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "The reception line held us up when we arrived for room 530.",
+        "summary": "The reception line held us up when we arrived for room 530",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3824,8 +3824,8 @@
         "aspect": "amenity",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "A water refill station on each floor would be useful.",
-        "summary": "A water refill station on each floor would be useful",
+        "evidenceQuote": "I noticed that a water refill station on each floor would be useful.",
+        "summary": "I noticed that a water refill station on each floor would be useful",
         "normalizedDescription": "amenity feedback",
         "expectedThemeId": "hotel-garden-water"
       }
@@ -3840,8 +3840,8 @@
         "aspect": "air_conditioning",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
-        "summary": "The AC in room 508 made a loud clicking sound",
+        "evidenceQuote": "A repeated clicking sound came from the AC in room 532.",
+        "summary": "A repeated clicking sound came from the AC in room 532",
         "normalizedDescription": "air conditioning feedback",
         "expectedThemeId": "hotel-garden-ac-noise"
       }
@@ -3856,8 +3856,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "I noticed that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "I noticed that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3872,8 +3872,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Music from the street carried into our room after midnight.",
-        "summary": "Music from the street carried into our room after midnight",
+        "evidenceQuote": "Street music reached room 534 after midnight.",
+        "summary": "Street music reached room 534 after midnight",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-garden-noise"
       }
@@ -3888,8 +3888,8 @@
         "aspect": "cleanliness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The room and bathroom were spotless on arrival.",
-        "summary": "The room and bathroom were spotless on arrival",
+        "evidenceQuote": "We felt that the room and bathroom were spotless on arrival.",
+        "summary": "We felt that the room and bathroom were spotless on arrival",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-garden-clean-praise"
       }
@@ -3904,8 +3904,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "The reception line held us up when we arrived for room 536.",
+        "summary": "The reception line held us up when we arrived for room 536",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -3920,8 +3920,8 @@
         "aspect": "amenity",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "A water refill station on each floor would be useful.",
-        "summary": "A water refill station on each floor would be useful",
+        "evidenceQuote": "We felt that a water refill station on each floor would be useful.",
+        "summary": "We felt that a water refill station on each floor would be useful",
         "normalizedDescription": "amenity feedback",
         "expectedThemeId": "hotel-garden-water"
       }
@@ -3936,8 +3936,8 @@
         "aspect": "air_conditioning",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
-        "summary": "The AC in room 508 made a loud clicking sound",
+        "evidenceQuote": "A repeated clicking sound came from the AC in room 538.",
+        "summary": "A repeated clicking sound came from the AC in room 538",
         "normalizedDescription": "air conditioning feedback",
         "expectedThemeId": "hotel-garden-ac-noise"
       }
@@ -3952,8 +3952,8 @@
         "aspect": "breakfast",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
-        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "evidenceQuote": "We felt that the breakfast spread had fresh fruit and warm bread.",
+        "summary": "We felt that the breakfast spread had fresh fruit and warm bread",
         "normalizedDescription": "breakfast feedback",
         "expectedThemeId": "hotel-garden-breakfast-praise"
       }
@@ -3968,8 +3968,8 @@
         "aspect": "noise",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "Music from the street carried into our room after midnight.",
-        "summary": "Music from the street carried into our room after midnight",
+        "evidenceQuote": "Street music reached room 540 after midnight.",
+        "summary": "Street music reached room 540 after midnight",
         "normalizedDescription": "noise feedback",
         "expectedThemeId": "hotel-garden-noise"
       }
@@ -3984,8 +3984,8 @@
         "aspect": "cleanliness",
         "kind": "specific_praise",
         "sentiment": "positive",
-        "evidenceQuote": "The room and bathroom were spotless on arrival.",
-        "summary": "The room and bathroom were spotless on arrival",
+        "evidenceQuote": "During our stay, the room and bathroom were spotless on arrival.",
+        "summary": "During our stay, the room and bathroom were spotless on arrival",
         "normalizedDescription": "cleanliness feedback",
         "expectedThemeId": "hotel-garden-clean-praise"
       }
@@ -4000,8 +4000,8 @@
         "aspect": "check_in",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
-        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "evidenceQuote": "The reception line held us up when we arrived for room 542.",
+        "summary": "The reception line held us up when we arrived for room 542",
         "normalizedDescription": "check in feedback",
         "expectedThemeId": "hotel-garden-checkin"
       }
@@ -4016,8 +4016,8 @@
         "aspect": "amenity",
         "kind": "suggestion",
         "sentiment": "neutral",
-        "evidenceQuote": "A water refill station on each floor would be useful.",
-        "summary": "A water refill station on each floor would be useful",
+        "evidenceQuote": "During our stay, a water refill station on each floor would be useful.",
+        "summary": "During our stay, a water refill station on each floor would be useful",
         "normalizedDescription": "amenity feedback",
         "expectedThemeId": "hotel-garden-water"
       }
@@ -4032,8 +4032,8 @@
         "aspect": "air_conditioning",
         "kind": "operational_complaint",
         "sentiment": "negative",
-        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
-        "summary": "The AC in room 508 made a loud clicking sound",
+        "evidenceQuote": "A repeated clicking sound came from the AC in room 544.",
+        "summary": "A repeated clicking sound came from the AC in room 544",
         "normalizedDescription": "air conditioning feedback",
         "expectedThemeId": "hotel-garden-ac-noise"
       }

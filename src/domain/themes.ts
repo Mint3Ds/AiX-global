@@ -39,6 +39,6 @@ export function candidateThemes<
         .filter((word) => words.has(word)).length,
     }))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 8)
+    .slice(0, 100)
     .map((entry) => entry.item);
 }

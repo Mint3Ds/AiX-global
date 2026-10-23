@@ -588,7 +588,19 @@ export async function analyzeReview(reviewId: string) {
         input.kind,
         `${input.aspect} ${input.normalizedDescription}`,
       );
-      const match = await matchWithOpenAI(input, candidates);
+      const normalizedAspect = input.aspect
+        .replaceAll("_", " ")
+        .trim()
+        .toLowerCase();
+      const exactCandidate = normalizedAspect.includes(" ")
+        ? candidates.find(
+            (candidate) =>
+              candidate.title.trim().toLowerCase() === normalizedAspect,
+          )
+        : undefined;
+      const match = exactCandidate
+        ? { themeId: exactCandidate.id }
+        : await matchWithOpenAI(input, candidates);
       if (
         match.themeId &&
         !candidates.some((candidate) => candidate.id === match.themeId)

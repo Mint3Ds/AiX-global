@@ -215,6 +215,58 @@
   color: var(--ink);
   font-weight: 550;
 }
+.reply-review-list {
+  display: grid;
+  gap: 10px;
+  max-height: 58vh;
+  overflow: auto;
+  margin-top: 14px;
+  padding-right: 5px;
+}
+.reply-review-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper-light);
+}
+.reply-review-content {
+  min-width: 0;
+}
+.reply-review-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+main button.reply-review-text {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+main button.reply-review-text:hover {
+  background: transparent;
+  color: var(--violet);
+}
+.reply-review-option > button {
+  min-height: 44px;
+  flex: 0 0 auto;
+}
 .feature-title {
   display: flex;
   justify-content: space-between;

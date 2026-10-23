@@ -72,6 +72,62 @@ alt_patterns = [
     ('amenity', 'suggestion', 'A water refill station on each floor would be useful.', 'hotel-garden-water'),
     ('air_conditioning', 'operational_complaint', 'The AC in room 508 made a loud clicking sound.', 'hotel-garden-ac-noise'),
 ]
+
+# Keep each complaint recognisable as the same issue without copying a review
+# verbatim across many different guests. The room/booking detail is stable for
+# each fixture so the generated review and its evidence quote stay aligned.
+def varied_quote(theme, original, index):
+    room = 300 + index
+    variants = {
+        'hotel-central-accessibility': [
+            f'From my wheelchair, I struggled to reach the lift button near room {room}.',
+            f'The lift call button outside room {room} sat too high for me to press from my wheelchair.',
+            f'I needed help pressing the lift button by room {room} because it was out of reach from my wheelchair.',
+        ],
+        'hotel-central-checkin': [
+            f'Checking in for room {room} took much longer than expected.',
+            f'We waited at reception before we could get the key for room {room}.',
+            f'The queue for our room {room} check-in barely moved.',
+        ],
+        'hotel-garden-checkin': [
+            f'Our Saturday check-in for room {room} moved very slowly.',
+            f'We spent too long in the arrival queue before getting room {room}.',
+            f'The reception line held us up when we arrived for room {room}.',
+        ],
+        'hotel-central-wifi': [
+            f'The Wi-Fi in room {room} dropped during my video call.',
+            f'I kept losing the internet connection while working from room {room}.',
+            f'A video call from room {room} froze repeatedly because the Wi-Fi cut out.',
+        ],
+        'hotel-central-noise': [
+            f'Road noise was loud enough to wake us in room {room}.',
+            f'We could hear traffic through the window of room {room} late at night.',
+            f'The street sounds carried into room {room} while we were trying to sleep.',
+        ],
+        'hotel-garden-noise': [
+            f'Street music reached room {room} after midnight.',
+            f'We could still hear music from outside in room {room} late at night.',
+            f'The music outside kept us awake in room {room}.',
+        ],
+        'hotel-central-cleanliness': [
+            f'The bathroom mirror in room {room} had marks on it when we arrived.',
+            f'We found streaks on the mirror in room {room} at check-in.',
+            f'Room {room} looked tidy, but the bathroom mirror had not been wiped properly.',
+        ],
+        'hotel-garden-ac-noise': [
+            f'The air conditioner in room {room} clicked loudly through the night.',
+            f'A repeated clicking sound came from the AC in room {room}.',
+            f'The AC unit in room {room} made a noise that disturbed our sleep.',
+        ],
+    }
+    if theme in variants:
+        return variants[theme][index % 3]
+    # These shared amenities have no room number in the complaint. Rotate
+    # natural lead-ins and details so the evidence is similar, not identical.
+    occurrence = index // (6 if theme.startswith('hotel-garden-') else 10)
+    lead = ['During our stay, ', 'For our visit, ', 'This time, ', 'I noticed that ', 'We felt that '][occurrence % 5]
+    return lead + original[0].lower() + original[1:]
+
 for i in range(35, 221):
     branch = 'hotel-central' if i % 3 else 'hotel-garden'
     if i % 13 == 0:
@@ -80,6 +136,7 @@ for i in range(35, 221):
         continue
     spec = (patterns if branch == 'hotel-central' else alt_patterns)[i % (10 if branch == 'hotel-central' else 6)]
     aspect, kind, quote, theme = spec
+    quote = varied_quote(theme, quote, i)
     segments = [(quote, point(quote, 'guest_experience', aspect, kind, theme))]
     if i % 9 == 0:
         extra = 'The reception staff greeted us warmly.'
@@ -92,6 +149,7 @@ for i in range(35, 221):
 # check-in and breakfast, so these rows keep the other property topics visible.
 for i in range(221, 245):
     aspect, kind, quote, theme = alt_patterns[(i - 221) % len(alt_patterns)]
+    quote = varied_quote(theme, quote, i)
     segments = [(quote, point(quote, 'guest_experience', aspect, kind, theme))]
     segments.append((f'Our stay was on floor {1 + (i % 8)}.', None))
     add(i, 'harbour-house', 'hotel-garden', segments, 2 if kind == 'operational_complaint' else 4 if kind == 'suggestion' else 5)

@@ -50,6 +50,11 @@ type Membership = {
   source: string;
   confirmation: string;
 };
+type EvidenceGroup = {
+  key: string;
+  quote: string;
+  reviews: Review[];
+};
 type Task = {
   id: string;
   themeId: string;
@@ -146,10 +151,108 @@ const label = (value: string) =>
   value === "simulated_published" || value === "reply_simulated_published"
     ? "posted"
     : value.replaceAll("_", " ");
+function RatingStars({ rating }: { rating: number }) {
+  const value = Math.max(0, Math.min(5, rating));
+  return (
+    <span
+      className="rating-stars"
+      role="img"
+      aria-label={`${value} out of 5 stars`}
+    >
+      <span className="rating-stars-filled">{"★".repeat(value)}</span>
+    </span>
+  );
+}
+function PriorityBadge({ priority }: { priority: string }) {
+  const tone = priority.toLowerCase();
+  return (
+    <span className={`priority-badge priority-${tone}`}>
+      {priority} priority
+    </span>
+  );
+}
+function EvidenceReviewList({
+  reviews,
+  onOpenReview,
+}: {
+  reviews: Review[];
+  onOpenReview: (review: Review) => void;
+}) {
+  return (
+    <ul className="evidence-review-list">
+      {reviews.map((review) => {
+        return (
+          <li key={review.id}>
+            <details className="evidence-review-reply">
+              <summary>
+                <RatingStars rating={review.rating} />
+                <time dateTime={review.reviewedAt}>
+                  {date(review.reviewedAt)}
+                </time>
+                <span className="evidence-reply-hint">Review details</span>
+              </summary>
+              <div className="evidence-reply-content">
+                <strong>Original review</strong>
+                <p>{review.originalText}</p>
+                <button
+                  type="button"
+                  className="link evidence-view-review"
+                  onClick={() => onOpenReview(review)}
+                >
+                  View in Reviews
+                </button>
+              </div>
+            </details>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+function PageControls({
+  page,
+  pageCount,
+  onPageChange,
+}: {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+}) {
+  return (
+    <nav className="page-controls" aria-label="List pages">
+      <button
+        className="secondary"
+        type="button"
+        disabled={pageCount <= 1 || page === 0}
+        onClick={() => onPageChange(page - 1)}
+      >
+        Previous
+      </button>
+      <span>
+        Page {page + 1} of {pageCount}
+      </span>
+      <button
+        className="secondary"
+        type="button"
+        disabled={pageCount <= 1 || page + 1 >= pageCount}
+        onClick={() => onPageChange(page + 1)}
+      >
+        Next
+      </button>
+    </nav>
+  );
+}
 const priorityRank = (priority: string) =>
   ({ urgent: 4, high: 3, medium: 2, low: 1 })[
     priority.toLowerCase() as "urgent" | "high" | "medium" | "low"
   ] || 0;
+const isOwnerVisibleTheme = (theme: Theme, support: number) =>
+  theme.type === "operational_issue"
+    ? support > 0 &&
+      (support >= 4 ||
+        theme.priority === "urgent" ||
+        ["owner_confirmed", "recurrence"].includes(theme.status))
+    : support > 0 || theme.status === "owner_confirmed";
 
 export function Workspace() {
   const [state, setState] = useState<State | null>(null);
@@ -164,6 +267,11 @@ export function Workspace() {
   const [selectedTheme, setSelectedTheme] =
     useState<string>("hotel-central-ac");
   const [selectedTask, setSelectedTask] = useState<string>("");
+  const [issueType, setIssueType] = useState<
+    "operational_issue" | "suggestion"
+  >("operational_issue");
+  const [issuePage, setIssuePage] = useState(0);
+  const [evidencePage, setEvidencePage] = useState(0);
   const [search, setSearch] = useState("");
   const [branch, setBranch] = useState("all");
   const [rating, setRating] = useState("all");
@@ -191,7 +299,6 @@ export function Workspace() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [tab]);
-
   const refresh = useCallback(async () => {
     try {
       const response = await fetch(
@@ -314,6 +421,79 @@ export function Workspace() {
       ) || [],
     [state, selectedTheme],
   );
+  const evidenceGroups = useMemo<EvidenceGroup[]>(() => {
+    if (!state) return [];
+    const reviewsById = new Map(
+      state.reviews.map((review) => [review.id, review]),
+    );
+    const groups = new Map<
+      string,
+      { quote: string; reviews: Map<string, Review> }
+    >();
+
+    for (const point of themeObservations) {
+      const quote = point.evidenceQuote.trim().replace(/\s+/g, " ");
+      const key = quote ? quote.toLocaleLowerCase() : `observation:${point.id}`;
+      const review = reviewsById.get(point.reviewId);
+      if (!review) continue;
+
+      if (!groups.has(key)) groups.set(key, { quote, reviews: new Map() });
+      groups.get(key)!.reviews.set(review.id, review);
+    }
+
+    return Array.from(groups, ([key, group]) => {
+      const orderedReviews = Array.from(group.reviews.values()).sort(
+        (a, b) =>
+          new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime(),
+      );
+      return {
+        key,
+        quote: group.quote,
+        reviews: orderedReviews,
+      };
+    }).sort((a, b) => b.reviews.length - a.reviews.length);
+  }, [state, themeObservations]);
+  const issueThemes = useMemo(() => {
+    if (!state) return [];
+    return state.themes
+      .filter(
+        (item) =>
+          item.type === issueType &&
+          isOwnerVisibleTheme(item, state.themeSupport[item.id] || 0),
+      )
+      .sort(
+        (a, b) =>
+          priorityRank(b.priority) - priorityRank(a.priority) ||
+          (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0),
+      );
+  }, [state, issueType]);
+  const issuePageCount = Math.max(1, Math.ceil(issueThemes.length / 5));
+  const currentIssuePage = Math.min(issuePage, issuePageCount - 1);
+  const visibleIssues = issueThemes.slice(
+    currentIssuePage * 5,
+    currentIssuePage * 5 + 5,
+  );
+  const evidencePageCount = Math.max(1, Math.ceil(evidenceGroups.length / 5));
+  const currentEvidencePage = Math.min(evidencePage, evidencePageCount - 1);
+  const visibleEvidenceGroups = evidenceGroups.slice(
+    currentEvidencePage * 5,
+    currentEvidencePage * 5 + 5,
+  );
+  const affectedReviews = useMemo(() => {
+    if (!state || !task) return [];
+    const reviewIds = new Set(
+      state.observations
+        .filter((point) =>
+          state.memberships.some(
+            (membership) =>
+              membership.themeId === task.themeId &&
+              membership.observationId === point.id,
+          ),
+        )
+        .map((point) => point.reviewId),
+    );
+    return state.reviews.filter((review) => reviewIds.has(review.id));
+  }, [state, task]);
   const filtered = useMemo(
     () =>
       state?.reviews.filter((review) => {
@@ -353,7 +533,32 @@ export function Workspace() {
   ].sort();
   const openTheme = (id: string) => {
     setSelectedTheme(id);
+    setEvidencePage(0);
     setTab("issues");
+  };
+  const changeIssueType = (type: "operational_issue" | "suggestion") => {
+    setIssueType(type);
+    setIssuePage(0);
+    setEvidencePage(0);
+    const support = state?.themeSupport || {};
+    const firstTheme = (state?.themes || [])
+      .filter(
+        (item) =>
+          item.type === type &&
+          isOwnerVisibleTheme(item, support[item.id] || 0),
+      )
+      .sort(
+        (a, b) =>
+          priorityRank(b.priority) - priorityRank(a.priority) ||
+          (support[b.id] || 0) - (support[a.id] || 0),
+      )[0];
+    setSelectedTheme(firstTheme?.id || "");
+  };
+  const changeIssuePage = (page: number) => {
+    setIssuePage(page);
+    setEvidencePage(0);
+    const firstTheme = issueThemes.slice(page * 5, page * 5 + 5)[0];
+    setSelectedTheme(firstTheme?.id || "");
   };
   const openReview = (id: string) => {
     setSelectedReview(id);
@@ -370,6 +575,7 @@ export function Workspace() {
     .filter(
       (item) =>
         item.type === "operational_issue" &&
+        isOwnerVisibleTheme(item, state.themeSupport[item.id] || 0) &&
         ["suggested", "recurrence"].includes(item.status),
     )
     .sort((a, b) => {
@@ -403,6 +609,9 @@ export function Workspace() {
           setBusinessId(id);
           setState(null);
           setSelectedReview(null);
+          setIssueType("operational_issue");
+          setIssuePage(0);
+          setEvidencePage(0);
           setSelectedTheme(
             id === "harbour-house"
               ? "hotel-central-ac"
@@ -433,7 +642,14 @@ export function Workspace() {
         }}
         tab={tab}
         role={role}
-        onTabChange={setTab}
+        onTabChange={(nextTab) => {
+          if (
+            nextTab === "issues" &&
+            !issueThemes.some((item) => item.id === selectedTheme)
+          )
+            setSelectedTheme(issueThemes[0]?.id || "");
+          setTab(nextTab);
+        }}
         onRoleChange={setRole}
       />
       {error && (
@@ -483,6 +699,10 @@ export function Workspace() {
                   value: state.themes.filter(
                     (theme) =>
                       theme.type === "operational_issue" &&
+                      isOwnerVisibleTheme(
+                        theme,
+                        state.themeSupport[theme.id] || 0,
+                      ) &&
                       ["suggested", "recurrence"].includes(theme.status),
                   ).length,
                 },
@@ -699,31 +919,33 @@ export function Workspace() {
                     <div className="card">No reviews match these filters.</div>
                   )}
                 </div>
-                <div className="card detail">
+                <div className="card detail review-detail">
                   {selected ? (
                     <>
-                      <p className="eyebrow">
-                        {branchName(selected.branchId)} · {selected.rating}{" "}
-                        stars · {date(selected.reviewedAt)}
-                      </p>
+                      <div className="review-meta">
+                        <span>{branchName(selected.branchId)}</span>
+                        <RatingStars rating={selected.rating} />
+                        <time>{date(selected.reviewedAt)}</time>
+                        <span className="status-pill">
+                          {label(selected.processingStatus)}
+                        </span>
+                      </div>
                       <h3>Original review</h3>
-                      <blockquote>{selected.originalText}</blockquote>
-                      <p>
-                        <b>Status:</b> {label(selected.processingStatus)}
-                        {state.replies.find(
-                          (reply) => reply.reviewId === selected.id,
-                        ) && (
-                          <>
-                            {" "}
-                            · <b>Reply:</b>{" "}
-                            {label(
-                              state.replies.find(
-                                (reply) => reply.reviewId === selected.id,
-                              )!.status,
-                            )}
-                          </>
-                        )}
-                      </p>
+                      <blockquote className="review-original">
+                        {selected.originalText}
+                      </blockquote>
+                      {state.replies.find(
+                        (reply) => reply.reviewId === selected.id,
+                      ) && (
+                        <p className="reply-status">
+                          Reply:{" "}
+                          {label(
+                            state.replies.find(
+                              (reply) => reply.reviewId === selected.id,
+                            )!.status,
+                          )}
+                        </p>
+                      )}
                       <h3>Operational complaints</h3>
                       {reviewPoints.length ? (
                         reviewPoints.map((point) => {
@@ -731,30 +953,35 @@ export function Workspace() {
                             (m) => m.observationId === point.id,
                           );
                           return (
-                            <div className="observation" key={point.id}>
-                              <p>
-                                <b>{label(point.category)}</b>
-                              </p>
+                            <article className="complaint-card" key={point.id}>
+                              <div className="complaint-card-heading">
+                                <span>{label(point.category)}</span>
+                                {membership && (
+                                  <span className="complaint-issue">
+                                    {
+                                      state.themes.find(
+                                        (theme) =>
+                                          theme.id === membership.themeId,
+                                      )?.title
+                                    }
+                                  </span>
+                                )}
+                              </div>
                               <blockquote>“{point.evidenceQuote}”</blockquote>
-                              <p>{point.summary}</p>
-                              {membership && (
-                                <p>
-                                  Issue:{" "}
-                                  {
-                                    state.themes.find(
-                                      (theme) =>
-                                        theme.id === membership.themeId,
-                                    )?.title
-                                  }
-                                </p>
-                              )}
-                            </div>
+                              <p className="complaint-summary">
+                                {point.summary}
+                              </p>
+                            </article>
                           );
                         })
                       ) : (
-                        <p className="muted">
-                          No operational complaints found.
-                        </p>
+                        <div className="empty-complaints">
+                          <b>No operational complaints</b>
+                          <p>
+                            This review has no reported service or facility
+                            issue.
+                          </p>
+                        </div>
                       )}
                       {["pending", "failed", "needs_review"].includes(
                         selected.processingStatus,
@@ -784,82 +1011,139 @@ export function Workspace() {
           {tab === "issues" && (
             <section>
               <h2>Issues and insights</h2>
+              <p className="muted">
+                Recurring issues appear after four reviews. Urgent and confirmed
+                issues appear sooner; individual feedback stays in Reviews.
+              </p>
               <div className="split">
-                <div className="review-list">
-                  {(
-                    [
-                      "operational_issue",
-                      "suggestion",
-                      "positive_pattern",
-                    ] as const
-                  ).map((type) => (
-                    <div key={type}>
-                      <h3>
-                        {type === "operational_issue"
-                          ? "Operational issues"
-                          : type === "suggestion"
-                            ? "Customer suggestions"
-                            : "Positive patterns"}
-                      </h3>
-                      {state.themes
-                        .filter((theme) => theme.type === type)
-                        .sort(
-                          (a, b) =>
-                            priorityRank(b.priority) -
-                              priorityRank(a.priority) ||
-                            (state.themeSupport[b.id] || 0) -
-                              (state.themeSupport[a.id] || 0),
-                        )
-                        .map((item) => (
+                <div className="issue-list-panel">
+                  <div
+                    className="issue-category-tabs"
+                    role="group"
+                    aria-label="Issue category"
+                  >
+                    {(["operational_issue", "suggestion"] as const).map(
+                      (type) => {
+                        const count = state.themes.filter(
+                          (item) =>
+                            item.type === type &&
+                            isOwnerVisibleTheme(
+                              item,
+                              state.themeSupport[item.id] || 0,
+                            ),
+                        ).length;
+                        const active = issueType === type;
+                        return (
                           <button
-                            key={item.id}
-                            className={`review-row ${selectedTheme === item.id ? "chosen" : ""}`}
-                            onClick={() => setSelectedTheme(item.id)}
+                            key={type}
+                            type="button"
+                            className={active ? "active" : ""}
+                            aria-pressed={active}
+                            onClick={() => changeIssueType(type)}
                           >
-                            <b>{item.title}</b>
-                            <span>
-                              {branchName(item.branchId)} ·{" "}
-                              {state.themeSupport[item.id] || 0} reviews ·{" "}
-                              {item.priority}
-                            </span>
-                            <small>{label(item.status)}</small>
+                            {type === "operational_issue"
+                              ? "Issues"
+                              : "Suggestions"}
+                            <span>{count}</span>
                           </button>
-                        ))}
-                    </div>
-                  ))}
+                        );
+                      },
+                    )}
+                  </div>
+                  <div className="review-list issue-list-paginated">
+                    {visibleIssues.length ? (
+                      visibleIssues.map((item) => (
+                        <button
+                          key={item.id}
+                          className={`review-row ${selectedTheme === item.id ? "chosen" : ""}`}
+                          onClick={() => {
+                            setSelectedTheme(item.id);
+                            setEvidencePage(0);
+                          }}
+                        >
+                          <span className="issue-row-heading">
+                            <b>{item.title}</b>
+                            <PriorityBadge priority={item.priority} />
+                          </span>
+                          <span className="issue-row-meta">
+                            {branchName(item.branchId)} ·{" "}
+                            {state.themeSupport[item.id] || 0} reviews
+                          </span>
+                          <small>{label(item.status)}</small>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="muted issue-empty">
+                        No{" "}
+                        {issueType === "operational_issue"
+                          ? "issues"
+                          : "suggestions"}{" "}
+                        yet.
+                      </p>
+                    )}
+                  </div>
+                  <div className="issue-list-footer">
+                    <span>
+                      {issueThemes.length
+                        ? `${currentIssuePage * 5 + 1}–${Math.min(currentIssuePage * 5 + 5, issueThemes.length)} of ${issueThemes.length}`
+                        : "0 issues"}
+                    </span>
+                    <PageControls
+                      page={currentIssuePage}
+                      pageCount={issuePageCount}
+                      onPageChange={changeIssuePage}
+                    />
+                  </div>
                 </div>
                 <div className="card detail">
                   {theme ? (
                     <>
-                      <p className="eyebrow">
-                        {branchName(theme.branchId)} · {label(theme.type)} ·{" "}
-                        {label(theme.status)}
-                      </p>
-                      <h3>{theme.title}</h3>
-                      <p>
-                        <b>{state.themeSupport[theme.id] || 0}</b> reviews ·{" "}
-                        {theme.priority}
-                      </p>
+                      <div className="issue-detail-heading">
+                        <p className="eyebrow">
+                          {branchName(theme.branchId)} · {label(theme.status)}
+                        </p>
+                        <h3>{theme.title}</h3>
+                        <div className="issue-title-meta">
+                          <span>
+                            {state.themeSupport[theme.id] || 0} reviews
+                          </span>
+                        </div>
+                      </div>
                       {owner && (
-                        <div className="controls">
-                          <label>
-                            Owner severity
-                            <select
-                              value={theme.severity}
-                              onChange={(event) =>
-                                void act("severity", {
-                                  themeId: theme.id,
-                                  severity: Number(event.target.value),
-                                })
-                              }
-                            >
-                              <option value={1}>1 · low</option>
-                              <option value={2}>2 · medium</option>
-                              <option value={3}>3 · safety concern</option>
-                            </select>
-                          </label>
+                        <div className="issue-decision">
+                          <div className="issue-decision-header">
+                            <div>
+                              <div className="issue-decision-label">
+                                <strong>Owner decision</strong>
+                                <PriorityBadge priority={theme.priority} />
+                              </div>
+                              <p className="muted">
+                                {theme.status === "suggested"
+                                  ? theme.type === "operational_issue"
+                                    ? "Confirm this issue to make a work task available."
+                                    : "Confirm to keep this suggestion for follow-up."
+                                  : "Severity sets the issue priority."}
+                              </p>
+                            </div>
+                            <label>
+                              Severity
+                              <select
+                                value={theme.severity}
+                                onChange={(event) =>
+                                  void act("severity", {
+                                    themeId: theme.id,
+                                    severity: Number(event.target.value),
+                                  })
+                                }
+                              >
+                                <option value={1}>Low</option>
+                                <option value={2}>Medium</option>
+                                <option value={3}>Safety concern</option>
+                              </select>
+                            </label>
+                          </div>
                           {theme.status === "suggested" && (
-                            <>
+                            <div className="issue-decision-actions">
                               <button
                                 onClick={() =>
                                   void act("theme_status", {
@@ -870,10 +1154,6 @@ export function Workspace() {
                               >
                                 Confirm issue
                               </button>
-                              <small className="muted">
-                                Confirms this is a real issue and enables a work
-                                task.
-                              </small>
                               <button
                                 className="secondary"
                                 onClick={() =>
@@ -885,26 +1165,65 @@ export function Workspace() {
                               >
                                 Dismiss
                               </button>
-                            </>
+                            </div>
                           )}
                         </div>
                       )}
                       <h4>Original evidence</h4>
-                      {themeObservations.length ? (
-                        themeObservations.map((point) => {
-                          const review = state.reviews.find(
-                            (r) => r.id === point.reviewId,
-                          );
-                          return (
-                            <div className="observation" key={point.id}>
-                              <p className="evidence-meta">
-                                {review?.rating}★ ·{" "}
-                                {date(review?.reviewedAt || null)}
-                              </p>
-                              <blockquote>“{point.evidenceQuote}”</blockquote>
-                            </div>
-                          );
-                        })
+                      {evidenceGroups.length ? (
+                        <div className="evidence-groups">
+                          {visibleEvidenceGroups.map((group) => (
+                            <section className="evidence-group" key={group.key}>
+                              <div className="evidence-group-header">
+                                <strong>
+                                  {group.reviews.length}{" "}
+                                  {group.reviews.length === 1
+                                    ? "review"
+                                    : "reviews"}
+                                </strong>
+                                {group.reviews.length > 1 && (
+                                  <span>Same feedback</span>
+                                )}
+                              </div>
+                              <blockquote className="evidence-quote">
+                                “{group.quote}”
+                              </blockquote>
+                              <EvidenceReviewList
+                                reviews={group.reviews.slice(0, 1)}
+                                onOpenReview={(review) => openReview(review.id)}
+                              />
+                              {group.reviews.length > 1 && (
+                                <details className="evidence-more">
+                                  <summary>
+                                    Show {group.reviews.length - 1} other
+                                    reviews
+                                  </summary>
+                                  <EvidenceReviewList
+                                    reviews={group.reviews.slice(1)}
+                                    onOpenReview={(review) =>
+                                      openReview(review.id)
+                                    }
+                                  />
+                                </details>
+                              )}
+                            </section>
+                          ))}
+                          <div className="evidence-page-footer">
+                            <span>
+                              Showing {currentEvidencePage * 5 + 1}–
+                              {Math.min(
+                                currentEvidencePage * 5 + 5,
+                                evidenceGroups.length,
+                              )}{" "}
+                              of {evidenceGroups.length} feedback groups
+                            </span>
+                            <PageControls
+                              page={currentEvidencePage}
+                              pageCount={evidencePageCount}
+                              onPageChange={setEvidencePage}
+                            />
+                          </div>
+                        </div>
                       ) : (
                         <p>No evidence linked yet.</p>
                       )}
@@ -1146,58 +1465,40 @@ export function Workspace() {
                           </p>
                           <details className="reply-actions">
                             <summary>
-                              Prepare guest replies (
-                              {
-                                new Set(
-                                  state.observations
-                                    .filter((point) =>
-                                      state.memberships.some(
-                                        (membership) =>
-                                          membership.themeId === task.themeId &&
-                                          membership.observationId === point.id,
-                                      ),
-                                    )
-                                    .map((point) => point.reviewId),
-                                ).size
-                              }
-                              )
+                              Prepare guest replies ({affectedReviews.length})
                             </summary>
-                            {[
-                              ...new Set(
-                                state.observations
-                                  .filter((point) =>
-                                    state.memberships.some(
-                                      (m) =>
-                                        m.themeId === task.themeId &&
-                                        m.observationId === point.id,
-                                    ),
-                                  )
-                                  .map((point) => point.reviewId),
-                              ),
-                            ].map((reviewId) => (
-                              <div className="controls" key={reviewId}>
-                                <button
-                                  className="link"
-                                  onClick={() => openReview(reviewId)}
+                            <div className="reply-review-list">
+                              {affectedReviews.map((review) => (
+                                <div
+                                  className="reply-review-option"
+                                  key={review.id}
                                 >
-                                  {state.reviews
-                                    .find((review) => review.id === reviewId)
-                                    ?.originalText.slice(0, 80)}
-                                  …
-                                </button>
-                                <button
-                                  disabled={!owner || !!busy}
-                                  onClick={() =>
-                                    void act("draft_reply", {
-                                      reviewId,
-                                      taskId: task.id,
-                                    })
-                                  }
-                                >
-                                  Draft guest reply
-                                </button>
-                              </div>
-                            ))}
+                                  <div className="reply-review-content">
+                                    <div className="reply-review-meta">
+                                      <RatingStars rating={review.rating} />
+                                      <time>{date(review.reviewedAt)}</time>
+                                    </div>
+                                    <button
+                                      className="reply-review-text"
+                                      onClick={() => openReview(review.id)}
+                                    >
+                                      {review.originalText}
+                                    </button>
+                                  </div>
+                                  <button
+                                    disabled={!owner || !!busy}
+                                    onClick={() =>
+                                      void act("draft_reply", {
+                                        reviewId: review.id,
+                                        taskId: task.id,
+                                      })
+                                    }
+                                  >
+                                    Draft reply
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           </details>
                         </>
                       )}
