@@ -1,5 +1,5 @@
 /* Apple-inspired monotone buttons */
-main button:not(.link):not(.review-row):not(.metric-card):not(.secondary),
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):not(.segmented-btn),
 .notice button {
   border: 1px solid #1d1d1f;
   border-radius: 9999px;
@@ -13,17 +13,17 @@ main button:not(.link):not(.review-row):not(.metric-card):not(.secondary),
   transition: all 0.15s ease;
   cursor: pointer;
 }
-main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):hover,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):not(.segmented-btn):hover,
 .notice button:hover {
   background: #000000;
   border-color: #000000;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
-main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):active,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):not(.segmented-btn):active,
 .notice button:active {
   transform: scale(0.98);
 }
-main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):disabled,
+main button:not(.link):not(.review-row):not(.metric-card):not(.secondary):not(.segmented-btn):disabled,
 .notice button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -55,4 +55,39 @@ button.link {
 }
 button.link:hover {
   color: #000000;
+}
+
+/* Segmented switcher pill button */
+main button.segmented-btn,
+button.segmented-btn {
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: #6e6e73;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  box-shadow: none;
+  transform: none;
+}
+main button.segmented-btn:hover,
+button.segmented-btn:hover {
+  color: #1d1d1f;
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+}
+main button.segmented-btn.active,
+button.segmented-btn.active {
+  background: #1d1d1f;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+main button.segmented-btn.active:hover,
+button.segmented-btn.active:hover {
+  background: #000000;
+  color: #ffffff;
 }

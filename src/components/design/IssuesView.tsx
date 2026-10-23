@@ -143,31 +143,41 @@ export function IssuesView({
         {/* Category Pills Switcher */}
         <div className="inline-flex items-center p-1 rounded-full bg-white border border-neutral-200/80 shadow-2xs">
           {[
-            { id: "operational_issue", label: "Operational Issues" },
-            { id: "suggestion", label: "Guest Suggestions" },
-            { id: "positive_pattern", label: "Positive Patterns" },
-            { id: "all", label: "All Items" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setFilterType(tab.id as typeof filterType)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                filterType === tab.id
-                  ? "bg-[#1d1d1f] text-white shadow-xs"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+            { id: "operational_issue", label: "Issues" },
+            { id: "suggestion", label: "Suggestions" },
+            { id: "positive_pattern", label: "Praise" },
+            { id: "all", label: "All" },
+          ].map((tab) => {
+            const count =
+              tab.id === "all"
+                ? themes.length
+                : themes.filter((t) => t.type === tab.id).length;
+
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setFilterType(tab.id as typeof filterType)}
+                className={`segmented-btn ${filterType === tab.id ? "active" : ""}`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`ml-1.5 text-[11px] ${
+                    filterType === tab.id ? "text-neutral-300" : "text-neutral-400"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Two Column Layout: Left List & Right Detail */}
+      {/* Two Column Layout: Left List & Right Detail, each with independent scroll wheel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column (5 of 12 cols): Stacked Cards List */}
-        <div className="lg:col-span-5 space-y-3">
+        {/* Left Column (5 of 12 cols): Stacked Cards List with independent scroll */}
+        <div className="lg:col-span-5 space-y-3 max-h-[calc(100vh-210px)] overflow-y-auto pr-2 clean-scrollbar">
           {sortedThemes.length > 0 ? (
             sortedThemes.map((item) => {
               const isSelected = selectedTheme?.id === item.id;
@@ -246,8 +256,8 @@ export function IssuesView({
           )}
         </div>
 
-        {/* Right Column (7 of 12 cols): Selected Issue Detail & Evidence */}
-        <div className="lg:col-span-7">
+        {/* Right Column (7 of 12 cols): Selected Issue Detail & Evidence with independent scroll */}
+        <div className="lg:col-span-7 sticky top-6 max-h-[calc(100vh-210px)] overflow-y-auto pr-1 clean-scrollbar">
           {selectedTheme ? (
             <div className="bg-white rounded-2xl border border-neutral-200/80 p-6 sm:p-7 shadow-xs space-y-6">
               {/* Header Badges & Actions */}
