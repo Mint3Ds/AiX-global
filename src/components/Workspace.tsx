@@ -5,6 +5,12 @@ import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
+import { ReviewsView } from "@/components/design/ReviewsView";
+import { IssuesView } from "@/components/design/IssuesView";
+import { NewReviewView } from "@/components/design/NewReviewView";
+import { TasksView } from "@/components/design/TasksView";
+import { RepliesView } from "@/components/design/RepliesView";
+import { ActivityView } from "@/components/design/ActivityView";
 
 type Review = {
   id: string;
@@ -441,13 +447,19 @@ export function Workspace() {
         onRoleChange={setRole}
       />
       {error && (
-        <div role="alert" className="notice error">
-          {error} <button onClick={() => void refresh()}>Retry load</button>
+        <div role="alert" className="my-3 rounded-2xl bg-rose-50 border border-rose-200/80 px-4 py-3 text-xs text-rose-900 font-medium flex items-center justify-between shadow-2xs">
+          <span>{error}</span>
+          <button type="button" onClick={() => void refresh()} className="secondary text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-white">
+            Retry load
+          </button>
         </div>
       )}
       {message && (
-        <div role="status" className="notice">
-          {message}
+        <div role="status" className="my-3 rounded-2xl bg-white border border-neutral-200/80 px-4 py-3 text-xs text-neutral-800 font-medium shadow-2xs flex items-center justify-between">
+          <span>{message}</span>
+          <button type="button" onClick={() => setMessage("")} className="link text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">
+            Dismiss
+          </button>
         </div>
       )}
       {!state ? (
@@ -660,922 +672,189 @@ export function Workspace() {
           )}
 
           {tab === "new" && (
-            <section>
-              <h2>New review</h2>
-              <form className="card form" onSubmit={submitNew}>
-                <label>
-                  Property or branch
-                  <select
-                    value={newBranch}
-                    onChange={(event) => setNewBranch(event.target.value)}
-                  >
-                    {state.branches.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Rating
-                  <select
-                    value={newRating}
-                    onChange={(event) =>
-                      setNewRating(Number(event.target.value))
-                    }
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <option key={value} value={value}>
-                        {value} stars
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="wide">
-                  Original review text
-                  <textarea
-                    rows={4}
-                    value={newText}
-                    onChange={(event) => {
-                      setNewText(event.target.value);
-                      setPreparedReviewId(null);
-                    }}
-                    required
-                  />
-                </label>
-                <button disabled={!!busy}>
-                  {busy ? "Working…" : "Save review"}
-                </button>
-              </form>
-              <button
-                className="link"
-                type="button"
-                onClick={() => setShowReviewChoices((show) => !show)}
-              >
-                {showReviewChoices
-                  ? "Hide examples"
-                  : "Choose an example review"}
-              </button>
-              {showReviewChoices && (
-                <div className="prepared-reviews">
-                  {preparedReviews.map((review) => (
-                    <button
-                      key={review.id}
-                      className={`review-row ${preparedReviewId === review.id ? "chosen" : ""}`}
-                      type="button"
-                      onClick={() => {
-                        setNewBranch(review.branchId);
-                        setNewRating(review.rating);
-                        setNewText(review.text);
-                        setPreparedReviewId(review.id);
-                      }}
-                    >
-                      <b>
-                        {review.rating}★ · {branchName(review.branchId)}
-                      </b>
-                      <span>{review.text}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </section>
+            <NewReviewView
+              branches={state.branches}
+              preparedReviews={preparedReviews}
+              busy={!!busy}
+              onSubmitReview={async ({ branchId, source, rating, text, preparedId }) => {
+                const sourceId = `guest-${Date.now()}`;
+                const result = (await act("intake", {
+                  data: {
+                    businessId,
+                    branchId,
+                    source,
+                    sourceReviewId: sourceId,
+                    rating: Number(rating),
+                    reviewedAt: new Date().toISOString(),
+                    text,
+                    isSynthetic: true,
+                  },
+                })) as { reviewId?: string } | null;
+                if (!result?.reviewId) return;
+
+                if (preparedId) {
+                  const existing = state?.reviews.find((r) => r.id === preparedId);
+                  if (existing) {
+                    setSelectedReview(existing.id);
+                    setTab("reviews");
+                    setMessage(
+                      `This prepared review is already in the workspace (${label(existing.processingStatus)}).`,
+                    );
+                    return;
+                  }
+                }
+
+                setSelectedReview(result.reviewId);
+                setTab("reviews");
+                setMessage("Review saved. Screening is starting…");
+                const poll = setInterval(() => void refresh(), 1000);
+                const outcome = (await act("analyze", {
+                  reviewId: result.reviewId,
+                }).finally(() => clearInterval(poll))) as {
+                  status?: string;
+                  provider?: string;
+                  changedThemes?: string[];
+                  error?: string;
+                } | null;
+                if (outcome) {
+                  setMessage(
+                    outcome.status === "needs_review"
+                      ? "Review saved. Please check the highlighted feedback."
+                      : outcome.status === "generic"
+                        ? "Review saved. No specific feedback was found."
+                        : "Review saved and analyzed.",
+                  );
+                  setTab("reviews");
+                }
+              }}
+            />
           )}
+
           {tab === "reviews" && (
-            <section>
-              <h2>Source reviews</h2>
-              <p className="muted">
-                All saved reviews remain searchable, including generic and
-                pending ones.
-              </p>
-              <div className="filters">
-                <label>
-                  Search
-                  <input
-                    placeholder="Review text or observation"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                </label>
-                <label>
-                  Property or branch
-                  <select
-                    value={branch}
-                    onChange={(event) => setBranch(event.target.value)}
-                  >
-                    <option value="all">All</option>
-                    {state.branches.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Rating
-                  <select
-                    value={rating}
-                    onChange={(event) => setRating(event.target.value)}
-                  >
-                    <option value="all">All</option>
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <option key={value} value={value}>
-                        {value}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Category
-                  <select
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                  >
-                    <option value="all">All</option>
-                    {categories.map((value) => (
-                      <option key={value} value={value}>
-                        {label(value)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Status
-                  <select
-                    value={status}
-                    onChange={(event) => setStatus(event.target.value)}
-                  >
-                    <option value="all">All</option>
-                    {[
-                      "pending",
-                      "processing",
-                      "complete",
-                      "generic",
-                      "needs_review",
-                      "failed",
-                    ].map((value) => (
-                      <option key={value} value={value}>
-                        {label(value)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <p>{filtered.length} reviews</p>
-              <div className="split">
-                <div className="review-list">
-                  {filtered.length ? (
-                    filtered.map((review) => (
-                      <button
-                        key={review.id}
-                        className={`review-row ${selectedReview === review.id ? "chosen" : ""}`}
-                        onClick={() => setSelectedReview(review.id)}
-                      >
-                        <span>
-                          <b>{review.rating}★</b> ·{" "}
-                          {branchName(review.branchId)} ·{" "}
-                          {label(review.processingStatus)}
-                        </span>
-                        <small>{date(review.reviewedAt)}</small>
-                        <span>{review.originalText}</span>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="card">No reviews match these filters.</div>
-                  )}
-                </div>
-                <div className="card detail">
-                  {selected ? (
-                    <>
-                      <p className="eyebrow">
-                        {branchName(selected.branchId)} · {selected.rating}{" "}
-                        stars · {date(selected.reviewedAt)}
-                      </p>
-                      <h3>Original review</h3>
-                      <blockquote>{selected.originalText}</blockquote>
-                      <p>
-                        <b>Status:</b> {label(selected.processingStatus)}
-                        {state.replies.find(
-                          (reply) => reply.reviewId === selected.id,
-                        ) && (
-                          <>
-                            {" "}
-                            · <b>Reply:</b>{" "}
-                            {label(
-                              state.replies.find(
-                                (reply) => reply.reviewId === selected.id,
-                              )!.status,
-                            )}
-                          </>
-                        )}
-                      </p>
-                      <h3>Operational complaints</h3>
-                      {reviewPoints.length ? (
-                        reviewPoints.map((point) => {
-                          const membership = state.memberships.find(
-                            (m) => m.observationId === point.id,
-                          );
-                          return (
-                            <div className="observation" key={point.id}>
-                              <p>
-                                <b>{label(point.category)}</b>
-                              </p>
-                              <blockquote>“{point.evidenceQuote}”</blockquote>
-                              <p>{point.summary}</p>
-                              {membership && (
-                                <p>
-                                  Issue:{" "}
-                                  {
-                                    state.themes.find(
-                                      (theme) =>
-                                        theme.id === membership.themeId,
-                                    )?.title
-                                  }
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <p className="muted">
-                          No operational complaints found.
-                        </p>
-                      )}
-                      {["pending", "failed", "needs_review"].includes(
-                        selected.processingStatus,
-                      ) && (
-                        <div>
-                          <button
-                            disabled={!!busy}
-                            onClick={() =>
-                              void act("analyze", { reviewId: selected.id })
-                            }
-                          >
-                            Retry analysis
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <p>
-                      Choose a review to inspect its original wording and
-                      analysis.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </section>
+            <ReviewsView
+              reviews={state.reviews}
+              observations={state.observations}
+              themes={state.themes}
+              memberships={state.memberships}
+              replies={state.replies}
+              branches={state.branches}
+              categories={categories}
+              selectedReviewId={selectedReview}
+              onSelectReview={setSelectedReview}
+              onRetryAnalysis={(reviewId) => void act("analyze", { reviewId })}
+              onJumpToIssue={(themeId) => openTheme(themeId)}
+              dateFormatter={date}
+              busy={!!busy}
+            />
           )}
+
           {tab === "issues" && (
-            <section>
-              <h2>Issues and insights</h2>
-              <div className="split">
-                <div className="review-list">
-                  {(
-                    [
-                      "operational_issue",
-                      "suggestion",
-                      "positive_pattern",
-                    ] as const
-                  ).map((type) => (
-                    <div key={type}>
-                      <h3>
-                        {type === "operational_issue"
-                          ? "Operational issues"
-                          : type === "suggestion"
-                            ? "Customer suggestions"
-                            : "Positive patterns"}
-                      </h3>
-                      {state.themes
-                        .filter((theme) => theme.type === type)
-                        .sort(
-                          (a, b) =>
-                            priorityRank(b.priority) -
-                              priorityRank(a.priority) ||
-                            (state.themeSupport[b.id] || 0) -
-                              (state.themeSupport[a.id] || 0),
-                        )
-                        .map((item) => (
-                          <button
-                            key={item.id}
-                            className={`review-row ${selectedTheme === item.id ? "chosen" : ""}`}
-                            onClick={() => setSelectedTheme(item.id)}
-                          >
-                            <b>{item.title}</b>
-                            <span>
-                              {branchName(item.branchId)} ·{" "}
-                              {state.themeSupport[item.id] || 0} reviews ·{" "}
-                              {item.priority}
-                            </span>
-                            <small>{label(item.status)}</small>
-                          </button>
-                        ))}
-                    </div>
-                  ))}
-                </div>
-                <div className="card detail">
-                  {theme ? (
-                    <>
-                      <p className="eyebrow">
-                        {branchName(theme.branchId)} · {label(theme.type)} ·{" "}
-                        {label(theme.status)}
-                      </p>
-                      <h3>{theme.title}</h3>
-                      <p>
-                        <b>{state.themeSupport[theme.id] || 0}</b> reviews ·{" "}
-                        {theme.priority}
-                      </p>
-                      {owner && (
-                        <div className="controls">
-                          <label>
-                            Owner severity
-                            <select
-                              value={theme.severity}
-                              onChange={(event) =>
-                                void act("severity", {
-                                  themeId: theme.id,
-                                  severity: Number(event.target.value),
-                                })
-                              }
-                            >
-                              <option value={1}>1 · low</option>
-                              <option value={2}>2 · medium</option>
-                              <option value={3}>3 · safety concern</option>
-                            </select>
-                          </label>
-                          {theme.status === "suggested" && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  void act("theme_status", {
-                                    themeId: theme.id,
-                                    status: "owner_confirmed",
-                                  })
-                                }
-                              >
-                                Confirm issue
-                              </button>
-                              <small className="muted">
-                                Confirms this is a real issue and enables a work
-                                task.
-                              </small>
-                              <button
-                                className="secondary"
-                                onClick={() =>
-                                  void act("theme_status", {
-                                    themeId: theme.id,
-                                    status: "dismissed",
-                                  })
-                                }
-                              >
-                                Dismiss
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-                      <h4>Original evidence</h4>
-                      {themeObservations.length ? (
-                        themeObservations.map((point) => {
-                          const review = state.reviews.find(
-                            (r) => r.id === point.reviewId,
-                          );
-                          return (
-                            <div className="observation" key={point.id}>
-                              <p className="evidence-meta">
-                                {review?.rating}★ ·{" "}
-                                {date(review?.reviewedAt || null)}
-                              </p>
-                              <blockquote>“{point.evidenceQuote}”</blockquote>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <p>No evidence linked yet.</p>
-                      )}
-                      {theme.type === "operational_issue" && owner && (
-                        <button
-                          className="create-task-button"
-                          onClick={async () => {
-                            const result = (await act("propose_task", {
-                              themeId: theme.id,
-                            })) as Task | null;
-                            if (result) openTask(result.id);
-                          }}
-                        >
-                          Create work task
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <p>Choose an issue or insight.</p>
-                  )}
-                </div>
-              </div>
-            </section>
+            <IssuesView
+              themes={state.themes}
+              themeSupport={state.themeSupport}
+              observations={state.observations}
+              memberships={state.memberships}
+              reviews={state.reviews}
+              employees={state.employees}
+              branches={state.branches}
+              selectedThemeId={selectedTheme}
+              onSelectTheme={setSelectedTheme}
+              owner={owner}
+              onSetSeverity={async (themeId, severity) => {
+                await act("severity", { themeId, severity });
+              }}
+              onSetStatus={async (themeId, status) => {
+                await act("theme_status", { themeId, status });
+              }}
+              onProposeTask={async (themeId, taskData) => {
+                const result = (await act("propose_task", { themeId })) as Task | null;
+                if (result) {
+                  if (taskData) {
+                    await act("edit_task", { taskId: result.id, data: taskData });
+                  }
+                  openTask(result.id);
+                }
+              }}
+              onCorrectMembership={async (observationId, themeId) => {
+                await act("membership", { observationId, themeId });
+              }}
+              dateFormatter={date}
+              busy={busy}
+            />
           )}
+
           {tab === "tasks" && (
-            <section>
-              <h2>Work tasks</h2>
-              <div className="split">
-                <div className="review-list">
-                  {state.tasks
-                    .filter((item) => item.status !== "proposed")
-                    .map((item) => (
-                      <button
-                        key={item.id}
-                        className={`review-row ${selectedTask === item.id ? "chosen" : ""}`}
-                        onClick={() => setSelectedTask(item.id)}
-                      >
-                        <b>{item.title}</b>
-                        <span>
-                          {label(item.status)} · {item.assigneeRole}
-                        </span>
-                      </button>
-                    ))}
-                </div>
-                <div className="card detail">
-                  {task ? (
-                    <>
-                      <p className="eyebrow">
-                        {label(task.status)} ·{" "}
-                        {branchName(
-                          state.themes.find(
-                            (theme) => theme.id === task.themeId,
-                          )?.branchId || "",
-                        )}
-                      </p>
-                      <h3>{task.title}</h3>
-                      <p>{task.description}</p>
-                      <p>
-                        <b>Assigned to:</b>{" "}
-                        {state.employees.find(
-                          (employee) => employee.id === task.assigneeId,
-                        )?.name || task.assigneeRole}
-                      </p>
-                      <p>
-                        <button
-                          className="link"
-                          onClick={() => openTheme(task.themeId)}
-                        >
-                          View related issue
-                        </button>
-                      </p>
-                      {task.status === "proposed" && owner && (
-                        <>
-                          <p className="muted">
-                            Choose an employee and due date, then save the
-                            proposal before approval.
-                          </p>
-                          <TaskEditor
-                            key={`${task.id}:${task.title}:${task.description}:${task.assigneeRole}`}
-                            task={task}
-                            employees={state.employees.filter(
-                              (employee) =>
-                                employee.branchId ===
-                                state.themes.find(
-                                  (item) => item.id === task.themeId,
-                                )?.branchId,
-                            )}
-                            save={(data) =>
-                              void act("edit_task", { taskId: task.id, data })
-                            }
-                          />
-                          <div className="controls">
-                            <button
-                              onClick={() =>
-                                void act("decide_task", {
-                                  taskId: task.id,
-                                  decision: "approve",
-                                })
-                              }
-                            >
-                              Approve task
-                            </button>
-                            <button
-                              className="secondary"
-                              onClick={() =>
-                                void act("decide_task", {
-                                  taskId: task.id,
-                                  decision: "defer",
-                                })
-                              }
-                            >
-                              Keep for later
-                            </button>
-                            <button
-                              className="secondary"
-                              onClick={() =>
-                                void act("decide_task", {
-                                  taskId: task.id,
-                                  decision: "reject",
-                                })
-                              }
-                            >
-                              Decline task
-                            </button>
-                          </div>
-                        </>
-                      )}
-                      {task.approvedAt && (
-                        <p>
-                          <b>Approved:</b> {date(task.approvedAt)}
-                        </p>
-                      )}
-
-                      {role === "staff" && (
-                        <label>
-                          Employee
-                          <select
-                            value={employeeId}
-                            onChange={(event) =>
-                              setEmployeeId(event.target.value)
-                            }
-                          >
-                            {state.employees
-                              .filter(
-                                (employee) =>
-                                  employee.branchId ===
-                                  state.themes.find(
-                                    (item) => item.id === task.themeId,
-                                  )?.branchId,
-                              )
-                              .map((employee) => (
-                                <option key={employee.id} value={employee.id}>
-                                  {employee.name} · {employee.jobTitle}
-                                </option>
-                              ))}
-                          </select>
-                        </label>
-                      )}
-                      <p>
-                        <b>Due:</b> {date(task.dueAt)}
-                      </p>
-                      {task.status === "approved_open" &&
-                        (owner || task.assigneeId === employeeId) && (
-                          <button
-                            onClick={() =>
-                              void act("start_task", {
-                                taskId: task.id,
-                                employeeId,
-                              })
-                            }
-                          >
-                            Start work
-                          </button>
-                        )}
-                      {["approved_open", "in_progress"].includes(task.status) &&
-                        (owner || task.assigneeId === employeeId) && (
-                          <div className="form">
-                            <label>
-                              Employee work report
-                              <textarea
-                                rows={4}
-                                value={workReport}
-                                onChange={(event) =>
-                                  setWorkReport(event.target.value)
-                                }
-                                placeholder="What did you actually inspect, repair, or replace?"
-                              />
-                            </label>
-                            <button
-                              onClick={() =>
-                                void act("report_task", {
-                                  taskId: task.id,
-                                  employeeId,
-                                  note: workReport,
-                                })
-                              }
-                            >
-                              Submit work update
-                            </button>
-                          </div>
-                        )}
-                      {task.status === "reported" && (
-                        <p>
-                          <b>Work update:</b> {task.employeeReport}
-                        </p>
-                      )}
-                      {task.status === "reported" && owner && (
-                        <div className="form">
-                          <label>
-                            What did you verify?
-                            <textarea
-                              rows={4}
-                              value={resolution}
-                              onChange={(event) =>
-                                setResolution(event.target.value)
-                              }
-                              placeholder="What did you verify? Be specific and truthful."
-                            />
-                          </label>
-                          <button
-                            onClick={() =>
-                              void act("verify_task", {
-                                taskId: task.id,
-                                note: resolution,
-                              })
-                            }
-                          >
-                            Verify completed work
-                          </button>
-                        </div>
-                      )}
-                      {task.status === "resolved" && (
-                        <>
-                          <p>
-                            <b>Resolved:</b> {date(task.resolvedAt)}
-                          </p>
-                          <p>
-                            <b>What was done:</b> {task.resolutionNote}
-                          </p>
-                          <details className="reply-actions">
-                            <summary>
-                              Prepare guest replies (
-                              {
-                                new Set(
-                                  state.observations
-                                    .filter((point) =>
-                                      state.memberships.some(
-                                        (membership) =>
-                                          membership.themeId === task.themeId &&
-                                          membership.observationId === point.id,
-                                      ),
-                                    )
-                                    .map((point) => point.reviewId),
-                                ).size
-                              }
-                              )
-                            </summary>
-                            {[
-                              ...new Set(
-                                state.observations
-                                  .filter((point) =>
-                                    state.memberships.some(
-                                      (m) =>
-                                        m.themeId === task.themeId &&
-                                        m.observationId === point.id,
-                                    ),
-                                  )
-                                  .map((point) => point.reviewId),
-                              ),
-                            ].map((reviewId) => (
-                              <div className="controls" key={reviewId}>
-                                <button
-                                  className="link"
-                                  onClick={() => openReview(reviewId)}
-                                >
-                                  {state.reviews
-                                    .find((review) => review.id === reviewId)
-                                    ?.originalText.slice(0, 80)}
-                                  …
-                                </button>
-                                <button
-                                  disabled={!owner || !!busy}
-                                  onClick={() =>
-                                    void act("draft_reply", {
-                                      reviewId,
-                                      taskId: task.id,
-                                    })
-                                  }
-                                >
-                                  Draft guest reply
-                                </button>
-                              </div>
-                            ))}
-                          </details>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <p>Choose a task.</p>
-                  )}
-                </div>
-              </div>
-            </section>
+            <TasksView
+              tasks={state.tasks.filter((t) => t.status !== "proposed" || owner)}
+              themes={state.themes}
+              employees={state.employees}
+              branches={state.branches}
+              observations={state.observations}
+              memberships={state.memberships}
+              reviews={state.reviews}
+              selectedTaskId={selectedTask}
+              onSelectTask={setSelectedTask}
+              role={role}
+              activeEmployeeId={employeeId}
+              onSetEmployeeId={setEmployeeId}
+              onStartTask={async (taskId, empId) => {
+                await act("start_task", { taskId, employeeId: empId });
+              }}
+              onReportTask={async (taskId, empId, note) => {
+                await act("report_task", { taskId, employeeId: empId, note });
+              }}
+              onVerifyTask={async (taskId, note) => {
+                await act("verify_task", { taskId, note });
+              }}
+              onDecideTask={async (taskId, decision) => {
+                await act("decide_task", { taskId, decision });
+              }}
+              onEditTask={async (taskId, data) => {
+                await act("edit_task", { taskId, data });
+              }}
+              onDraftReply={async (reviewId, taskId) => {
+                await act("draft_reply", { reviewId, taskId });
+                setTab("replies");
+              }}
+              onOpenTheme={openTheme}
+              onOpenReview={openReview}
+              dateFormatter={date}
+              busy={busy}
+            />
           )}
+
           {tab === "replies" && (
-            <section>
-              <h2>Guest replies</h2>
-
-              {state.replies.length ? (
-                state.replies.map((reply) => (
-                  <ReplyCard
-                    key={`${reply.id}:${reply.text}:${reply.status}`}
-                    reply={reply}
-                    review={state.reviews.find(
-                      (review) => review.id === reply.reviewId,
-                    )}
-                    task={state.tasks.find((task) => task.id === reply.taskId)}
-                    owner={owner}
-                    selected={false}
-                    toggleSelected={() => {}}
-                    save={(text) =>
-                      void act("edit_reply", { replyId: reply.id, text })
-                    }
-                    approve={(partialApproved) =>
-                      void act("approve_reply", {
-                        replyId: reply.id,
-                        partialApproved,
-                      })
-                    }
-                    publish={() =>
-                      void act("simulate_publish", { replyId: reply.id })
-                    }
-                  />
-                ))
-              ) : (
-                <div className="card">
-                  No drafts yet. Resolve an approved task, then choose a linked
-                  review.
-                </div>
-              )}
-            </section>
+            <RepliesView
+              replies={state.replies}
+              reviews={state.reviews}
+              tasks={state.tasks}
+              branches={state.branches}
+              owner={owner}
+              onSaveReply={async (replyId, text) => {
+                await act("edit_reply", { replyId, text });
+              }}
+              onApproveReply={async (replyId, partialApproved) => {
+                await act("approve_reply", { replyId, partialApproved });
+              }}
+              onApproveBatch={async (replyIds) => {
+                await act("approve_reply_batch", { replyIds });
+              }}
+              onPublishReply={async (replyId) => {
+                await act("simulate_publish", { replyId });
+              }}
+              dateFormatter={date}
+              busy={busy}
+            />
           )}
+
           {tab === "activity" && (
-            <section>
-              <h2>Activity record</h2>
-              <p className="muted">
-                Chronological record of intake, analysis, corrections,
-                approvals, work updates, resolution, and replies.
-              </p>
-              <div className="card">
-                {state.events
-                  .filter((item) => item.type !== "handoff_simulated")
-                  .map((item) => (
-                    <div className="event" key={item.id}>
-                      <time>{date(item.createdAt)}</time>
-                      <div>
-                        <b>{label(item.type)}</b> ·{" "}
-                        {item.actor === "demo owner"
-                          ? "Owner"
-                          : state.employees.find(
-                              (employee) => employee.id === item.actor,
-                            )?.name || item.actor}{" "}
-                        ({item.role})<p>{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </section>
+            <ActivityView
+              events={state.events.filter((item) => item.type !== "handoff_simulated")}
+              employees={state.employees}
+              dateFormatter={date}
+            />
           )}
         </main>
-      )}
-    </div>
-  );
-}
-function TaskEditor({
-  task,
-  employees,
-  save,
-}: {
-  task: Task;
-  employees: State["employees"];
-  save: (data: {
-    title: string;
-    description: string;
-    assigneeRole: string;
-    assigneeId: string;
-    dueAt: string;
-  }) => void;
-}) {
-  const [title, setTitle] = useState(task.title),
-    [description, setDescription] = useState(task.description),
-    [assigneeRole, setAssigneeRole] = useState(task.assigneeRole),
-    [assigneeId, setAssigneeId] = useState(
-      task.assigneeId || employees[0]?.id || "",
-    ),
-    [dueAt, setDueAt] = useState(task.dueAt?.slice(0, 16) || "");
-  return (
-    <div className="form">
-      <label>
-        Task title
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-      </label>
-      <label>
-        Description
-        <textarea
-          value={description}
-          rows={3}
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </label>
-      <label>
-        Assignee role
-        <input
-          value={assigneeRole}
-          onChange={(event) => setAssigneeRole(event.target.value)}
-        />
-      </label>
-      <label>
-        Employee
-        <select
-          value={assigneeId}
-          onChange={(event) => setAssigneeId(event.target.value)}
-        >
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.name} · {employee.jobTitle}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Due date
-        <input
-          type="datetime-local"
-          value={dueAt}
-          onChange={(event) => setDueAt(event.target.value)}
-        />
-      </label>
-      <button
-        className="secondary"
-        onClick={() =>
-          save({ title, description, assigneeRole, assigneeId, dueAt })
-        }
-      >
-        Save proposal edits
-      </button>
-    </div>
-  );
-}
-function ReplyCard({
-  reply,
-  review,
-  task,
-  owner,
-  selected,
-  toggleSelected,
-  save,
-  approve,
-  publish,
-}: {
-  reply: Reply;
-  review?: Review;
-  task?: Task;
-  owner: boolean;
-  selected: boolean;
-  toggleSelected: () => void;
-  save: (text: string) => void;
-  approve: (partialApproved: boolean) => void;
-  publish: () => void;
-}) {
-  const [text, setText] = useState(reply.text);
-  return (
-    <div className="card reply">
-      <p className="eyebrow">{label(reply.status)}</p>
-      <h3>Source review</h3>
-      <blockquote>{review?.originalText}</blockquote>
-      <p>
-        {review?.rating}★ · {date(review?.reviewedAt || null)}
-      </p>
-      {reply.partialWarning && (
-        <div className="notice error" role="alert">
-          <b>Partial reply warning:</b> {reply.partialWarning}
-        </div>
-      )}
-      <p>
-        <b>Resolution note:</b> {task?.resolutionNote}
-      </p>
-      <label>
-        {reply.status === "simulated_published"
-          ? "Posted reply"
-          : "Reply draft"}
-        <textarea
-          rows={5}
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          disabled={!owner || reply.status === "simulated_published"}
-        />
-      </label>
-      {owner && (
-        <div className="controls">
-          {reply.status === "draft" && !reply.partialWarning && (
-            <label>
-              <input
-                type="checkbox"
-                checked={selected}
-                onChange={toggleSelected}
-              />{" "}
-              Select for batch approval
-            </label>
-          )}
-          {reply.status !== "simulated_published" && (
-            <button className="secondary" onClick={() => save(text)}>
-              Save edits
-            </button>
-          )}
-          {reply.status === "draft" && (
-            <button onClick={() => approve(Boolean(reply.partialWarning))}>
-              Approve reply
-            </button>
-          )}
-          {reply.status === "approved_ready" && (
-            <button onClick={publish}>Mark as posted</button>
-          )}
-        </div>
       )}
     </div>
   );
