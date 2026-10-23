@@ -1041,8 +1041,7 @@ export async function decideTask(
     .select()
     .from(businesses)
     .where(eq(businesses.id, theme.businessId));
-  if (!task.assigneeId)
-    throw new Error("Select a fictional employee before approval.");
+  if (!task.assigneeId) throw new Error("Select an employee before approval.");
   if (!task.dueAt) throw new Error("Set a due date before approving the task.");
   const [employee] = await db
     .select()
@@ -1321,9 +1320,7 @@ export async function editReply(replyId: string, role: string, text: string) {
   requireOwner(role);
   const reply = await oneReply(replyId);
   if (reply.status === "simulated_published")
-    throw new Error(
-      "A simulated published reply is a historical record and cannot be edited.",
-    );
+    throw new Error("A posted reply cannot be edited.");
   if (text.trim().length < 10 || text.length > 1200)
     throw new Error("Reply must be 10–1200 characters.");
   const unresolved = await unresolvedReviewComplaints(
@@ -1430,7 +1427,7 @@ export async function simulatePublish(replyId: string, role: string) {
     "reply_simulated_published",
     "reply",
     replyId,
-    "Reply marked as simulated published locally. No review platform was contacted.",
+    "Reply marked as posted.",
     "demo owner",
     "owner",
   );

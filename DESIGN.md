@@ -4,17 +4,17 @@ The visual design is kept in `src/components/design/` and `src/styles/`. The rev
 
 ## Where to edit
 
-| Change | File |
-| --- | --- |
-| Colors, shared type defaults, focus outline | `src/styles/tokens.css` |
-| Header, navigation, field guide, general page headings | `src/styles/shell.css` |
-| Shared primary, secondary, and text buttons | `src/styles/buttons.css` |
-| Dashboard hero, review diagram, metrics, spotlight cards | `src/styles/dashboard.css` |
-| Review, issue, task, reply, activity, and form styling | `src/styles/workspace.css` |
-| Tablet and phone layouts, reduced motion | `src/styles/responsive.css` |
-| Brand markup, navigation labels, field guide steps | `src/components/design/WorkspaceHeader.tsx` |
-| Dashboard wording, illustration, and card markup | `src/components/design/DashboardView.tsx` |
-| Data passed into the dashboard and markup for working screens | `src/components/Workspace.tsx` |
+| Change                                                        | File                                        |
+| ------------------------------------------------------------- | ------------------------------------------- |
+| Colors, shared type defaults, focus outline                   | `src/styles/tokens.css`                     |
+| Header, navigation, field guide, general page headings        | `src/styles/shell.css`                      |
+| Shared primary, secondary, and text buttons                   | `src/styles/buttons.css`                    |
+| Dashboard hero, review diagram, metrics, spotlight cards      | `src/styles/dashboard.css`                  |
+| Review, issue, task, reply, activity, and form styling        | `src/styles/workspace.css`                  |
+| Tablet and phone layouts, reduced motion                      | `src/styles/responsive.css`                 |
+| Brand markup, navigation labels, field guide steps            | `src/components/design/WorkspaceHeader.tsx` |
+| Dashboard wording, illustration, and card markup              | `src/components/design/DashboardView.tsx`   |
+| Data passed into the dashboard and markup for working screens | `src/components/Workspace.tsx`              |
 
 `src/app/globals.css` imports the style files in order. `src/app/layout.tsx` imports `globals.css`, and `src/app/page.tsx` mounts the workspace. There are no image assets in this design; the small brand mark and review diagram are HTML and CSS.
 

@@ -1,27 +1,27 @@
-/* Design colors, typography defaults, and global accessibility. */
-
 :root {
-  --paper: #dcebd3;
-  --paper-light: #f3f5e9;
-  --paper-deep: #c9ddbd;
-  --surface: #fbfcf5;
-  --surface-alt: #fbfcf4;
-  --ink: #1b2c29;
-  --muted: #4e6259;
-  --line: #45594e;
-  --violet: #643c91;
-  --violet-light: #e8def3;
-  --violet-on-dark: #d0a9f3;
-  --live: #d9eec9;
-  --warning: #e5c56e;
-  --error: #8b312f;
-  --error-bg: #f5ded6;
-  --placeholder: #6b7a6e;
-  --white: #fff;
-  font-family: Arial, Helvetica, sans-serif;
+  --paper: #f5f5f7;
+  --paper-light: #ffffff;
+  --paper-deep: #ececef;
+  --surface: #ffffff;
+  --surface-alt: #f8f8fa;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #d2d2d7;
+  --violet: #0071e3;
+  --violet-light: #e8f2fc;
+  --violet-on-dark: #ffffff;
+  --live: #e8f5ea;
+  --warning: #fff4d6;
+  --error: #b42318;
+  --error-bg: #fff0ef;
+  --placeholder: #86868b;
+  --white: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
   background: var(--paper);
   font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 * {
   box-sizing: border-box;
@@ -44,9 +44,9 @@ button {
 }
 :focus-visible {
   outline: 3px solid var(--violet);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 ::selection {
-  background: var(--violet);
-  color: var(--white);
+  background: #cfe5ff;
+  color: var(--ink);
 }
