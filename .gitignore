@@ -10,3 +10,4 @@ coverage/
 .local/
 
 tsconfig.tsbuildinfo
+.pgdata/
