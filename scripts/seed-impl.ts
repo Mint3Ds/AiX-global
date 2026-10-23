@@ -78,6 +78,41 @@ try {
       "Duty supervisor",
     ],
     [
+      "hotel-employee-4",
+      "harbour-house",
+      "hotel-central",
+      "Nurul Aziz",
+      "Front desk supervisor",
+    ],
+    [
+      "hotel-employee-5",
+      "harbour-house",
+      "hotel-central",
+      "Wei Jian",
+      "Facilities technician",
+    ],
+    [
+      "hotel-employee-6",
+      "harbour-house",
+      "hotel-garden",
+      "Priya Nair",
+      "Housekeeping supervisor",
+    ],
+    [
+      "hotel-employee-7",
+      "harbour-house",
+      "hotel-garden",
+      "Amir Hakim",
+      "Guest services agent",
+    ],
+    [
+      "hotel-employee-8",
+      "harbour-house",
+      "hotel-garden",
+      "Chloe Tan",
+      "Maintenance technician",
+    ],
+    [
       "restaurant-employee-1",
       "nusa-table",
       "sunway",
@@ -85,6 +120,20 @@ try {
       "Floor manager",
     ],
     ["salon-employee-1", "luma-salon", "salon-main", "Maya Tan", "Stylist"],
+    [
+      "salon-employee-2",
+      "luma-salon",
+      "salon-main",
+      "Alicia Lee",
+      "Senior stylist",
+    ],
+    [
+      "salon-employee-3",
+      "luma-salon",
+      "salon-main",
+      "Hana Yusuf",
+      "Receptionist",
+    ],
   ] as const)
     await db
       .insert(employees)

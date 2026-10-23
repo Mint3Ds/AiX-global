@@ -148,12 +148,6 @@ const date = (value: string | null) =>
       })
     : "—";
 const label = (value: string) => value.replaceAll("_", " ");
-const pointType = (kind: string) =>
-  kind === "operational_complaint"
-    ? "operational_issue"
-    : kind === "suggestion"
-      ? "suggestion"
-      : "positive_pattern";
 const priorityRank = (priority: string) =>
   ({ urgent: 4, high: 3, medium: 2, low: 1 })[
     priority.toLowerCase() as "urgent" | "high" | "medium" | "low"
@@ -179,15 +173,25 @@ export function Workspace() {
   const [status, setStatus] = useState("all");
   const [source, setSource] = useState("all");
   const [newText, setNewText] = useState(hotelDemoText);
+  const [preparedReviewId, setPreparedReviewId] = useState<string | null>(
+    "hotel-demo-001",
+  );
   const [newBranch, setNewBranch] = useState("hotel-central");
+  const [preparedReviews, setPreparedReviews] = useState<
+    {
+      id: string;
+      businessId: string;
+      branchId: string;
+      source: string;
+      sourceReviewId: string;
+      rating: number;
+      text: string;
+    }[]
+  >([]);
+  const [showReviewChoices, setShowReviewChoices] = useState(false);
   const [newRating, setNewRating] = useState(2);
-  const [newSourceId, setNewSourceId] = useState("hotel-demo-source-002");
   const [resolution, setResolution] = useState("");
   const [workReport, setWorkReport] = useState("");
-  const [batchReplyIds, setBatchReplyIds] = useState<string[]>([]);
-  const [manualQuote, setManualQuote] = useState("");
-  const [manualSummary, setManualSummary] = useState("");
-  const [guideOpen, setGuideOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -212,6 +216,12 @@ export function Workspace() {
   useEffect(() => {
     void Promise.resolve().then(refresh);
   }, [refresh]);
+  useEffect(() => {
+    fetch(`/api/prepared-reviews?businessId=${encodeURIComponent(businessId)}`)
+      .then((response) => response.json())
+      .then((rows) => setPreparedReviews(Array.isArray(rows) ? rows : []))
+      .catch(() => setPreparedReviews([]));
+  }, [businessId]);
   const act = useCallback(
     async (type: string, values: Record<string, unknown> = {}) => {
       setBusy(type);
@@ -240,12 +250,16 @@ export function Workspace() {
   );
   const submitNew = async (event: React.FormEvent) => {
     event.preventDefault();
+    const prepared = preparedReviews.find(
+      (review) => review.id === preparedReviewId && review.text === newText,
+    );
+    const sourceId = `guest-${Date.now()}`;
     const result = (await act("intake", {
       data: {
         businessId,
         branchId: newBranch,
-        source: "Simulated Guest Form",
-        sourceReviewId: newSourceId.trim(),
+        source: prepared?.source || "Guest review form",
+        sourceReviewId: sourceId,
         rating: Number(newRating),
         reviewedAt: new Date().toISOString(),
         text: newText,
@@ -253,6 +267,19 @@ export function Workspace() {
       },
     })) as { reviewId?: string } | null;
     if (!result?.reviewId) return;
+    if (prepared) {
+      const existing = state?.reviews.find(
+        (review) => review.id === prepared.id,
+      );
+      if (existing) {
+        setSelectedReview(existing.id);
+        setTab("reviews");
+        setMessage(
+          `This prepared review is already in the workspace (${label(existing.processingStatus)}).`,
+        );
+        return;
+      }
+    }
     setSelectedReview(result.reviewId);
     setTab("reviews");
     setMessage("Review saved. Screening is starting…");
@@ -267,7 +294,11 @@ export function Workspace() {
     } | null;
     if (outcome) {
       setMessage(
-        `Review ${outcome.status}. Screening: ${outcome.provider || (state?.mode === "fixture" ? "fixture" : "provider unavailable")}. ${outcome.changedThemes?.length ? "Theme updated." : ""}`,
+        outcome.status === "needs_review"
+          ? "Review saved. Please check the highlighted feedback."
+          : outcome.status === "generic"
+            ? "Review saved. No specific feedback was found."
+            : "Review saved and analyzed.",
       );
       setTab("reviews");
     }
@@ -317,10 +348,6 @@ export function Workspace() {
     selected && state
       ? state.observations.filter((point) => point.reviewId === selected.id)
       : [];
-  const latestRun =
-    selected && state
-      ? state.runs.find((run) => run.reviewId === selected.id)
-      : null;
   const categories = [
     ...new Set(
       state?.observations.map((observation) => observation.category) || [],
@@ -366,14 +393,12 @@ export function Workspace() {
   return (
     <div className="shell">
       <WorkspaceHeader
-        mode={state?.mode || "loading"}
         businesses={
           state?.businesses || [
             { id: "harbour-house", name: "Harbour House Hotel" },
           ]
         }
         businessId={businessId}
-        branchCount={state?.branches.length || 0}
         onBusinessChange={(id) => {
           setBusinessId(id);
           setState(null);
@@ -400,11 +425,6 @@ export function Workspace() {
                 ? restaurantDemoText
                 : salonDemoText,
           );
-          setNewSourceId(
-            id === "harbour-house"
-              ? "hotel-demo-source-002"
-              : `synthetic-${id}-demo-001`,
-          );
           setEmployeeId(
             id === "harbour-house"
               ? "hotel-employee-1"
@@ -419,10 +439,8 @@ export function Workspace() {
         }}
         tab={tab}
         role={role}
-        guideOpen={guideOpen}
         onTabChange={setTab}
         onRoleChange={setRole}
-        onGuideToggle={() => setGuideOpen((open) => !open)}
       />
       {error && (
         <div role="alert" className="notice error">
@@ -450,12 +468,16 @@ export function Workspace() {
                 state.businesses.find((business) => business.id === businessId)
                   ?.name || "Business"
               }
-              businessType={
-                state.businesses.find((business) => business.id === businessId)
-                  ?.businessType || "business"
-              }
               metrics={[
-                { title: "Reviews", value: state.reviews.length },
+                { title: "Total reviews", value: state.reviews.length },
+                {
+                  title: "New today",
+                  value: state.reviews.filter(
+                    (review) =>
+                      new Date(review.reviewedAt).toDateString() ===
+                      new Date().toDateString(),
+                  ).length,
+                },
                 {
                   title: "Specific feedback",
                   value: state.reviews.filter(
@@ -489,81 +511,65 @@ export function Workspace() {
                       id: spotlight.id,
                       title: spotlight.title,
                       priority: spotlight.priority,
-                      priorityReason: spotlight.priorityReason,
                       branchId: spotlight.branchId,
-                      status: spotlight.status,
                       support: state.themeSupport[spotlight.id] || 0,
                       evidenceQuote: spotlightEvidence?.evidenceQuote,
                     }
                   : null
               }
               onNewReview={() => setTab("new")}
-              onIssues={() => setTab("issues")}
               onInspect={openTheme}
-              onGuidedDemo={() => {
-                setGuideOpen(true);
-                setTab("new");
-              }}
             />
           )}
           {tab === "new" && (
             <section>
-              <h2>Enter a synthetic review</h2>
-              <p className="muted">
-                The prepared review below is separate from the seeded reviews.
-                In fixture mode, exact text matching provides deterministic
-                analysis; changed text can require manual review.
-              </p>
+              <h2>New review</h2>
               <form className="card form" onSubmit={submitNew}>
                 <label>
                   Property or branch
-                  <select
-                    value={newBranch}
-                    onChange={(event) => setNewBranch(event.target.value)}
-                  >
-                    {state.branches.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
+                  <select value={newBranch} onChange={(event) => setNewBranch(event.target.value)}>
+                    {state.branches.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
                 </label>
                 <label>
                   Rating
-                  <select
-                    value={newRating}
-                    onChange={(event) =>
-                      setNewRating(Number(event.target.value))
-                    }
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <option key={value} value={value}>
-                        {value} stars
-                      </option>
-                    ))}
+                  <select value={newRating} onChange={(event) => setNewRating(Number(event.target.value))}>
+                    {[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value} stars</option>)}
                   </select>
                 </label>
-                <label>
-                  Synthetic source review ID
-                  <input
-                    value={newSourceId}
-                    onChange={(event) => setNewSourceId(event.target.value)}
-                    required
-                  />
+                <label className="wide">
+                  Review source ID
+                  <input value="Generated automatically" disabled />
                 </label>
                 <label className="wide">
                   Original review text
-                  <textarea
-                    rows={4}
-                    value={newText}
-                    onChange={(event) => setNewText(event.target.value)}
-                    required
-                  />
+                  <textarea rows={4} value={newText} onChange={(event) => { setNewText(event.target.value); setPreparedReviewId(null); }} required />
                 </label>
-                <button disabled={!!busy}>
-                  {busy ? "Working…" : "Save and analyse"}
-                </button>
+                <button disabled={!!busy}>{busy ? "Working…" : "Save review"}</button>
               </form>
+              <button className="link" type="button" onClick={() => setShowReviewChoices((show) => !show)}>
+                {showReviewChoices ? "Hide examples" : "Choose an example review"}
+              </button>
+              {showReviewChoices && <div className="prepared-reviews">
+                {preparedReviews.map((review) => (
+                  <button
+                    key={review.id}
+                    className={`review-row ${preparedReviewId === review.id ? "chosen" : ""}`}
+                    type="button"
+                    onClick={() => {
+                      setNewBranch(review.branchId);
+                      setNewRating(review.rating);
+                      setNewText(review.text);
+                      setPreparedReviewId(review.id);
+                    }}
+                  >
+                    <b>
+                      {review.rating}★ · {review.branchId}
+                    </b>
+                    <span>{review.text}</span>
+                  </button>
+                ))}
+              </div>}
             </section>
           )}
           {tab === "reviews" && (
@@ -602,7 +608,7 @@ export function Workspace() {
                     value={source}
                     onChange={(event) => setSource(event.target.value)}
                   >
-                    <option value="all">All simulated sources</option>
+                    <option value="all">All sources</option>
                     {[...new Set(state.reviews.map((review) => review.source))]
                       .sort()
                       .map((item) => (
@@ -662,15 +668,7 @@ export function Workspace() {
                   </select>
                 </label>
               </div>
-              <p>
-                {filtered.length} matching reviews ·{" "}
-                <button
-                  disabled={!!busy}
-                  onClick={() => void act("analyze_batch", { limit: 5 })}
-                >
-                  Analyse up to 5 pending
-                </button>
-              </p>
+              <p>{filtered.length} reviews</p>
               <div className="split">
                 <div className="review-list">
                   {filtered.length ? (
@@ -684,13 +682,8 @@ export function Workspace() {
                           <b>{review.rating}★</b> · {review.branchId} ·{" "}
                           {label(review.processingStatus)}
                         </span>
-                        <small>
-                          {review.source} · {date(review.reviewedAt)}
-                        </small>
-                        <span>
-                          {review.originalText.slice(0, 135)}
-                          {review.originalText.length > 135 ? "…" : ""}
-                        </span>
+                        <small>{date(review.reviewedAt)}</small>
+                        <span>{review.originalText}</span>
                       </button>
                     ))
                   ) : (
@@ -701,8 +694,8 @@ export function Workspace() {
                   {selected ? (
                     <>
                       <p className="eyebrow">
-                        {selected.id} · {selected.branchId} · {selected.source}{" "}
-                        · {selected.rating} stars · {date(selected.reviewedAt)}
+                        {selected.branchId} · {selected.rating} stars ·{" "}
+                        {date(selected.reviewedAt)}
                       </p>
                       <h3>Original review</h3>
                       <blockquote>{selected.originalText}</blockquote>
@@ -721,27 +714,8 @@ export function Workspace() {
                             )}
                           </>
                         )}
-                        {selected.processingStage
-                          ? ` · stage: ${label(selected.processingStage)}`
-                          : ""}{" "}
-                        · <b>Source ID:</b> {selected.sourceReviewId}
                       </p>
-                      {latestRun && (
-                        <div className="provider">
-                          <b>Analysis:</b> {label(latestRun.decision)} ·{" "}
-                          {latestRun.mode} mode
-                          <br />
-                          Screening: {label(latestRun.screeningProvider)}
-                          {latestRun.screeningModel
-                            ? ` (${latestRun.screeningModel})`
-                            : ""}{" "}
-                          · Extraction:{" "}
-                          {latestRun.extractionProvider || "not needed"} · Theme
-                          matching: {latestRun.matchingProvider || "not needed"}
-                          {latestRun.safeError && <p>{latestRun.safeError}</p>}
-                        </div>
-                      )}
-                      <h3>Separate observations</h3>
+                      <h3>What we found</h3>
                       {reviewPoints.length ? (
                         reviewPoints.map((point) => {
                           const membership = state.memberships.find(
@@ -751,55 +725,20 @@ export function Workspace() {
                             <div className="observation" key={point.id}>
                               <p>
                                 <b>{label(point.kind)}</b> ·{" "}
-                                {label(point.category)} / {label(point.aspect)}{" "}
-                                · {point.provider} ({point.mode})
+                                {label(point.category)}
                               </p>
                               <blockquote>“{point.evidenceQuote}”</blockquote>
                               <p>{point.summary}</p>
-                              <p>
-                                Theme:{" "}
-                                {membership ? (
-                                  <button
-                                    className="link"
-                                    onClick={() =>
-                                      openTheme(membership.themeId)
-                                    }
-                                  >
-                                    {state.themes.find(
+                              {membership && (
+                                <p>
+                                  Issue:{" "}
+                                  {
+                                    state.themes.find(
                                       (theme) =>
                                         theme.id === membership.themeId,
-                                    )?.title || membership.themeId}
-                                  </button>
-                                ) : (
-                                  "ungrouped"
-                                )}
-                              </p>
-                              {owner && (
-                                <label>
-                                  Owner grouping{" "}
-                                  <select
-                                    value={membership?.themeId || ""}
-                                    onChange={(event) =>
-                                      void act("membership", {
-                                        observationId: point.id,
-                                        themeId: event.target.value || null,
-                                      })
-                                    }
-                                  >
-                                    <option value="">Leave ungrouped</option>
-                                    {state.themes
-                                      .filter(
-                                        (theme) =>
-                                          theme.branchId === point.branchId &&
-                                          theme.type === pointType(point.kind),
-                                      )
-                                      .map((theme) => (
-                                        <option key={theme.id} value={theme.id}>
-                                          {theme.title}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </label>
+                                    )?.title
+                                  }
+                                </p>
                               )}
                             </div>
                           );
@@ -821,60 +760,6 @@ export function Workspace() {
                           >
                             Retry analysis
                           </button>
-                          {owner && (
-                            <div className="manual">
-                              <h4>Manual owner review</h4>
-                              <button
-                                onClick={() =>
-                                  void act("manual_classify", {
-                                    reviewId: selected.id,
-                                    data: { useful: false },
-                                  })
-                                }
-                              >
-                                Mark generic
-                              </button>
-                              <label>
-                                Exact evidence quote
-                                <input
-                                  value={manualQuote}
-                                  onChange={(event) =>
-                                    setManualQuote(event.target.value)
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Short summary
-                                <input
-                                  value={manualSummary}
-                                  onChange={(event) =>
-                                    setManualSummary(event.target.value)
-                                  }
-                                />
-                              </label>
-                              <button
-                                onClick={() =>
-                                  void act("manual_classify", {
-                                    reviewId: selected.id,
-                                    data: {
-                                      useful: true,
-                                      observation: {
-                                        category: "other",
-                                        aspect: "owner_observation",
-                                        kind: "other_specific_feedback",
-                                        sentiment: "neutral",
-                                        evidenceQuote: manualQuote,
-                                        summary: manualSummary,
-                                        normalizedDescription: manualSummary,
-                                      },
-                                    },
-                                  })
-                                }
-                              >
-                                Save specific observation
-                              </button>
-                            </div>
-                          )}
                         </div>
                       )}
                     </>
@@ -891,10 +776,6 @@ export function Workspace() {
           {tab === "issues" && (
             <section>
               <h2>Issues and insights</h2>
-              <p className="muted">
-                Themes are suggestions. Counts use distinct source reviews at
-                one property. Owner corrections update them.
-              </p>
               <div className="split">
                 <div className="review-list">
                   {(
@@ -947,14 +828,7 @@ export function Workspace() {
                         {label(theme.status)}
                       </p>
                       <h3>{theme.title}</h3>
-                      <p>
-                        <b>
-                          {state.themeSupport[theme.id] || 0} distinct source
-                          reviews
-                        </b>{" "}
-                        · suggested priority: {theme.priority}
-                      </p>
-                      <p>{theme.priorityReason}</p>
+                      <p><b>{state.themeSupport[theme.id] || 0}</b> reviews · {theme.priority} priority</p>
                       {owner && (
                         <div className="controls">
                           <label>
@@ -983,8 +857,12 @@ export function Workspace() {
                                   })
                                 }
                               >
-                                Confirm theme
+                                Confirm issue
                               </button>
+                              <small className="muted">
+                                Confirms this is a real issue and enables a work
+                                task.
+                              </small>
                               <button
                                 className="secondary"
                                 onClick={() =>
@@ -1070,7 +948,7 @@ export function Workspace() {
                             if (result) openTask(result.id);
                           }}
                         >
-                          Open task proposal
+                          Create work task
                         </button>
                       )}
                     </>
@@ -1083,21 +961,23 @@ export function Workspace() {
           )}
           {tab === "tasks" && (
             <section>
-              <h2>Owner-approved work</h2>
+              <h2>Work tasks</h2>
               <div className="split">
                 <div className="review-list">
-                  {state.tasks.map((item) => (
-                    <button
-                      key={item.id}
-                      className={`review-row ${selectedTask === item.id ? "chosen" : ""}`}
-                      onClick={() => setSelectedTask(item.id)}
-                    >
-                      <b>{item.title}</b>
-                      <span>
-                        {label(item.status)} · {item.assigneeRole}
-                      </span>
-                    </button>
-                  ))}
+                  {state.tasks
+                    .filter((item) => item.status !== "proposed")
+                    .map((item) => (
+                      <button
+                        key={item.id}
+                        className={`review-row ${selectedTask === item.id ? "chosen" : ""}`}
+                        onClick={() => setSelectedTask(item.id)}
+                      >
+                        <b>{item.title}</b>
+                        <span>
+                          {label(item.status)} · {item.assigneeRole}
+                        </span>
+                      </button>
+                    ))}
                 </div>
                 <div className="card detail">
                   {task ? (
@@ -1113,14 +993,17 @@ export function Workspace() {
                       <h3>{task.title}</h3>
                       <p>{task.description}</p>
                       <p>
-                        <b>Assignee:</b> {task.assigneeRole}
+                        <b>Assigned to:</b>{" "}
+                        {state.employees.find(
+                          (employee) => employee.id === task.assigneeId,
+                        )?.name || task.assigneeRole}
                       </p>
                       <p>
                         <button
                           className="link"
                           onClick={() => openTheme(task.themeId)}
                         >
-                          Inspect source evidence before deciding
+                          View related issue
                         </button>
                       </p>
                       {task.status === "proposed" && owner && (
@@ -1152,7 +1035,7 @@ export function Workspace() {
                                 })
                               }
                             >
-                              Approve task and simulate handoff
+                              Approve task
                             </button>
                             <button
                               className="secondary"
@@ -1163,7 +1046,7 @@ export function Workspace() {
                                 })
                               }
                             >
-                              Defer
+                              Keep for later
                             </button>
                             <button
                               className="secondary"
@@ -1174,7 +1057,7 @@ export function Workspace() {
                                 })
                               }
                             >
-                              Reject
+                              Decline task
                             </button>
                           </div>
                         </>
@@ -1184,21 +1067,7 @@ export function Workspace() {
                           <b>Approved:</b> {date(task.approvedAt)}
                         </p>
                       )}
-                      {state.handoffs
-                        .filter((handoff) => handoff.approvedTaskId === task.id)
-                        .map((handoff) => (
-                          <div className="provider" key={handoff.id}>
-                            <b>Simulated Orbyte integration</b> ·{" "}
-                            {handoff.simulatedStatus} ·{" "}
-                            {date(handoff.createdAt)}
-                            <details>
-                              <summary>View approved handoff payload</summary>
-                              <pre>
-                                {JSON.stringify(handoff.payload, null, 2)}
-                              </pre>
-                            </details>
-                          </div>
-                        ))}
+
                       {role === "staff" && (
                         <label>
                           Acting as fictional employee
@@ -1263,19 +1132,19 @@ export function Workspace() {
                                 })
                               }
                             >
-                              Submit work report for verification
+                              Submit work update
                             </button>
                           </div>
                         )}
                       {task.status === "reported" && (
-                        <div className="provider">
-                          <b>Employee report:</b> {task.employeeReport}
-                        </div>
+                        <p>
+                          <b>Work update:</b> {task.employeeReport}
+                        </p>
                       )}
                       {task.status === "reported" && owner && (
                         <div className="form">
                           <label>
-                            Manager verification note
+                            What did you verify?
                             <textarea
                               rows={4}
                               value={resolution}
@@ -1302,10 +1171,10 @@ export function Workspace() {
                           <p>
                             <b>Resolved:</b> {date(task.resolvedAt)}
                           </p>
-                          <div className="provider">
-                            <b>Owner resolution note:</b> {task.resolutionNote}
-                          </div>
-                          <h4>Draft a reply for an affected review</h4>
+                          <p>
+                            <b>What was done:</b> {task.resolutionNote}
+                          </p>
+                          <h4>Reply to a guest</h4>
                           {[
                             ...new Set(
                               state.observations
@@ -1324,7 +1193,10 @@ export function Workspace() {
                                 className="link"
                                 onClick={() => openReview(reviewId)}
                               >
-                                {reviewId}
+                                {state.reviews
+                                  .find((review) => review.id === reviewId)
+                                  ?.originalText.slice(0, 80)}
+                                …
                               </button>
                               <button
                                 disabled={!owner || !!busy}
@@ -1335,7 +1207,7 @@ export function Workspace() {
                                   })
                                 }
                               >
-                                Prepare reply
+                                Draft guest reply
                               </button>
                             </div>
                           ))}
@@ -1351,22 +1223,8 @@ export function Workspace() {
           )}
           {tab === "replies" && (
             <section>
-              <h2>Replies ready for owner review</h2>
-              <p className="muted">
-                Approved replies are not posted. Simulate publishing only after
-                owner review; no review platform is contacted.
-              </p>
-              {owner && batchReplyIds.length > 0 && (
-                <button
-                  onClick={() =>
-                    void act("approve_reply_batch", {
-                      replyIds: batchReplyIds,
-                    }).then(() => setBatchReplyIds([]))
-                  }
-                >
-                  Approve selected drafts ({batchReplyIds.length})
-                </button>
-              )}
+              <h2>Guest replies</h2>
+
               {state.replies.length ? (
                 state.replies.map((reply) => (
                   <ReplyCard
@@ -1377,14 +1235,8 @@ export function Workspace() {
                     )}
                     task={state.tasks.find((task) => task.id === reply.taskId)}
                     owner={owner}
-                    selected={batchReplyIds.includes(reply.id)}
-                    toggleSelected={() =>
-                      setBatchReplyIds((current) =>
-                        current.includes(reply.id)
-                          ? current.filter((id) => id !== reply.id)
-                          : [...current, reply.id],
-                      )
-                    }
+                    selected={false}
+                    toggleSelected={() => {}}
                     save={(text) =>
                       void act("edit_reply", { replyId: reply.id, text })
                     }
@@ -1412,7 +1264,7 @@ export function Workspace() {
               <h2>Activity record</h2>
               <p className="muted">
                 Chronological record of intake, analysis, corrections,
-                approvals, simulated handoffs, resolution, and replies.
+                approvals, work updates, resolution, and replies.
               </p>
               <div className="card">
                 {state.events.map((item) => (
@@ -1432,10 +1284,6 @@ export function Workspace() {
           )}
         </main>
       )}
-      <footer>
-        Visit2Value · synthetic hackathon prototype · Orbyte handoff is
-        simulated · demo roles are not production authentication
-      </footer>
     </div>
   );
 }
@@ -1541,14 +1389,11 @@ function ReplyCard({
   const [text, setText] = useState(reply.text);
   return (
     <div className="card reply">
-      <p className="eyebrow">
-        {label(reply.status)} · {reply.provider} ({reply.mode}) ·{" "}
-        {reply.reviewId}
-      </p>
+      <p className="eyebrow">{label(reply.status)}</p>
       <h3>Source review</h3>
       <blockquote>{review?.originalText}</blockquote>
       <p>
-        {review?.source} · {review?.rating}★ · {review?.branchId} ·{" "}
+        {review?.rating}★ · {review?.branchId} ·{" "}
         {date(review?.reviewedAt || null)}
       </p>
       {reply.partialWarning && (
@@ -1561,8 +1406,8 @@ function ReplyCard({
       </p>
       <label>
         {reply.status === "simulated_published"
-          ? "Simulated published reply"
-          : "Editable draft"}
+          ? "Posted reply"
+          : "Reply draft"}
         <textarea
           rows={5}
           value={text}
@@ -1589,13 +1434,11 @@ function ReplyCard({
           )}
           {reply.status === "draft" && (
             <button onClick={() => approve(Boolean(reply.partialWarning))}>
-              {reply.partialWarning
-                ? "Approve truthful partial reply"
-                : "Approve · ready to post"}
+              Approve reply
             </button>
           )}
           {reply.status === "approved_ready" && (
-            <button onClick={publish}>Simulate publishing</button>
+            <button onClick={publish}>Mark as posted</button>
           )}
         </div>
       )}

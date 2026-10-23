@@ -187,7 +187,31 @@ export function fixtureForExactText(
     (item) =>
       item.text === text && (!businessId || item.businessId === businessId),
   );
-  if (!review) return null;
+  if (!review) {
+    const candidate = [
+      ...hotelSeedReviews,
+      ...hotelDemoReviews,
+      ...salonSeedReviews,
+      ...seedReviews,
+      ...demoReviews,
+    ]
+      .filter((item) => !businessId || item.businessId === businessId)
+      .map((item) => ({
+        item,
+        analysis:
+          fromExpected(item.id) ?? extra[item.id] ?? generatedById.get(item.id),
+      }))
+      .find(
+        ({ item, analysis }) =>
+          item.text.length >= 20 && text.includes(item.text) && analysis,
+      );
+    if (!candidate?.analysis) return null;
+    const observations = candidate.analysis.observations.filter((point) =>
+      text.includes(point.evidenceQuote),
+    );
+    if (!observations.length && candidate.analysis.useful) return null;
+    return { useful: observations.length > 0, observations };
+  }
   return (
     fromExpected(review.id) ??
     extra[review.id] ??
