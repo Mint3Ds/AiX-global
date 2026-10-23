@@ -1,20 +1,20 @@
 .hero-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: clamp(28px, 5vw, 70px);
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1fr);
+  gap: 18px;
   align-items: center;
-  min-height: 420px;
-  padding: clamp(32px, 5vw, 64px);
+  min-height: 0;
+  padding: 22px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--paper-light);
 }
 .hero-copy h2 {
-  max-width: 680px;
-  margin: 0 0 18px;
-  font-size: clamp(38px, 5vw, 66px);
-  line-height: 1;
-  letter-spacing: -0.06em;
+  max-width: 360px;
+  margin: 0 0 14px;
+  font-size: clamp(25px, 3vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
   font-weight: 650;
 }
 .hero-copy h2 em {
@@ -195,6 +195,25 @@
 }
 .feature {
   border-left: 1px solid var(--line);
+}
+.create-task-button {
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 0 18px;
+}
+.evidence-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+.reply-actions {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.reply-actions summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 550;
 }
 .feature-title {
   display: flex;

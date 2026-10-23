@@ -134,11 +134,6 @@ type State = {
   }[];
   themeSupport: Record<string, number>;
 };
-const hotelDemoText =
-  "The AC in room 226 blew warm air all night. We also saw a small insect near the bathroom sink. The front desk was patient and helpful.";
-const restaurantDemoText =
-  "The booth rocked when I leaned back, but the fried rice was beautifully smoky.";
-const salonDemoText = "My appointment started twenty minutes late.";
 const date = (value: string | null) =>
   value
     ? new Date(value).toLocaleString("en-MY", {
@@ -147,7 +142,10 @@ const date = (value: string | null) =>
         timeZone: "Asia/Kuala_Lumpur",
       })
     : "—";
-const label = (value: string) => value.replaceAll("_", " ");
+const label = (value: string) =>
+  value === "simulated_published" || value === "reply_simulated_published"
+    ? "posted"
+    : value.replaceAll("_", " ");
 const priorityRank = (priority: string) =>
   ({ urgent: 4, high: 3, medium: 2, low: 1 })[
     priority.toLowerCase() as "urgent" | "high" | "medium" | "low"
@@ -171,11 +169,8 @@ export function Workspace() {
   const [rating, setRating] = useState("all");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
-  const [source, setSource] = useState("all");
-  const [newText, setNewText] = useState(hotelDemoText);
-  const [preparedReviewId, setPreparedReviewId] = useState<string | null>(
-    "hotel-demo-001",
-  );
+  const [newText, setNewText] = useState("");
+  const [preparedReviewId, setPreparedReviewId] = useState<string | null>(null);
   const [newBranch, setNewBranch] = useState("hotel-central");
   const [preparedReviews, setPreparedReviews] = useState<
     {
@@ -328,7 +323,6 @@ export function Workspace() {
         const query = search.toLowerCase();
         return (
           (branch === "all" || review.branchId === branch) &&
-          (source === "all" || review.source === source) &&
           (rating === "all" || review.rating === Number(rating)) &&
           (status === "all" || review.processingStatus === status) &&
           (category === "all" ||
@@ -342,11 +336,15 @@ export function Workspace() {
             ))
         );
       }) || [],
-    [state, search, branch, rating, category, status, source],
+    [state, search, branch, rating, category, status],
   );
   const reviewPoints =
     selected && state
-      ? state.observations.filter((point) => point.reviewId === selected.id)
+      ? state.observations.filter(
+          (point) =>
+            point.reviewId === selected.id &&
+            point.kind === "operational_complaint",
+        )
       : [];
   const categories = [
     ...new Set(
@@ -366,6 +364,8 @@ export function Workspace() {
     setTab("tasks");
   };
   const owner = role === "owner";
+  const branchName = (id: string) =>
+    state?.branches.find((item) => item.id === id)?.name || id;
   const spotlight = state?.themes
     .filter(
       (item) =>
@@ -418,13 +418,8 @@ export function Workspace() {
                 ? "sunway"
                 : "salon-main",
           );
-          setNewText(
-            id === "harbour-house"
-              ? hotelDemoText
-              : id === "nusa-table"
-                ? restaurantDemoText
-                : salonDemoText,
-          );
+          setNewText("");
+          setPreparedReviewId(null);
           setEmployeeId(
             id === "harbour-house"
               ? "hotel-employee-1"
@@ -433,7 +428,6 @@ export function Workspace() {
                 : "salon-employee-1",
           );
           setBranch("all");
-          setSource("all");
           setSearch("");
           setTab("dashboard");
         }}
@@ -511,7 +505,7 @@ export function Workspace() {
                       id: spotlight.id,
                       title: spotlight.title,
                       priority: spotlight.priority,
-                      branchId: spotlight.branchId,
+                      branchId: branchName(spotlight.branchId),
                       support: state.themeSupport[spotlight.id] || 0,
                       evidenceQuote: spotlightEvidence?.evidenceQuote,
                     }
@@ -527,49 +521,79 @@ export function Workspace() {
               <form className="card form" onSubmit={submitNew}>
                 <label>
                   Property or branch
-                  <select value={newBranch} onChange={(event) => setNewBranch(event.target.value)}>
-                    {state.branches.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  <select
+                    value={newBranch}
+                    onChange={(event) => setNewBranch(event.target.value)}
+                  >
+                    {state.branches.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Rating
-                  <select value={newRating} onChange={(event) => setNewRating(Number(event.target.value))}>
-                    {[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value} stars</option>)}
+                  <select
+                    value={newRating}
+                    onChange={(event) =>
+                      setNewRating(Number(event.target.value))
+                    }
+                  >
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <option key={value} value={value}>
+                        {value} stars
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label className="wide">
-                  Review source ID
-                  <input value="Generated automatically" disabled />
-                </label>
-                <label className="wide">
                   Original review text
-                  <textarea rows={4} value={newText} onChange={(event) => { setNewText(event.target.value); setPreparedReviewId(null); }} required />
-                </label>
-                <button disabled={!!busy}>{busy ? "Working…" : "Save review"}</button>
-              </form>
-              <button className="link" type="button" onClick={() => setShowReviewChoices((show) => !show)}>
-                {showReviewChoices ? "Hide examples" : "Choose an example review"}
-              </button>
-              {showReviewChoices && <div className="prepared-reviews">
-                {preparedReviews.map((review) => (
-                  <button
-                    key={review.id}
-                    className={`review-row ${preparedReviewId === review.id ? "chosen" : ""}`}
-                    type="button"
-                    onClick={() => {
-                      setNewBranch(review.branchId);
-                      setNewRating(review.rating);
-                      setNewText(review.text);
-                      setPreparedReviewId(review.id);
+                  <textarea
+                    rows={4}
+                    value={newText}
+                    onChange={(event) => {
+                      setNewText(event.target.value);
+                      setPreparedReviewId(null);
                     }}
-                  >
-                    <b>
-                      {review.rating}★ · {review.branchId}
-                    </b>
-                    <span>{review.text}</span>
-                  </button>
-                ))}
-              </div>}
+                    required
+                  />
+                </label>
+                <button disabled={!!busy}>
+                  {busy ? "Working…" : "Save review"}
+                </button>
+              </form>
+              <button
+                className="link"
+                type="button"
+                onClick={() => setShowReviewChoices((show) => !show)}
+              >
+                {showReviewChoices
+                  ? "Hide examples"
+                  : "Choose an example review"}
+              </button>
+              {showReviewChoices && (
+                <div className="prepared-reviews">
+                  {preparedReviews.map((review) => (
+                    <button
+                      key={review.id}
+                      className={`review-row ${preparedReviewId === review.id ? "chosen" : ""}`}
+                      type="button"
+                      onClick={() => {
+                        setNewBranch(review.branchId);
+                        setNewRating(review.rating);
+                        setNewText(review.text);
+                        setPreparedReviewId(review.id);
+                      }}
+                    >
+                      <b>
+                        {review.rating}★ · {branchName(review.branchId)}
+                      </b>
+                      <span>{review.text}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </section>
           )}
           {tab === "reviews" && (
@@ -600,22 +624,6 @@ export function Workspace() {
                         {item.name}
                       </option>
                     ))}
-                  </select>
-                </label>
-                <label>
-                  Source
-                  <select
-                    value={source}
-                    onChange={(event) => setSource(event.target.value)}
-                  >
-                    <option value="all">All sources</option>
-                    {[...new Set(state.reviews.map((review) => review.source))]
-                      .sort()
-                      .map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
                   </select>
                 </label>
                 <label>
@@ -679,7 +687,8 @@ export function Workspace() {
                         onClick={() => setSelectedReview(review.id)}
                       >
                         <span>
-                          <b>{review.rating}★</b> · {review.branchId} ·{" "}
+                          <b>{review.rating}★</b> ·{" "}
+                          {branchName(review.branchId)} ·{" "}
                           {label(review.processingStatus)}
                         </span>
                         <small>{date(review.reviewedAt)}</small>
@@ -694,8 +703,8 @@ export function Workspace() {
                   {selected ? (
                     <>
                       <p className="eyebrow">
-                        {selected.branchId} · {selected.rating} stars ·{" "}
-                        {date(selected.reviewedAt)}
+                        {branchName(selected.branchId)} · {selected.rating}{" "}
+                        stars · {date(selected.reviewedAt)}
                       </p>
                       <h3>Original review</h3>
                       <blockquote>{selected.originalText}</blockquote>
@@ -706,7 +715,7 @@ export function Workspace() {
                         ) && (
                           <>
                             {" "}
-                            · <b>Demo reply:</b>{" "}
+                            · <b>Reply:</b>{" "}
                             {label(
                               state.replies.find(
                                 (reply) => reply.reviewId === selected.id,
@@ -715,7 +724,7 @@ export function Workspace() {
                           </>
                         )}
                       </p>
-                      <h3>What we found</h3>
+                      <h3>Operational complaints</h3>
                       {reviewPoints.length ? (
                         reviewPoints.map((point) => {
                           const membership = state.memberships.find(
@@ -724,8 +733,7 @@ export function Workspace() {
                           return (
                             <div className="observation" key={point.id}>
                               <p>
-                                <b>{label(point.kind)}</b> ·{" "}
-                                {label(point.category)}
+                                <b>{label(point.category)}</b>
                               </p>
                               <blockquote>“{point.evidenceQuote}”</blockquote>
                               <p>{point.summary}</p>
@@ -745,7 +753,7 @@ export function Workspace() {
                         })
                       ) : (
                         <p className="muted">
-                          No specific observations stored.
+                          No operational complaints found.
                         </p>
                       )}
                       {["pending", "failed", "needs_review"].includes(
@@ -810,9 +818,9 @@ export function Workspace() {
                           >
                             <b>{item.title}</b>
                             <span>
-                              {item.branchId} ·{" "}
-                              {state.themeSupport[item.id] || 0} distinct source
-                              reviews · {item.priority}
+                              {branchName(item.branchId)} ·{" "}
+                              {state.themeSupport[item.id] || 0} reviews ·{" "}
+                              {item.priority}
                             </span>
                             <small>{label(item.status)}</small>
                           </button>
@@ -824,11 +832,14 @@ export function Workspace() {
                   {theme ? (
                     <>
                       <p className="eyebrow">
-                        {theme.branchId} · {label(theme.type)} ·{" "}
+                        {branchName(theme.branchId)} · {label(theme.type)} ·{" "}
                         {label(theme.status)}
                       </p>
                       <h3>{theme.title}</h3>
-                      <p><b>{state.themeSupport[theme.id] || 0}</b> reviews · {theme.priority} priority</p>
+                      <p>
+                        <b>{state.themeSupport[theme.id] || 0}</b> reviews ·{" "}
+                        {theme.priority}
+                      </p>
                       {owner && (
                         <div className="controls">
                           <label>
@@ -884,55 +895,13 @@ export function Workspace() {
                           const review = state.reviews.find(
                             (r) => r.id === point.reviewId,
                           );
-                          const membership = state.memberships.find(
-                            (m) => m.observationId === point.id,
-                          );
                           return (
                             <div className="observation" key={point.id}>
-                              <p>
-                                <button
-                                  className="link"
-                                  onClick={() => openReview(point.reviewId)}
-                                >
-                                  {point.reviewId}
-                                </button>{" "}
-                                · {review?.rating}★ · {review?.source} ·{" "}
-                                {date(review?.reviewedAt || null)} ·{" "}
-                                {membership?.source}
+                              <p className="evidence-meta">
+                                {review?.rating}★ ·{" "}
+                                {date(review?.reviewedAt || null)}
                               </p>
                               <blockquote>“{point.evidenceQuote}”</blockquote>
-                              <p>{point.summary}</p>
-                              {owner && (
-                                <label>
-                                  Correct grouping
-                                  <select
-                                    value={theme.id}
-                                    onChange={(event) =>
-                                      void act("membership", {
-                                        observationId: point.id,
-                                        themeId: event.target.value || null,
-                                      })
-                                    }
-                                  >
-                                    <option value={theme.id}>
-                                      Keep in this theme
-                                    </option>
-                                    <option value="">Leave ungrouped</option>
-                                    {state.themes
-                                      .filter(
-                                        (other) =>
-                                          other.id !== theme.id &&
-                                          other.branchId === point.branchId &&
-                                          other.type === theme.type,
-                                      )
-                                      .map((other) => (
-                                        <option key={other.id} value={other.id}>
-                                          Move to {other.title}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </label>
-                              )}
                             </div>
                           );
                         })
@@ -941,6 +910,7 @@ export function Workspace() {
                       )}
                       {theme.type === "operational_issue" && owner && (
                         <button
+                          className="create-task-button"
                           onClick={async () => {
                             const result = (await act("propose_task", {
                               themeId: theme.id,
@@ -984,11 +954,11 @@ export function Workspace() {
                     <>
                       <p className="eyebrow">
                         {label(task.status)} ·{" "}
-                        {
+                        {branchName(
                           state.themes.find(
                             (theme) => theme.id === task.themeId,
-                          )?.branchId
-                        }
+                          )?.branchId || "",
+                        )}
                       </p>
                       <h3>{task.title}</h3>
                       <p>{task.description}</p>
@@ -1070,7 +1040,7 @@ export function Workspace() {
 
                       {role === "staff" && (
                         <label>
-                          Acting as fictional employee
+                          Employee
                           <select
                             value={employeeId}
                             onChange={(event) =>
@@ -1174,43 +1144,61 @@ export function Workspace() {
                           <p>
                             <b>What was done:</b> {task.resolutionNote}
                           </p>
-                          <h4>Reply to a guest</h4>
-                          {[
-                            ...new Set(
-                              state.observations
-                                .filter((point) =>
-                                  state.memberships.some(
-                                    (m) =>
-                                      m.themeId === task.themeId &&
-                                      m.observationId === point.id,
-                                  ),
-                                )
-                                .map((point) => point.reviewId),
-                            ),
-                          ].map((reviewId) => (
-                            <div className="controls" key={reviewId}>
-                              <button
-                                className="link"
-                                onClick={() => openReview(reviewId)}
-                              >
-                                {state.reviews
-                                  .find((review) => review.id === reviewId)
-                                  ?.originalText.slice(0, 80)}
-                                …
-                              </button>
-                              <button
-                                disabled={!owner || !!busy}
-                                onClick={() =>
-                                  void act("draft_reply", {
-                                    reviewId,
-                                    taskId: task.id,
-                                  })
-                                }
-                              >
-                                Draft guest reply
-                              </button>
-                            </div>
-                          ))}
+                          <details className="reply-actions">
+                            <summary>
+                              Prepare guest replies (
+                              {
+                                new Set(
+                                  state.observations
+                                    .filter((point) =>
+                                      state.memberships.some(
+                                        (membership) =>
+                                          membership.themeId === task.themeId &&
+                                          membership.observationId === point.id,
+                                      ),
+                                    )
+                                    .map((point) => point.reviewId),
+                                ).size
+                              }
+                              )
+                            </summary>
+                            {[
+                              ...new Set(
+                                state.observations
+                                  .filter((point) =>
+                                    state.memberships.some(
+                                      (m) =>
+                                        m.themeId === task.themeId &&
+                                        m.observationId === point.id,
+                                    ),
+                                  )
+                                  .map((point) => point.reviewId),
+                              ),
+                            ].map((reviewId) => (
+                              <div className="controls" key={reviewId}>
+                                <button
+                                  className="link"
+                                  onClick={() => openReview(reviewId)}
+                                >
+                                  {state.reviews
+                                    .find((review) => review.id === reviewId)
+                                    ?.originalText.slice(0, 80)}
+                                  …
+                                </button>
+                                <button
+                                  disabled={!owner || !!busy}
+                                  onClick={() =>
+                                    void act("draft_reply", {
+                                      reviewId,
+                                      taskId: task.id,
+                                    })
+                                  }
+                                >
+                                  Draft guest reply
+                                </button>
+                              </div>
+                            ))}
+                          </details>
                         </>
                       )}
                     </>
@@ -1267,18 +1255,22 @@ export function Workspace() {
                 approvals, work updates, resolution, and replies.
               </p>
               <div className="card">
-                {state.events.map((item) => (
-                  <div className="event" key={item.id}>
-                    <time>{date(item.createdAt)}</time>
-                    <div>
-                      <b>{label(item.type)}</b> · {item.actor} ({item.role})
-                      <p>{item.description}</p>
-                      <small>
-                        {item.entityType}: {item.entityId}
-                      </small>
+                {state.events
+                  .filter((item) => item.type !== "handoff_simulated")
+                  .map((item) => (
+                    <div className="event" key={item.id}>
+                      <time>{date(item.createdAt)}</time>
+                      <div>
+                        <b>{label(item.type)}</b> ·{" "}
+                        {item.actor === "demo owner"
+                          ? "Owner"
+                          : state.employees.find(
+                              (employee) => employee.id === item.actor,
+                            )?.name || item.actor}{" "}
+                        ({item.role})<p>{item.description}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </section>
           )}
@@ -1334,7 +1326,7 @@ function TaskEditor({
         />
       </label>
       <label>
-        Fictional employee
+        Employee
         <select
           value={assigneeId}
           onChange={(event) => setAssigneeId(event.target.value)}
@@ -1393,8 +1385,7 @@ function ReplyCard({
       <h3>Source review</h3>
       <blockquote>{review?.originalText}</blockquote>
       <p>
-        {review?.rating}★ · {review?.branchId} ·{" "}
-        {date(review?.reviewedAt || null)}
+        {review?.rating}★ · {date(review?.reviewedAt || null)}
       </p>
       {reply.partialWarning && (
         <div className="notice error" role="alert">
