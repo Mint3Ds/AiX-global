@@ -265,47 +265,36 @@ export function ReviewsView({
         </div>
       </div>
 
-      {/* Two Column Layout (Master-Detail like the original): Left List & Right Detail */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column (5 of 12 cols): Review Cards List */}
-        <div className="lg:col-span-5 space-y-3">
+      {/* Two Column Layout (Original 2-column layout with its own scrollbar) */}
+      <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+        {/* Left Column: Review List with its own scrollbar */}
+        <div className="space-y-2 max-h-[74vh] overflow-y-auto pr-2 clean-scrollbar">
           {filteredReviews.length > 0 ? (
             filteredReviews.map((review) => {
               const reviewObs = observations.filter((o) => o.reviewId === review.id);
               const isSelected = selectedReview?.id === review.id;
 
               return (
-                <div
+                <button
                   key={review.id}
+                  type="button"
                   onClick={() => onSelectReview(review.id)}
-                  className={`bg-white rounded-2xl p-4 sm:p-5 border transition-all cursor-pointer text-left space-y-3 ${
-                    isSelected
-                      ? "border-neutral-900 shadow-sm ring-1 ring-neutral-900/10"
-                      : "border-neutral-200/80 hover:border-neutral-300 shadow-2xs"
-                  }`}
+                  className={`review-row ${isSelected ? "chosen" : ""}`}
                 >
-                  {/* Top Row: Source, Property, Rating */}
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                  {/* Top row: Rating, branch, status */}
+                  <div className="flex items-center justify-between w-full gap-1.5 flex-wrap text-xs">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      {/* Simulated Source Pill without duplicate badge */}
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
-                        {formatSourceName(review.source)}
-                      </span>
-
-                      {/* Property Pill */}
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-white text-neutral-600 border border-neutral-200 shadow-2xs">
-                        {branchName(review.branchId)}
-                      </span>
-
-                      {/* Clean Rating */}
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold text-neutral-800 bg-neutral-50 border border-neutral-200/70">
+                      <span className="font-semibold text-neutral-900">
                         {review.rating}★
+                      </span>
+                      <span className="text-neutral-300">·</span>
+                      <span className="font-medium text-neutral-700">
+                        {branchName(review.branchId)}
                       </span>
                     </div>
 
-                    {/* Processing Status Pill */}
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                         review.processingStatus === "complete"
                           ? "bg-emerald-50 text-emerald-800 border border-emerald-200/80"
                           : review.processingStatus === "generic"
@@ -319,23 +308,17 @@ export function ReviewsView({
                     </span>
                   </div>
 
-                  {/* Body: Snippet of original text */}
-                  <p className="text-sm text-neutral-800 line-clamp-3 leading-relaxed font-normal">
+                  {/* Date & Source */}
+                  <div className="flex items-center justify-between w-full gap-2 text-[11px] text-neutral-400 font-normal">
+                    <span>{dateFormatter(review.reviewedAt)}</span>
+                    <span className="truncate max-w-[150px]">{formatSourceName(review.source)}</span>
+                  </div>
+
+                  {/* Text snippet */}
+                  <p className="text-xs text-neutral-700 line-clamp-2 leading-relaxed font-normal">
                     {review.originalText}
                   </p>
-
-                  {/* Footer: Date & observation count */}
-                  <div className="flex items-center justify-between pt-2 border-t border-neutral-100 text-[11px] text-neutral-400">
-                    <span>{dateFormatter(review.reviewedAt)}</span>
-                    <span className="font-medium text-neutral-500">
-                      {reviewObs.length > 0
-                        ? `${reviewObs.length} observation${reviewObs.length > 1 ? "s" : ""}`
-                        : review.processingStatus === "generic"
-                          ? "Generic"
-                          : "Pending extraction"}
-                    </span>
-                  </div>
-                </div>
+                </button>
               );
             })
           ) : (
@@ -345,8 +328,8 @@ export function ReviewsView({
           )}
         </div>
 
-        {/* Right Column (7 of 12 cols): Selected Review Detail (Sticky) */}
-        <div className="lg:col-span-7 sticky top-6">
+        {/* Right Column: Selected Review Detail (with its own scrollbar & sticky) */}
+        <div className="sticky top-6 max-h-[74vh] overflow-y-auto pr-1 clean-scrollbar">
           {selectedReview ? (
             <div className="bg-white rounded-2xl border border-neutral-200/80 p-6 shadow-xs space-y-5">
               {/* Top Row: Full Badges & Date */}
