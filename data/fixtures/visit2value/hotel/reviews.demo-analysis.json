@@ -1,0 +1,38 @@
+[
+  {
+    "reviewId": "hotel-demo-001",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The AC in room 226 blew warm air all night.",
+        "summary": "The AC in room 226 blew warm air all night",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "We also saw a small insect near the bathroom sink.",
+        "summary": "We also saw a small insect near the bathroom sink",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The front desk was patient and helpful.",
+        "summary": "The front desk was patient and helpful",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  }
+]

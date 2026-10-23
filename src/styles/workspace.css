@@ -1,0 +1,231 @@
+/* Review, issue, task, reply, activity, and form layouts. */
+
+.notice {
+  margin: 14px 0;
+  border: 2px solid var(--ink);
+  padding: 12px 15px;
+  background: var(--paper-light);
+  font-weight: 700;
+}
+.notice.error {
+  border-color: var(--error);
+  color: var(--error);
+  background: var(--error-bg);
+}
+.notice button {
+  margin-left: 10px;
+}
+.filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(110px, 1fr));
+  gap: 10px;
+  margin: 23px 0 18px;
+}
+.filters label,
+.form label,
+.manual label,
+.reply label,
+.controls label,
+.observation label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font:
+    800 11px/1.2 "Courier New",
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+input,
+textarea,
+select {
+  max-width: 100%;
+  min-width: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 11px;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
+}
+.filters input,
+.filters select {
+  width: 100%;
+}
+.form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 880px;
+}
+.form.wide,
+.form .wide {
+  grid-column: 1 / -1;
+}
+.form textarea,
+.form input {
+  width: 100%;
+}
+.form > button {
+  width: max-content;
+}
+.split {
+  display: grid;
+  grid-template-columns: minmax(270px, 370px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 16px;
+}
+.review-list {
+  max-height: 74vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.review-list > div > h3 {
+  margin: 22px 0 11px;
+  font:
+    800 11px "Courier New",
+    monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.review-list > div:first-child > h3 {
+  margin-top: 0;
+}
+.review-row {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 9px;
+  padding: 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper-light);
+  color: var(--ink);
+  text-align: left;
+  line-height: 1.3;
+  box-shadow: 3px 3px 0 transparent;
+}
+.review-row:hover,
+.review-row.chosen {
+  background: var(--violet-light);
+  box-shadow: 3px 3px 0 var(--violet);
+}
+.review-row b {
+  font-weight: 900;
+}
+.review-row small {
+  color: var(--muted);
+}
+.detail {
+  min-height: 280px;
+}
+.detail > h3 {
+  font-size: 29px;
+}
+.detail > h4 {
+  font:
+    800 11px "Courier New",
+    monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.detail blockquote,
+.reply blockquote {
+  margin: 13px 0;
+  padding: 16px;
+  border-left: 4px solid var(--violet);
+  background: var(--paper);
+  white-space: pre-wrap;
+  font-size: 15px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.observation {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface-alt);
+}
+.observation p {
+  margin: 5px 0;
+}
+.observation blockquote {
+  margin: 11px 0;
+  font-weight: 700;
+}
+.provider {
+  margin: 16px 0;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.provider p {
+  margin-bottom: 0;
+}
+.provider pre {
+  max-height: 300px;
+  overflow: auto;
+  background: var(--paper-light);
+  padding: 12px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 16px 0;
+}
+.manual {
+  display: grid;
+  gap: 11px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.manual button {
+  width: max-content;
+}
+.reply {
+  max-width: 880px;
+  margin: 16px 0;
+}
+.reply textarea {
+  width: 100%;
+}
+.event {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+}
+.event:last-child {
+  border-bottom: 0;
+}
+.event time,
+.event small {
+  font:
+    700 11px/1.4 "Courier New",
+    monospace;
+  color: var(--muted);
+}
+.event p {
+  margin: 5px 0;
+}
+footer {
+  border-top: 2px solid var(--ink);
+  padding: 20px 0 30px;
+  color: var(--muted);
+  font:
+    700 10px/1.6 "Courier New",
+    monospace;
+  text-transform: uppercase;
+}

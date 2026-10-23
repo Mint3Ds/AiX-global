@@ -1,8 +1,14 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { DashboardView } from "@/components/design/DashboardView";
+import {
+  WorkspaceHeader,
+  type WorkspaceTab as Tab,
+} from "@/components/design/WorkspaceHeader";
 
 type Review = {
   id: string;
+  businessId: string;
   branchId: string;
   source: string;
   sourceReviewId: string;
@@ -29,6 +35,7 @@ type Observation = {
 };
 type Theme = {
   id: string;
+  businessId: string;
   branchId: string;
   title: string;
   type: string;
@@ -49,6 +56,13 @@ type Task = {
   title: string;
   description: string;
   assigneeRole: string;
+  assigneeId: string | null;
+  dueAt: string | null;
+  employeeReport: string | null;
+  reportedAt: string | null;
+  reportedBy: string | null;
+  verifiedAt: string | null;
+  recurrenceOfTaskId: string | null;
   status: string;
   resolutionNote: string | null;
   approvedAt: string | null;
@@ -62,6 +76,9 @@ type Reply = {
   status: string;
   provider: string;
   mode: string;
+  partialWarning: string | null;
+  partialApproved: boolean;
+  publishedAt: string | null;
 };
 type Run = {
   id: string;
@@ -90,6 +107,16 @@ type Event = {
 type State = {
   mode: string;
   synthetic: boolean;
+  selectedBusinessId: string;
+  businesses: { id: string; name: string; businessType: string }[];
+  branches: { id: string; businessId: string; name: string }[];
+  employees: {
+    id: string;
+    businessId: string;
+    branchId: string;
+    name: string;
+    jobTitle: string;
+  }[];
   reviews: Review[];
   observations: Observation[];
   themes: Theme[];
@@ -107,10 +134,11 @@ type State = {
   }[];
   themeSupport: Record<string, number>;
 };
-type Tab =
-  "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
-const demoText =
+const hotelDemoText =
+  "The AC in room 226 blew warm air all night. We also saw a small insect near the bathroom sink. The front desk was patient and helpful.";
+const restaurantDemoText =
   "The booth rocked when I leaned back, but the fried rice was beautifully smoky.";
+const salonDemoText = "My appointment started twenty minutes late.";
 const date = (value: string | null) =>
   value
     ? new Date(value).toLocaleString("en-MY", {
@@ -126,6 +154,10 @@ const pointType = (kind: string) =>
     : kind === "suggestion"
       ? "suggestion"
       : "positive_pattern";
+const priorityRank = (priority: string) =>
+  ({ urgent: 4, high: 3, medium: 2, low: 1 })[
+    priority.toLowerCase() as "urgent" | "high" | "medium" | "low"
+  ] || 0;
 
 export function Workspace() {
   const [state, setState] = useState<State | null>(null);
@@ -134,27 +166,39 @@ export function Workspace() {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
   const [role, setRole] = useState<"owner" | "staff">("owner");
+  const [businessId, setBusinessId] = useState("harbour-house");
+  const [employeeId, setEmployeeId] = useState("hotel-employee-1");
   const [selectedReview, setSelectedReview] = useState<string | null>(null);
-  const [selectedTheme, setSelectedTheme] = useState<string>("sunway-seating");
-  const [selectedTask, setSelectedTask] = useState<string>(
-    "task-sunway-seating",
-  );
+  const [selectedTheme, setSelectedTheme] =
+    useState<string>("hotel-central-ac");
+  const [selectedTask, setSelectedTask] = useState<string>("");
   const [search, setSearch] = useState("");
   const [branch, setBranch] = useState("all");
   const [rating, setRating] = useState("all");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
-  const [newText, setNewText] = useState(demoText);
-  const [newBranch, setNewBranch] = useState("sunway");
-  const [newRating, setNewRating] = useState(4);
-  const [newSourceId, setNewSourceId] = useState("synthetic-demo-source-001");
+  const [source, setSource] = useState("all");
+  const [newText, setNewText] = useState(hotelDemoText);
+  const [newBranch, setNewBranch] = useState("hotel-central");
+  const [newRating, setNewRating] = useState(2);
+  const [newSourceId, setNewSourceId] = useState("hotel-demo-source-002");
   const [resolution, setResolution] = useState("");
+  const [workReport, setWorkReport] = useState("");
+  const [batchReplyIds, setBatchReplyIds] = useState<string[]>([]);
   const [manualQuote, setManualQuote] = useState("");
   const [manualSummary, setManualSummary] = useState("");
+  const [guideOpen, setGuideOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
 
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch("/api/state", { cache: "no-store" });
+      const response = await fetch(
+        `/api/state?businessId=${encodeURIComponent(businessId)}`,
+        { cache: "no-store" },
+      );
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Could not load data");
       setState(body);
@@ -164,20 +208,10 @@ export function Workspace() {
         reason instanceof Error ? reason.message : "Could not load data",
       );
     }
-  }, []);
+  }, [businessId]);
   useEffect(() => {
-    void fetch("/api/state", { cache: "no-store" })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || "Could not load data");
-        setState(body);
-      })
-      .catch((reason) =>
-        setError(
-          reason instanceof Error ? reason.message : "Could not load data",
-        ),
-      );
-  }, []);
+    void Promise.resolve().then(refresh);
+  }, [refresh]);
   const act = useCallback(
     async (type: string, values: Record<string, unknown> = {}) => {
       setBusy(type);
@@ -187,7 +221,7 @@ export function Workspace() {
         const response = await fetch("/api/action", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type, role, ...values }),
+          body: JSON.stringify({ type, role, businessId, ...values }),
         });
         const body = await response.json();
         if (!response.ok || !body.ok)
@@ -202,14 +236,15 @@ export function Workspace() {
         setBusy("");
       }
     },
-    [refresh, role],
+    [refresh, role, businessId],
   );
   const submitNew = async (event: React.FormEvent) => {
     event.preventDefault();
     const result = (await act("intake", {
       data: {
+        businessId,
         branchId: newBranch,
-        source: "Demo Feedback Form",
+        source: "Simulated Guest Form",
         sourceReviewId: newSourceId.trim(),
         rating: Number(newRating),
         reviewedAt: new Date().toISOString(),
@@ -262,6 +297,7 @@ export function Workspace() {
         const query = search.toLowerCase();
         return (
           (branch === "all" || review.branchId === branch) &&
+          (source === "all" || review.source === source) &&
           (rating === "all" || review.rating === Number(rating)) &&
           (status === "all" || review.processingStatus === status) &&
           (category === "all" ||
@@ -275,7 +311,7 @@ export function Workspace() {
             ))
         );
       }) || [],
-    [state, search, branch, rating, category, status],
+    [state, search, branch, rating, category, status, source],
   );
   const reviewPoints =
     selected && state
@@ -303,56 +339,91 @@ export function Workspace() {
     setTab("tasks");
   };
   const owner = role === "owner";
+  const spotlight = state?.themes
+    .filter(
+      (item) =>
+        item.type === "operational_issue" &&
+        ["suggested", "recurrence"].includes(item.status),
+    )
+    .sort((a, b) => {
+      return (
+        priorityRank(b.priority) - priorityRank(a.priority) ||
+        b.severity - a.severity ||
+        (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0)
+      );
+    })[0];
+  const spotlightEvidence =
+    spotlight && state
+      ? state.observations.find((point) =>
+          state.memberships.some(
+            (membership) =>
+              membership.themeId === spotlight.id &&
+              membership.observationId === point.id,
+          ),
+        )
+      : null;
 
   return (
     <div className="shell">
-      <header className="top">
-        <div>
-          <h1>Visit2Value</h1>
-          <p>Customer evidence → owner decision → visible action</p>
-        </div>
-        <div className="badges">
-          <strong>Synthetic demo data</strong>
-          <strong className={state?.mode === "live" ? "live" : "fixture"}>
-            AI mode: {state?.mode || "loading"}
-          </strong>
-          <label>
-            Demo role{" "}
-            <select
-              value={role}
-              onChange={(event) =>
-                setRole(event.target.value as "owner" | "staff")
-              }
-            >
-              <option value="owner">Owner</option>
-              <option value="staff">Staff</option>
-            </select>
-          </label>
-        </div>
-      </header>
-      <nav aria-label="Main navigation">
-        {(
-          [
-            "dashboard",
-            "reviews",
-            "issues",
-            "new",
-            "tasks",
-            "replies",
-            "activity",
-          ] as Tab[]
-        ).map((item) => (
-          <button
-            key={item}
-            className={tab === item ? "active" : ""}
-            onClick={() => setTab(item)}
-          >
-            {item === "new"
-              ? "New review"
-              : item[0].toUpperCase() + item.slice(1)}
-          </button>
-        ))}
-      </nav>
+      <WorkspaceHeader
+        mode={state?.mode || "loading"}
+        businesses={
+          state?.businesses || [
+            { id: "harbour-house", name: "Harbour House Hotel" },
+          ]
+        }
+        businessId={businessId}
+        branchCount={state?.branches.length || 0}
+        onBusinessChange={(id) => {
+          setBusinessId(id);
+          setState(null);
+          setSelectedReview(null);
+          setSelectedTheme(
+            id === "harbour-house"
+              ? "hotel-central-ac"
+              : id === "nusa-table"
+                ? "sunway-seating"
+                : "salon-delay",
+          );
+          setSelectedTask(id === "nusa-table" ? "task-sunway-seating" : "");
+          setNewBranch(
+            id === "harbour-house"
+              ? "hotel-central"
+              : id === "nusa-table"
+                ? "sunway"
+                : "salon-main",
+          );
+          setNewText(
+            id === "harbour-house"
+              ? hotelDemoText
+              : id === "nusa-table"
+                ? restaurantDemoText
+                : salonDemoText,
+          );
+          setNewSourceId(
+            id === "harbour-house"
+              ? "hotel-demo-source-002"
+              : `synthetic-${id}-demo-001`,
+          );
+          setEmployeeId(
+            id === "harbour-house"
+              ? "hotel-employee-1"
+              : id === "nusa-table"
+                ? "restaurant-employee-1"
+                : "salon-employee-1",
+          );
+          setBranch("all");
+          setSource("all");
+          setSearch("");
+          setTab("dashboard");
+        }}
+        tab={tab}
+        role={role}
+        guideOpen={guideOpen}
+        onTabChange={setTab}
+        onRoleChange={setRole}
+        onGuideToggle={() => setGuideOpen((open) => !open)}
+      />
       {error && (
         <div role="alert" className="notice error">
           {error} <button onClick={() => void refresh()}>Retry load</button>
@@ -374,110 +445,87 @@ export function Workspace() {
       ) : (
         <main>
           {tab === "dashboard" && (
-            <section>
-              <h2>Nusa Table overview</h2>
-              <p className="muted">
-                Fictional Malaysian casual restaurant · Sunway and Bangsar
-                branches · no live review platforms connected
-              </p>
-              <div className="metrics">
-                <Metric title="Reviews" value={state.reviews.length} />
-                <Metric
-                  title="Specific feedback"
-                  value={
-                    state.reviews.filter(
-                      (review) => review.processingStatus === "complete",
-                    ).length
-                  }
-                />
-                <Metric
-                  title="Issues needing attention"
-                  value={
-                    state.themes.filter(
-                      (theme) =>
-                        theme.type === "operational_issue" &&
-                        theme.status === "suggested",
-                    ).length
-                  }
-                />
-                <Metric
-                  title="Open approved tasks"
-                  value={
-                    state.tasks.filter(
-                      (task) => task.status === "approved_open",
-                    ).length
-                  }
-                />
-                <Metric
-                  title="Replies to approve"
-                  value={
-                    state.replies.filter((reply) => reply.status === "draft")
-                      .length
-                  }
-                />
-              </div>
-              <div className="card feature">
-                <p className="eyebrow">Suggested operational issue · Sunway</p>
-                <h3>Unsteady seating</h3>
-                <p>
-                  {
-                    state.themes.find((theme) => theme.id === "sunway-seating")
-                      ?.priorityReason
-                  }
-                </p>
-                <p>
-                  <b>
-                    {state.themeSupport["sunway-seating"] || 0} distinct source
-                    reviews
-                  </b>{" "}
-                  currently support this theme. Each quote is available for
-                  inspection.
-                </p>
-                <button onClick={() => openTheme("sunway-seating")}>
-                  Inspect seating evidence
-                </button>
-              </div>
-              <div className="two">
-                <div className="card">
-                  <h3>Try the complete journey</h3>
-                  <p>
-                    Enter the separate synthetic demo review, check its two
-                    observations, inspect the seating theme, approve and resolve
-                    the task, then prepare a reply.
-                  </p>
-                  <button onClick={() => setTab("new")}>
-                    Enter demo review
-                  </button>
-                </div>
-                <div className="card">
-                  <h3>Processing boundaries</h3>
-                  <p>
-                    Fixture results are marked as fixtures. Live mode uses Jev
-                    with OpenAI fallback for screening, then OpenAI for
-                    extraction and matching. Tasks and replies need owner
-                    approval.
-                  </p>
-                </div>
-              </div>
-            </section>
+            <DashboardView
+              businessName={
+                state.businesses.find((business) => business.id === businessId)
+                  ?.name || "Business"
+              }
+              businessType={
+                state.businesses.find((business) => business.id === businessId)
+                  ?.businessType || "business"
+              }
+              metrics={[
+                { title: "Reviews", value: state.reviews.length },
+                {
+                  title: "Specific feedback",
+                  value: state.reviews.filter(
+                    (review) => review.processingStatus === "complete",
+                  ).length,
+                },
+                {
+                  title: "Issues needing attention",
+                  value: state.themes.filter(
+                    (theme) =>
+                      theme.type === "operational_issue" &&
+                      ["suggested", "recurrence"].includes(theme.status),
+                  ).length,
+                },
+                {
+                  title: "Open approved tasks",
+                  value: state.tasks.filter(
+                    (task) => task.status === "approved_open",
+                  ).length,
+                },
+                {
+                  title: "Replies to approve",
+                  value: state.replies.filter(
+                    (reply) => reply.status === "draft",
+                  ).length,
+                },
+              ]}
+              spotlight={
+                spotlight
+                  ? {
+                      id: spotlight.id,
+                      title: spotlight.title,
+                      priority: spotlight.priority,
+                      priorityReason: spotlight.priorityReason,
+                      branchId: spotlight.branchId,
+                      status: spotlight.status,
+                      support: state.themeSupport[spotlight.id] || 0,
+                      evidenceQuote: spotlightEvidence?.evidenceQuote,
+                    }
+                  : null
+              }
+              onNewReview={() => setTab("new")}
+              onIssues={() => setTab("issues")}
+              onInspect={openTheme}
+              onGuidedDemo={() => {
+                setGuideOpen(true);
+                setTab("new");
+              }}
+            />
           )}
           {tab === "new" && (
             <section>
               <h2>Enter a synthetic review</h2>
               <p className="muted">
-                The short demo review below is separate from the 80 seeded
-                reviews. In fixture mode, exact text matching provides
-                deterministic analysis; changed text can require manual review.
+                The prepared review below is separate from the seeded reviews.
+                In fixture mode, exact text matching provides deterministic
+                analysis; changed text can require manual review.
               </p>
               <form className="card form" onSubmit={submitNew}>
                 <label>
-                  Branch
+                  Property or branch
                   <select
                     value={newBranch}
                     onChange={(event) => setNewBranch(event.target.value)}
                   >
-                    <option value="sunway">Nusa Table Sunway</option>
-                    <option value="bangsar">Nusa Table Bangsar</option>
+                    {state.branches.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
@@ -535,14 +583,33 @@ export function Workspace() {
                   />
                 </label>
                 <label>
-                  Branch
+                  Property or branch
                   <select
                     value={branch}
                     onChange={(event) => setBranch(event.target.value)}
                   >
                     <option value="all">All</option>
-                    <option value="sunway">Sunway</option>
-                    <option value="bangsar">Bangsar</option>
+                    {state.branches.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Source
+                  <select
+                    value={source}
+                    onChange={(event) => setSource(event.target.value)}
+                  >
+                    <option value="all">All simulated sources</option>
+                    {[...new Set(state.reviews.map((review) => review.source))]
+                      .sort()
+                      .map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
                   </select>
                 </label>
                 <label>
@@ -641,6 +708,19 @@ export function Workspace() {
                       <blockquote>{selected.originalText}</blockquote>
                       <p>
                         <b>Status:</b> {label(selected.processingStatus)}
+                        {state.replies.find(
+                          (reply) => reply.reviewId === selected.id,
+                        ) && (
+                          <>
+                            {" "}
+                            · <b>Demo reply:</b>{" "}
+                            {label(
+                              state.replies.find(
+                                (reply) => reply.reviewId === selected.id,
+                              )!.status,
+                            )}
+                          </>
+                        )}
                         {selected.processingStage
                           ? ` · stage: ${label(selected.processingStage)}`
                           : ""}{" "}
@@ -813,7 +893,7 @@ export function Workspace() {
               <h2>Issues and insights</h2>
               <p className="muted">
                 Themes are suggestions. Counts use distinct source reviews at
-                one branch. Owner corrections update them.
+                one property. Owner corrections update them.
               </p>
               <div className="split">
                 <div className="review-list">
@@ -834,6 +914,13 @@ export function Workspace() {
                       </h3>
                       {state.themes
                         .filter((theme) => theme.type === type)
+                        .sort(
+                          (a, b) =>
+                            priorityRank(b.priority) -
+                              priorityRank(a.priority) ||
+                            (state.themeSupport[b.id] || 0) -
+                              (state.themeSupport[a.id] || 0),
+                        )
                         .map((item) => (
                           <button
                             key={item.id}
@@ -843,7 +930,7 @@ export function Workspace() {
                             <b>{item.title}</b>
                             <span>
                               {item.branchId} ·{" "}
-                              {state.themeSupport[item.id] || 0} distinct
+                              {state.themeSupport[item.id] || 0} distinct source
                               reviews · {item.priority}
                             </span>
                             <small>{label(item.status)}</small>
@@ -862,7 +949,8 @@ export function Workspace() {
                       <h3>{theme.title}</h3>
                       <p>
                         <b>
-                          {state.themeSupport[theme.id] || 0} distinct reviews
+                          {state.themeSupport[theme.id] || 0} distinct source
+                          reviews
                         </b>{" "}
                         · suggested priority: {theme.priority}
                       </p>
@@ -1037,9 +1125,20 @@ export function Workspace() {
                       </p>
                       {task.status === "proposed" && owner && (
                         <>
+                          <p className="muted">
+                            Choose an employee and due date, then save the
+                            proposal before approval.
+                          </p>
                           <TaskEditor
                             key={`${task.id}:${task.title}:${task.description}:${task.assigneeRole}`}
                             task={task}
+                            employees={state.employees.filter(
+                              (employee) =>
+                                employee.branchId ===
+                                state.themes.find(
+                                  (item) => item.id === task.themeId,
+                                )?.branchId,
+                            )}
                             save={(data) =>
                               void act("edit_task", { taskId: task.id, data })
                             }
@@ -1100,28 +1199,101 @@ export function Workspace() {
                             </details>
                           </div>
                         ))}
-                      {task.status === "approved_open" && owner && (
+                      {role === "staff" && (
+                        <label>
+                          Acting as fictional employee
+                          <select
+                            value={employeeId}
+                            onChange={(event) =>
+                              setEmployeeId(event.target.value)
+                            }
+                          >
+                            {state.employees
+                              .filter(
+                                (employee) =>
+                                  employee.branchId ===
+                                  state.themes.find(
+                                    (item) => item.id === task.themeId,
+                                  )?.branchId,
+                              )
+                              .map((employee) => (
+                                <option key={employee.id} value={employee.id}>
+                                  {employee.name} · {employee.jobTitle}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                      )}
+                      <p>
+                        <b>Due:</b> {date(task.dueAt)}
+                      </p>
+                      {task.status === "approved_open" &&
+                        (owner || task.assigneeId === employeeId) && (
+                          <button
+                            onClick={() =>
+                              void act("start_task", {
+                                taskId: task.id,
+                                employeeId,
+                              })
+                            }
+                          >
+                            Start work
+                          </button>
+                        )}
+                      {["approved_open", "in_progress"].includes(task.status) &&
+                        (owner || task.assigneeId === employeeId) && (
+                          <div className="form">
+                            <label>
+                              Employee work report
+                              <textarea
+                                rows={4}
+                                value={workReport}
+                                onChange={(event) =>
+                                  setWorkReport(event.target.value)
+                                }
+                                placeholder="What did you actually inspect, repair, or replace?"
+                              />
+                            </label>
+                            <button
+                              onClick={() =>
+                                void act("report_task", {
+                                  taskId: task.id,
+                                  employeeId,
+                                  note: workReport,
+                                })
+                              }
+                            >
+                              Submit work report for verification
+                            </button>
+                          </div>
+                        )}
+                      {task.status === "reported" && (
+                        <div className="provider">
+                          <b>Employee report:</b> {task.employeeReport}
+                        </div>
+                      )}
+                      {task.status === "reported" && owner && (
                         <div className="form">
                           <label>
-                            Truthful resolution note
+                            Manager verification note
                             <textarea
                               rows={4}
                               value={resolution}
                               onChange={(event) =>
                                 setResolution(event.target.value)
                               }
-                              placeholder="What did the team actually inspect, repair, or replace?"
+                              placeholder="What did you verify? Be specific and truthful."
                             />
                           </label>
                           <button
                             onClick={() =>
-                              void act("resolve_task", {
+                              void act("verify_task", {
                                 taskId: task.id,
                                 note: resolution,
                               })
                             }
                           >
-                            Mark resolved with note
+                            Verify completed work
                           </button>
                         </div>
                       )}
@@ -1181,9 +1353,20 @@ export function Workspace() {
             <section>
               <h2>Replies ready for owner review</h2>
               <p className="muted">
-                Approved replies are ready to post manually. This application
-                does not publish to a review platform.
+                Approved replies are not posted. Simulate publishing only after
+                owner review; no review platform is contacted.
               </p>
+              {owner && batchReplyIds.length > 0 && (
+                <button
+                  onClick={() =>
+                    void act("approve_reply_batch", {
+                      replyIds: batchReplyIds,
+                    }).then(() => setBatchReplyIds([]))
+                  }
+                >
+                  Approve selected drafts ({batchReplyIds.length})
+                </button>
+              )}
               {state.replies.length ? (
                 state.replies.map((reply) => (
                   <ReplyCard
@@ -1194,11 +1377,25 @@ export function Workspace() {
                     )}
                     task={state.tasks.find((task) => task.id === reply.taskId)}
                     owner={owner}
+                    selected={batchReplyIds.includes(reply.id)}
+                    toggleSelected={() =>
+                      setBatchReplyIds((current) =>
+                        current.includes(reply.id)
+                          ? current.filter((id) => id !== reply.id)
+                          : [...current, reply.id],
+                      )
+                    }
                     save={(text) =>
                       void act("edit_reply", { replyId: reply.id, text })
                     }
-                    approve={() =>
-                      void act("approve_reply", { replyId: reply.id })
+                    approve={(partialApproved) =>
+                      void act("approve_reply", {
+                        replyId: reply.id,
+                        partialApproved,
+                      })
+                    }
+                    publish={() =>
+                      void act("simulate_publish", { replyId: reply.id })
                     }
                   />
                 ))
@@ -1242,28 +1439,28 @@ export function Workspace() {
     </div>
   );
 }
-function Metric({ title, value }: { title: string; value: number }) {
-  return (
-    <div className="metric">
-      <strong>{value}</strong>
-      <span>{title}</span>
-    </div>
-  );
-}
 function TaskEditor({
   task,
+  employees,
   save,
 }: {
   task: Task;
+  employees: State["employees"];
   save: (data: {
     title: string;
     description: string;
     assigneeRole: string;
+    assigneeId: string;
+    dueAt: string;
   }) => void;
 }) {
   const [title, setTitle] = useState(task.title),
     [description, setDescription] = useState(task.description),
-    [assigneeRole, setAssigneeRole] = useState(task.assigneeRole);
+    [assigneeRole, setAssigneeRole] = useState(task.assigneeRole),
+    [assigneeId, setAssigneeId] = useState(
+      task.assigneeId || employees[0]?.id || "",
+    ),
+    [dueAt, setDueAt] = useState(task.dueAt?.slice(0, 16) || "");
   return (
     <div className="form">
       <label>
@@ -1288,9 +1485,32 @@ function TaskEditor({
           onChange={(event) => setAssigneeRole(event.target.value)}
         />
       </label>
+      <label>
+        Fictional employee
+        <select
+          value={assigneeId}
+          onChange={(event) => setAssigneeId(event.target.value)}
+        >
+          {employees.map((employee) => (
+            <option key={employee.id} value={employee.id}>
+              {employee.name} · {employee.jobTitle}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Due date
+        <input
+          type="datetime-local"
+          value={dueAt}
+          onChange={(event) => setDueAt(event.target.value)}
+        />
+      </label>
       <button
         className="secondary"
-        onClick={() => save({ title, description, assigneeRole })}
+        onClick={() =>
+          save({ title, description, assigneeRole, assigneeId, dueAt })
+        }
       >
         Save proposal edits
       </button>
@@ -1302,15 +1522,21 @@ function ReplyCard({
   review,
   task,
   owner,
+  selected,
+  toggleSelected,
   save,
   approve,
+  publish,
 }: {
   reply: Reply;
   review?: Review;
   task?: Task;
   owner: boolean;
+  selected: boolean;
+  toggleSelected: () => void;
   save: (text: string) => void;
-  approve: () => void;
+  approve: (partialApproved: boolean) => void;
+  publish: () => void;
 }) {
   const [text, setText] = useState(reply.text);
   return (
@@ -1322,24 +1548,54 @@ function ReplyCard({
       <h3>Source review</h3>
       <blockquote>{review?.originalText}</blockquote>
       <p>
+        {review?.source} · {review?.rating}★ · {review?.branchId} ·{" "}
+        {date(review?.reviewedAt || null)}
+      </p>
+      {reply.partialWarning && (
+        <div className="notice error" role="alert">
+          <b>Partial reply warning:</b> {reply.partialWarning}
+        </div>
+      )}
+      <p>
         <b>Resolution note:</b> {task?.resolutionNote}
       </p>
       <label>
-        Editable draft
+        {reply.status === "simulated_published"
+          ? "Simulated published reply"
+          : "Editable draft"}
         <textarea
           rows={5}
           value={text}
           onChange={(event) => setText(event.target.value)}
-          disabled={!owner}
+          disabled={!owner || reply.status === "simulated_published"}
         />
       </label>
       {owner && (
         <div className="controls">
-          <button className="secondary" onClick={() => save(text)}>
-            Save edits
-          </button>
+          {reply.status === "draft" && !reply.partialWarning && (
+            <label>
+              <input
+                type="checkbox"
+                checked={selected}
+                onChange={toggleSelected}
+              />{" "}
+              Select for batch approval
+            </label>
+          )}
+          {reply.status !== "simulated_published" && (
+            <button className="secondary" onClick={() => save(text)}>
+              Save edits
+            </button>
+          )}
           {reply.status === "draft" && (
-            <button onClick={approve}>Approve · ready to post</button>
+            <button onClick={() => approve(Boolean(reply.partialWarning))}>
+              {reply.partialWarning
+                ? "Approve truthful partial reply"
+                : "Approve · ready to post"}
+            </button>
+          )}
+          {reply.status === "approved_ready" && (
+            <button onClick={publish}>Simulate publishing</button>
           )}
         </div>
       )}

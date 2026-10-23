@@ -1,121 +1,69 @@
 # Visit2Value
 
-Visit2Value turns customer reviews into evidence-backed, owner-approved business actions. The fictional demo restaurant, Nusa Table, has Sunway and Bangsar branches. The app saves original reviews, identifies specific feedback, extracts separate observations, suggests branch-specific themes, and shows the exact quote behind each suggestion. An owner can correct evidence, approve a task, record completed work, and approve a reply that is ready to post manually.
+Visit2Value is a synthetic review-to-resolution workspace for small businesses. The default judge demo is **Harbour House Hotel**, a fictional independent hotel with two properties. The original Nusa Table restaurant remains available, and a smaller Luma Salon workspace demonstrates that the same review workflow can serve another business type. Use the business selector at the top of the app. The selector scopes reviews, issues, staff, tasks, replies, and activity to that business.
 
-This is a synthetic hackathon prototype for Domain 2, “Orbyte Smart SME Challenge: Less Busywork, Better Business.” The Orbyte handoff is **simulated and stored locally**. No review platform, Orbyte API, or customer account is connected.
+Every business, employee, guest review, source label, and outcome in this repository is team-created fiction. All three hotel review sources are **simulated**. No source is scraped or connected. The Orbyte handoff and reply publication are local simulations; there is no Orbyte or review-platform API call. The role switcher demonstrates workflow rules, but it is not production authentication.
 
-## Quick start
+## Run locally with teammates
 
-Requires Node.js 22.12+ (or Node 24+) and PostgreSQL 16+. If you use `nvm`, run `nvm use` in the repository first; `.nvmrc` selects a compatible version.
+Requires Node.js 22.12+ (or Node 24+) and PostgreSQL 16+. Clone the shared GitHub repository, then run:
 
 ```sh
 npm ci
 cp .env.example .env.local
-# Start PostgreSQL and set DATABASE_URL in .env.local as described below.
+# Set DATABASE_URL in the ignored .env.local file and start PostgreSQL.
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-Open `http://localhost:3000`. `AI_MODE=fixture` in `.env.local` provides the reliable demo without API keys. The app respects `HOST` and `PORT` supplied by the shell or hosting environment; for example, `PORT=3001 npm run dev` on macOS/Linux. Next.js reads these before `.env.local`, so set custom host and port in your shell or host settings rather than that file. No Git commit, deployment, or external posting is required to run it.
+Open `http://localhost:3000`. The default `AI_MODE=fixture` needs no AI keys. Each teammate runs their own database and migration/seed; GitHub shares code and JSON fixtures, not local PostgreSQL rows. `db:migrate` and `db:seed` are repeatable and do not reset owner work. They insert the source fixtures and labelled historical analyses only when those rows are absent. The separate demo review is never seeded. Do not commit `.env.local`.
 
-### Local PostgreSQL
+For a fresh local PostgreSQL installation on macOS, the previous setup still applies: install/start `postgresql@16`, create a `visit2value` role and database, then use the URL in `.env.example`. Replit requires a provisioned PostgreSQL database and `DATABASE_URL` Secret. Import this repository, run the same migration/seed commands, and set `AI_MODE=fixture` as a Secret. If publishing a Replit App, check its published database and Secrets separately.
 
-If PostgreSQL is already running, create a database and role matching `DATABASE_URL`. On macOS with Homebrew, one setup is:
+### Configuration
+
+| Variable           | Purpose                                                                        |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `DATABASE_URL`     | PostgreSQL connection URL; required.                                           |
+| `AI_MODE`          | `fixture` for deterministic demo or `live` for actual provider calls.          |
+| `TYPESAFE_API_KEY` | Server-side Jev key for live screening.                                        |
+| `OPENAI_API_KEY`   | Server-side OpenAI key for fallback, extraction, matching, and reply drafting. |
+| `OPENAI_MODEL`     | OpenAI model; defaults to `gpt-5-mini`.                                        |
+| `HOST`, `PORT`     | Optional shell-provided bind host and port.                                    |
+
+In live mode, Jev decides whether a review has any specific business feedback; OpenAI takes over screening if Jev fails. OpenAI extracts distinct observations, proposes same-property issue matches, and drafts a reply after verified work. Provider failures leave the source review searchable and retryable. Fixture mode processes only exact labelled text; arbitrary new text enters `needs_review` for manual classification or can be retried in live mode. The historical seed's provider is labelled `fixture`, never Jev.
+
+## Judge journey
+
+1. Open **Harbour House Hotel**. There are 244 historical synthetic reviews across three simulated sources, with at least 24 distinct source reviews supporting the Central property's air-conditioning issue and a separate insect issue. Open an issue and inspect the exact quotes, full reviews, dates, ratings, and source labels. The Garden property stays separate.
+2. Open **New review**. The prefilled hotel text mentions warm AC, a small insect, and helpful front-desk staff. Give it a new source review ID if you have previously run the demo, then save and analyse. It is not part of the seed. In fixture mode its exact text yields three labelled observations. In live mode it goes through Jev and OpenAI. The review is saved before analysis, and the AC issue gains one distinct source review.
+3. Open **Issues**, inspect the new evidence, and optionally remove and restore a mistaken grouping. The distinct-review count follows the evidence.
+4. Propose an AC task. Select a fictional employee, set a due date, save, and approve. The approved task remains in Visit2Value. **Activity** shows a locally simulated Orbyte handoff with the approval, assignee, property, due date, and evidence references.
+5. Switch to **Staff**, choose the assigned fictional employee, start work, and submit a specific work report. Switch back to **Owner** to inspect the report and enter a separate verification note. Only this verification resolves the task.
+6. Draft a reply to the new review. It must address the whole source review: the unresolved insect concern triggers a conspicuous partial-reply warning. Read or edit the draft and explicitly approve a truthful partial reply. Approval leaves it ready; **Simulate publishing** changes the local demo status to `simulated_published` and adds an activity event. No external post occurs.
+7. Return to **Reviews** to search all original text, including generic reviews, and filter by property, simulated source, rating, status, and observation category. Search for a topic such as “breakfast.” A later review related to a verified issue flags possible recurrence and permits a new task while preserving the first task's history.
+
+The restaurant and salon use the same review and issue model, with their own data. The hotel has the complete demonstration. On an already used local database, the prefilled source ID may be taken; enter a different synthetic source ID to inject the same prepared text again. The app rejects a source ID if its original evidence is changed.
+
+## Commands and code map
 
 ```sh
-brew install postgresql@16
-brew services start postgresql@16
-export PATH="$(brew --prefix postgresql@16)/bin:$PATH"
-psql postgres -c "CREATE ROLE visit2value LOGIN PASSWORD 'visit2value';"
-createdb -O visit2value visit2value
-```
-
-The `.env.example` URL then works locally. Use a stronger local password if appropriate and update your ignored `.env.local`. On Linux or Replit, use an existing PostgreSQL service and its connection URL instead. Do not commit `.env.local`.
-
-### Environment
-
-| Variable           | Purpose                                                                                                                                                                                                |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `DATABASE_URL`     | PostgreSQL connection URL; required at runtime.                                                                                                                                                        |
-| `AI_MODE`          | Required: `fixture` or `live`. Current mode appears in the header.                                                                                                                                     |
-| `TYPESAFE_API_KEY` | Server-only key for Jev screening in live mode.                                                                                                                                                        |
-| `OPENAI_API_KEY`   | Server-only key for fallback, extraction, matching, and reply drafting.                                                                                                                                |
-| `OPENAI_MODEL`     | Configurable OpenAI model; default `gpt-5-mini`. The selected model must support Responses structured outputs and be available to your account. Errors are shown rather than silently changing models. |
-| `HOST`, `PORT`     | Optional shell or hosting environment variables for server host and port; defaults are `0.0.0.0` and `3000`.                                                                                           |
-
-The default model's documented structured-output support was checked against [official OpenAI model documentation](https://developers.openai.com/api/docs/models/gpt-5-mini). A live call with the configured key successfully used `gpt-5-mini` on 22 October 2026; account access can change, so configuration errors remain visible.
-
-### Useful commands
-
-```sh
-npm run dev          # development server
-npm run build        # production build
-npm run start        # built server
-npm run db:migrate   # create the schema; safe to repeat
-npm run db:seed      # insert source fixtures; safe to repeat
 npm run typecheck
 npm run lint
 npm test
-TEST_BASE_URL=http://localhost:3000 npm test  # after completing the demo journey, include persisted route-handler checks
+TEST_BASE_URL=http://localhost:3000 npm test  # adds local route tests, including one synthetic intake
+npm run build
 ```
 
-Only for an intentionally disposable demo database:
+`npm run db:reset` is destructive and guarded by `CONFIRM_DEMO_RESET=yes`; use it only on an intentionally disposable database. Ordinary startup never drops data.
 
-```sh
-CONFIRM_DEMO_RESET=yes npm run db:reset
-npm run db:migrate
-npm run db:seed
-```
+- `src/components/Workspace.tsx`, `src/components/design/`, `src/styles/`: interface and design components.
+- `src/app/api/`: business-scoped route handlers.
+- `src/domain/`: analysis validation, evidence, issue counts, priority, workflow rules, and service orchestration.
+- `src/integrations/jev`, `src/integrations/openai`: real live provider adapters; keys remain server-side.
+- `src/integrations/orbyte/handoff.ts`: the local simulated handoff interface, not an Orbyte API.
+- `src/data/schema.ts`, `migrations/`: PostgreSQL/Drizzle schema and additive migrations.
+- `scripts/seed-impl.ts`, `scripts/generate-hotel-fixtures.py`, `data/fixtures/visit2value/`: repeatable synthetic data.
 
-The reset drops the database's `public` schema and its contents. Ordinary startup never clears data. The seed uses the existing `data/fixtures/visit2value/reviews.seed.json` file and its human-authored expected-analysis subset. It does **not** insert `reviews.demo-new.json`. The duplicate rule is unique `(businessId, source, sourceReviewId)`.
-
-## Four-minute judge demo
-
-1. Start in fixture mode. Dashboard → **Inspect seating evidence**. Show the count of distinct Sunway reviews and the original English and Malay quotes. Bangsar themes remain separate.
-2. New review: use the prefilled, separate synthetic text: **“The booth rocked when I leaned back, but the fried rice was beautifully smoky.”** Save and analyse. The review detail shows one seating complaint and one fried rice compliment, each with an exact quote and `fixture` provenance. The seating count rises by one.
-3. Issues → Unsteady seating. Inspect a quote. Demonstrate **Correct grouping** by removing an observation, then find that review under Reviews and restore its owner grouping. The count updates.
-4. Tasks → the seating proposal. Review or edit it, approve it as the simulated owner, and show the **simulated Orbyte integration** payload. Enter a synthetic resolution note describing work that was actually done in the fictional scenario; mark resolved.
-5. Prepare a reply for the new review, edit it to match the resolution note, approve it as **ready to post**, then refresh. Activity shows intake → fixture analysis → correction → approval → simulated handoff → resolution → reply.
-
-For a fresh judge run, reset and reseed a disposable demo database before the presentation. The first demo record's ID in the fixture file is `demo-review-001`; a newly entered database review receives a UUID.
-
-## AI behavior
-
-**Live mode** (`AI_MODE=live`): [TypeSafe's documented `POST /v1/systemone`](https://api.typesafe.ai/docs) asks Jev whether a review has at least one specific useful point. Jev gets one retry. If unavailable, timed out, uncertain, or invalid, the same screening question goes to OpenAI structured output. A useful review proceeds to OpenAI observation extraction and same-branch theme matching. After a resolution note, OpenAI drafts a reply. Each stage records its actual provider, model where available, prompt version, mode, time, and safe failure information. If OpenAI fails, the review remains failed or needs review with a retry route. Provider calls and keys remain server-side.
-
-**Fixture mode** (`AI_MODE=fixture`): exact supplied review text receives labelled deterministic expectations. Generic reviews remain searchable without observations. Unknown text has no fabricated fixture result; it enters `needs_review` for an owner decision or can be retried after switching to live mode. The seed intentionally pre-analyses only the labelled subset; the rest are pending. `Analyse up to 5 pending` handles a small batch.
-
-The selected model uses the official OpenAI JavaScript SDK's [Responses structured parse method](https://developers.openai.com/api/docs/guides/structured-outputs). On 22 October 2026, a separate synthetic live review was screened by Jev (`jev-1.14.0`), extracted by OpenAI (`gpt-5-mini`) into separate seating and fried rice observations, and matched by OpenAI to the appropriate Sunway themes. A second generic synthetic review used a deliberately invalid Jev key for one local server run; real OpenAI screening handled the fallback and stored `openai_fallback`. After a synthetic owner resolution note, OpenAI generated a reply draft, which was edited and approved locally. The temporary test reviews and actions were removed by resetting this disposable local database; the saved keys were not changed. These smoke tests demonstrate the configured paths at that time, not broad model accuracy or production reliability.
-
-## Replit
-
-1. Import the GitHub repository in Replit and select Node.js 22.12+ (or Node 24+). The imported branch must contain these application files and fixtures.
-2. Provision Replit's managed PostgreSQL database. Put its connection string in the `DATABASE_URL` Secret. Do not use a local SQLite file.
-3. Add `AI_MODE=fixture` for the reliable demo, or `AI_MODE=live` plus `TYPESAFE_API_KEY`, `OPENAI_API_KEY`, and `OPENAI_MODEL` Secrets for live processing.
-4. Run `npm ci`, `npm run db:migrate`, `npm run db:seed`, then `npm run dev`. Replit supplies a port; the npm script uses it. For a production run, use `npm run build` and `npm run start`.
-
-Importing the repository gives teammates code, not a shared running website. To send a browser link, publish the Replit App and check the **published** app's Secrets and PostgreSQL database separately. Replit may give the published app its own production database; copy the synthetic development data during publishing when that option is available, or run the migration and seed against the production `DATABASE_URL`. Then open the published URL and confirm it shows 80 reviews before sharing it. See [Replit's production database guide](https://docs.replit.com/references/data-and-storage/create-production-database-when-publishing). Keep the demo database synthetic only.
-
-Do not copy a personal `.env.local` into Replit or GitHub. The demo role switcher is **not production authentication**.
-
-## Where to change the code
-
-- `src/app` and `src/components`: pages, route handlers, and owner interface.
-- `src/domain`: evidence rules, language labels, theme counts, and workflow transitions.
-- `src/integrations/jev` and `src/integrations/openai`: provider calls and prompts.
-- `src/integrations/orbyte`: local simulated handoff interface and payload.
-- `src/config`: restaurant categories, seeded theme labels, and priority thresholds.
-- `src/data`: Drizzle models, connection, and exact fixture loader.
-- `migrations` and `scripts`: schema, migration, repeatable seed, and intentional reset.
-- `tests`: focused rules, fixture contracts, and optional local route tests.
-
-[ARCHITECTURE.md](ARCHITECTURE.md) walks through the data flow and approval boundaries. A hotel could replace restaurant categories with room, cleanliness, and check-in observations; a salon could use appointment, service, and hygiene categories. The review → observation → theme → approval → task → reply flow stays the same.
-
-## Boundaries and proposed measurements
-
-This prototype uses team-created synthetic reviews, business identities, staff roles, and outcomes only. A real deployment would need authorized review sources, authentication and permissions, retention and deletion practices, and handling consistent with Malaysia's PDPA principles. This is an architecture note, not legal advice. It does not process payments, file statutory returns, or provide financial or legal advice.
-
-Proposed measurements, **not validated results**, include owner triage time, time from recurring complaint to approved action, confirmed recurring issue count, grouping correction rate, and reply preparation time. No revenue or satisfaction improvement is claimed. Future integrations could connect authorized review sources, production identity, and a real Orbyte workflow after API access and consent are established.
-
-The repository retains its existing MIT license file. [LICENSE-APACHE-2.0](LICENSE-APACHE-2.0) includes the Apache License 2.0 text requested for the hackathon; the team should confirm the intended distribution license before publishing.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the data flow and [dataset documentation](data/fixtures/visit2value/DATASET_README.md) for fixture provenance. Production use would need authorized review-source access, real identity and permissions, operational verification controls, and a documented Orbyte integration. This demo makes no claim of real posting or measured business improvement.

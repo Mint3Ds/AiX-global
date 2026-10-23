@@ -4,6 +4,7 @@ import { db, pool } from "../src/data/db";
 import {
   businesses,
   branches,
+  employees,
   reviews,
   analysisRuns,
   observations,
@@ -12,41 +13,91 @@ import {
   tasks,
   events,
 } from "../src/data/schema";
-import { seedReviews, seedFixture } from "../src/data/fixtures";
-import { restaurantConfig, themeCatalog } from "../src/config/business";
-import { priorityFor } from "../src/config/priority";
+import {
+  seedReviews,
+  hotelSeedReviews,
+  salonSeedReviews,
+  seedFixture,
+} from "../src/data/fixtures";
+import {
+  businessConfigs,
+  restaurantConfig,
+  themeCatalog,
+} from "../src/config/business";
+import { priorityFor, priorityRules } from "../src/config/priority";
 import { verifyEvidence } from "../src/domain/analysis";
 import { detectReviewLanguage } from "../src/domain/language";
 try {
-  await db
-    .insert(businesses)
-    .values({
-      id: restaurantConfig.businessId,
-      name: restaurantConfig.businessName,
-      businessType: restaurantConfig.businessType,
-      timezone: restaurantConfig.timezone,
-    })
-    .onConflictDoNothing();
-  for (const [id, name] of [
-    ["sunway", "Nusa Table Sunway"],
-    ["bangsar", "Nusa Table Bangsar"],
-  ])
+  for (const config of businessConfigs)
+    await db
+      .insert(businesses)
+      .values({
+        id: config.businessId,
+        name: config.businessName,
+        businessType: config.businessType,
+        timezone: config.timezone,
+      })
+      .onConflictDoNothing();
+  const branchSeed = [
+    ["sunway", "Nusa Table Sunway", "nusa-table", "Sunway, Selangor"],
+    ["bangsar", "Nusa Table Bangsar", "nusa-table", "Bangsar, Kuala Lumpur"],
+    ["hotel-central", "Harbour House Central", "harbour-house", "Kuala Lumpur"],
+    ["hotel-garden", "Harbour House Garden", "harbour-house", "Petaling Jaya"],
+    ["salon-main", "Luma Salon", "luma-salon", "Kuala Lumpur"],
+  ] as const;
+  for (const [id, name, businessId, locationLabel] of branchSeed)
     await db
       .insert(branches)
       .values({
         id,
-        businessId: restaurantConfig.businessId,
+        businessId,
         name,
-        locationLabel:
-          id === "sunway" ? "Sunway, Selangor" : "Bangsar, Kuala Lumpur",
+        locationLabel,
       })
+      .onConflictDoNothing();
+  for (const [id, businessId, branchId, name, jobTitle] of [
+    [
+      "hotel-employee-1",
+      "harbour-house",
+      "hotel-central",
+      "Aina Rahman",
+      "Maintenance technician",
+    ],
+    [
+      "hotel-employee-2",
+      "harbour-house",
+      "hotel-central",
+      "Daniel Lim",
+      "Housekeeping lead",
+    ],
+    [
+      "hotel-employee-3",
+      "harbour-house",
+      "hotel-garden",
+      "Sara Wong",
+      "Duty supervisor",
+    ],
+    [
+      "restaurant-employee-1",
+      "nusa-table",
+      "sunway",
+      "Farah Ismail",
+      "Floor manager",
+    ],
+    ["salon-employee-1", "luma-salon", "salon-main", "Maya Tan", "Stylist"],
+  ] as const)
+    await db
+      .insert(employees)
+      .values({ id, businessId, branchId, name, jobTitle })
       .onConflictDoNothing();
   for (const [id, t] of Object.entries(themeCatalog))
     await db
       .insert(themes)
       .values({
         id,
-        businessId: restaurantConfig.businessId,
+        businessId: branchSeed.find(
+          ([branchId]) => branchId === t.branchId,
+        )![2],
         branchId: t.branchId,
         title: t.title,
         type: t.type,
@@ -55,7 +106,11 @@ try {
         priorityReason: "Awaiting evidence count.",
       })
       .onConflictDoNothing();
-  for (const review of seedReviews) {
+  for (const review of [
+    ...seedReviews,
+    ...hotelSeedReviews,
+    ...salonSeedReviews,
+  ]) {
     await db
       .insert(reviews)
       .values({
@@ -71,13 +126,7 @@ try {
         processingStatus: "pending",
         language: detectReviewLanguage(review.text),
       })
-      .onConflictDoUpdate({
-        target: reviews.id,
-        set: {
-          branchId: review.branchId,
-          language: detectReviewLanguage(review.text),
-        },
-      });
+      .onConflictDoNothing();
     const fixture = seedFixture(review.id);
     if (!fixture) continue;
     const existing = await db
@@ -139,12 +188,22 @@ try {
         .where(eq(reviews.id, review.id));
     });
   }
-  for (const [id, t] of Object.entries(themeCatalog)) {
+  for (const [id] of Object.entries(themeCatalog)) {
     const result = await db.execute(
-      sql`SELECT count(DISTINCT o.review_id)::integer AS count FROM theme_memberships m JOIN observations o ON o.id=m.observation_id WHERE m.theme_id=${id}`,
+      sql`SELECT count(DISTINCT o.review_id)::integer AS count,
+        count(DISTINCT o.review_id) FILTER (WHERE r.reviewed_at >= now() - (${priorityRules.recentDays} * interval '1 day'))::integer AS recent
+        FROM theme_memberships m JOIN observations o ON o.id=m.observation_id JOIN reviews r ON r.id=o.review_id WHERE m.theme_id=${id}`,
     );
     const count = Number(result.rows[0]?.count ?? 0);
-    const p = priorityFor(t.type, count, t.severity);
+    const recent = Number(result.rows[0]?.recent ?? 0);
+    const [current] = await db.select().from(themes).where(eq(themes.id, id));
+    const p = priorityFor(
+      current.type,
+      count,
+      current.severity,
+      recent,
+      current.status === "recurrence",
+    );
     await db
       .update(themes)
       .set({ priority: p.priority, priorityReason: p.reason })
@@ -174,11 +233,12 @@ try {
       entityId: "nusa-table",
       description:
         "Loaded synthetic seed reviews and labelled fixture analysis subset.",
+      businessId: restaurantConfig.businessId,
       metadata: { reviewCount: seedReviews.length },
     })
     .onConflictDoNothing();
   console.log(
-    `Seed ready: ${seedReviews.length} reviews; separate demo reviews were not inserted.`,
+    `Seed ready: ${seedReviews.length} restaurant, ${hotelSeedReviews.length} hotel, ${salonSeedReviews.length} salon reviews; separate demo reviews were not inserted.`,
   );
 } finally {
   await pool.end();

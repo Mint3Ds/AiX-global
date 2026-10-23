@@ -15,6 +15,12 @@ import {
   editReply,
   approveReply,
   analyzePendingBatch,
+  assertActionScope,
+  startTask,
+  reportTask,
+  verifyTask,
+  simulatePublish,
+  approveReplyBatch,
 } from "@/domain/service";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
@@ -22,6 +28,8 @@ export async function POST(request: NextRequest) {
     assertDatabaseConfigured();
     const body = await request.json();
     const role = String(body.role || "staff");
+    const businessId = String(body.businessId || "");
+    await assertActionScope(businessId, body);
     let result: unknown = null;
     switch (body.type) {
       case "intake":
@@ -66,6 +74,28 @@ export async function POST(request: NextRequest) {
           String(body.note || ""),
         );
         break;
+      case "start_task":
+        result = await startTask(
+          String(body.taskId),
+          role,
+          String(body.employeeId || ""),
+        );
+        break;
+      case "report_task":
+        result = await reportTask(
+          String(body.taskId),
+          role,
+          String(body.employeeId || ""),
+          String(body.note || ""),
+        );
+        break;
+      case "verify_task":
+        result = await verifyTask(
+          String(body.taskId),
+          role,
+          String(body.note || ""),
+        );
+        break;
       case "draft_reply":
         result = await createReply(
           String(body.reviewId),
@@ -81,10 +111,20 @@ export async function POST(request: NextRequest) {
         );
         break;
       case "approve_reply":
-        result = await approveReply(String(body.replyId), role);
+        result = await approveReply(
+          String(body.replyId),
+          role,
+          Boolean(body.partialApproved),
+        );
+        break;
+      case "approve_reply_batch":
+        result = await approveReplyBatch(body.replyIds, role);
+        break;
+      case "simulate_publish":
+        result = await simulatePublish(String(body.replyId), role);
         break;
       case "analyze_batch":
-        result = await analyzePendingBatch(Number(body.limit || 5));
+        result = await analyzePendingBatch(businessId, Number(body.limit || 5));
         break;
       default:
         throw new Error("Unknown action");

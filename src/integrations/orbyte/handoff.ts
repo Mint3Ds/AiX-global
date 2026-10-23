@@ -4,6 +4,8 @@ export type HandoffPayload = {
   title: string;
   description: string;
   assigneeRole: string;
+  assignee: string;
+  dueAt: string | null;
   evidence: { reviewId: string; quote: string }[];
   approvedBy: string;
   approvedAt: string;

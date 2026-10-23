@@ -1,65 +1,95 @@
 import { describe, expect, it } from "vitest";
 const base = process.env.TEST_BASE_URL;
+const businessId = "harbour-house";
 async function action(payload: Record<string, unknown>) {
   const response = await fetch(`${base}/api/action`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ businessId, ...payload }),
   });
   return { status: response.status, body: await response.json() };
 }
+async function state(id = businessId) {
+  return (await fetch(`${base}/api/state?businessId=${id}`)).json();
+}
 const integration = base ? describe : describe.skip;
-integration("persisted demo route handlers", () => {
-  it("does not let a staff request approve a task through the server", async () => {
-    const result = await action({
-      type: "decide_task",
-      taskId: "task-sunway-seating",
-      decision: "approve",
-      role: "staff",
-    });
-    expect(result.status).toBe(400);
-    expect(result.body.error).toMatch(/Owner approval required/);
-  });
-  it("does not duplicate observations or handoffs on reprocessing", async () => {
-    const before = await (await fetch(`${base}/api/state`)).json();
-    const review = before.reviews.find(
-      (r: { sourceReviewId: string }) =>
-        r.sourceReviewId === "synthetic-demo-source-001",
-    );
-    expect(review).toBeTruthy();
-    const result = await action({
-      type: "analyze",
-      reviewId: review.id,
-      role: "owner",
-    });
-    expect(result.body.result.alreadyProcessed).toBe(true);
-    const after = await (await fetch(`${base}/api/state`)).json();
+integration("business-scoped persisted route handlers", () => {
+  it("returns distinct workspaces without mixing reviews", async () => {
+    const hotel = await state();
+    const salon = await state("luma-salon");
+    expect(hotel.reviews.length).toBeGreaterThanOrEqual(200);
     expect(
-      after.observations.filter(
-        (o: { reviewId: string }) => o.reviewId === review.id,
+      hotel.reviews.every(
+        (review: { businessId: string }) => review.businessId === businessId,
       ),
-    ).toHaveLength(2);
+    ).toBe(true);
     expect(
-      after.handoffs.filter(
-        (h: { approvedTaskId: string }) =>
-          h.approvedTaskId === "task-sunway-seating",
+      salon.reviews.every(
+        (review: { businessId: string }) => review.businessId === "luma-salon",
+      ),
+    ).toBe(true);
+    expect(
+      hotel.employees.every(
+        (employee: { businessId: string }) =>
+          employee.businessId === businessId,
+      ),
+    ).toBe(true);
+  });
+  it("makes feed events idempotent and protects changed evidence", async () => {
+    const data = {
+      businessId,
+      branchId: "hotel-central",
+      source: "Simulated Integration Feed",
+      sourceReviewId: "integration-idempotency-001",
+      rating: 3,
+      reviewedAt: "2026-10-23T10:00:00+08:00",
+      text: "The room was warm and the front desk was helpful.",
+      isSynthetic: true,
+    };
+    const first = await action({ type: "intake", role: "staff", data });
+    const second = await action({ type: "intake", role: "staff", data });
+    expect(first.status).toBe(200);
+    expect(second.body.result).toMatchObject({
+      reviewId: first.body.result.reviewId,
+      duplicate: true,
+    });
+    const conflict = await action({
+      type: "intake",
+      role: "staff",
+      data: {
+        ...data,
+        text: "Changed source evidence that must not replace the original.",
+      },
+    });
+    expect(conflict.status).toBe(400);
+    expect(conflict.body.error).toMatch(/preserved/);
+    const hotel = await state();
+    expect(
+      hotel.reviews.filter(
+        (review: { sourceReviewId: string }) =>
+          review.sourceReviewId === data.sourceReviewId,
       ),
     ).toHaveLength(1);
   });
-  it("keeps the approved reply after refresh and rejects an invalid task transition", async () => {
-    const state = await (await fetch(`${base}/api/state`)).json();
-    expect(
-      state.replies.some(
-        (r: { status: string }) => r.status === "approved_ready",
-      ),
-    ).toBe(true);
-    const result = await action({
-      type: "resolve_task",
-      taskId: "task-sunway-seating",
-      note: "again again again",
+  it("rejects cross-business actions and employee self-verification", async () => {
+    const hotel = await state();
+    const cross = await action({
+      type: "analyze",
       role: "owner",
+      reviewId: (await state("luma-salon")).reviews[0].id,
     });
-    expect(result.status).toBe(400);
-    expect(result.body.error).toMatch(/Cannot move resolved/);
+    expect(cross.status).toBe(400);
+    expect(cross.body.error).toMatch(/another business/);
+    const task = hotel.tasks[0];
+    if (task) {
+      const verify = await action({
+        type: "verify_task",
+        role: "staff",
+        taskId: task.id,
+        note: "I verified my own work.",
+      });
+      expect(verify.status).toBe(400);
+      expect(verify.body.error).toMatch(/Owner approval/);
+    }
   });
 });

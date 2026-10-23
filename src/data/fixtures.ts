@@ -5,8 +5,8 @@ import { observationSchema, type ObservationInput } from "@/domain/analysis";
 const root = resolve(process.cwd(), "data/fixtures/visit2value");
 const seedReviewSchema = z.object({
   id: z.string(),
-  businessId: z.literal("nusa-table"),
-  branchId: z.enum(["sunway", "bangsar"]),
+  businessId: z.enum(["nusa-table", "harbour-house", "luma-salon"]),
+  branchId: z.string().min(1),
   source: z.string(),
   sourceReviewId: z.string(),
   rating: z.number().int().min(1).max(5),
@@ -23,6 +23,44 @@ export const demoReviews = z
   .parse(
     JSON.parse(readFileSync(resolve(root, "reviews.demo-new.json"), "utf8")),
   );
+const hotelRoot = resolve(root, "hotel");
+export const hotelSeedReviews = z
+  .array(seedReviewSchema)
+  .parse(
+    JSON.parse(readFileSync(resolve(hotelRoot, "reviews.seed.json"), "utf8")),
+  );
+export const hotelDemoReviews = z
+  .array(seedReviewSchema)
+  .parse(
+    JSON.parse(
+      readFileSync(resolve(hotelRoot, "reviews.demo-new.json"), "utf8"),
+    ),
+  );
+export const salonSeedReviews = z
+  .array(seedReviewSchema)
+  .parse(
+    JSON.parse(readFileSync(resolve(hotelRoot, "salon.seed.json"), "utf8")),
+  );
+const generatedAnalysis = [
+  "reviews.analysis.json",
+  "salon.analysis.json",
+  "reviews.demo-analysis.json",
+].flatMap((file) =>
+  z
+    .array(
+      z.object({
+        reviewId: z.string(),
+        useful: z.boolean(),
+        observations: z.array(
+          observationSchema.extend({ expectedThemeId: z.string().optional() }),
+        ),
+      }),
+    )
+    .parse(JSON.parse(readFileSync(resolve(hotelRoot, file), "utf8"))),
+);
+const generatedById = new Map(
+  generatedAnalysis.map((row) => [row.reviewId, row]),
+);
 const expected = z
   .object({
     reviews: z.array(
@@ -135,13 +173,28 @@ const extra: Record<string, FixtureAnalysis> = {
     ],
   },
 };
-export function fixtureForExactText(text: string): FixtureAnalysis | null {
-  const review = [...seedReviews, ...demoReviews].find(
-    (item) => item.text === text,
+export function fixtureForExactText(
+  text: string,
+  businessId?: string,
+): FixtureAnalysis | null {
+  const review = [
+    ...seedReviews,
+    ...demoReviews,
+    ...hotelSeedReviews,
+    ...hotelDemoReviews,
+    ...salonSeedReviews,
+  ].find(
+    (item) =>
+      item.text === text && (!businessId || item.businessId === businessId),
   );
   if (!review) return null;
-  return fromExpected(review.id) ?? extra[review.id] ?? null;
+  return (
+    fromExpected(review.id) ??
+    extra[review.id] ??
+    generatedById.get(review.id) ??
+    null
+  );
 }
 export function seedFixture(reviewId: string) {
-  return fromExpected(reviewId);
+  return fromExpected(reviewId) ?? generatedById.get(reviewId) ?? null;
 }

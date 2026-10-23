@@ -28,6 +28,18 @@ export const branches = pgTable("branches", {
   locationLabel: text("location_label").notNull(),
   createdAt: time("created_at"),
 });
+export const employees = pgTable("employees", {
+  id: text("id").primaryKey(),
+  businessId: text("business_id")
+    .notNull()
+    .references(() => businesses.id),
+  branchId: text("branch_id")
+    .notNull()
+    .references(() => branches.id),
+  name: text("name").notNull(),
+  jobTitle: text("job_title").notNull(),
+  createdAt: time("created_at"),
+});
 export const reviews = pgTable(
   "reviews",
   {
@@ -154,6 +166,14 @@ export const tasks = pgTable(
     title: text("title").notNull(),
     description: text("description").notNull(),
     assigneeRole: text("assignee_role").notNull(),
+    assigneeId: text("assignee_id").references(() => employees.id),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    employeeReport: text("employee_report"),
+    reportedAt: timestamp("reported_at", { withTimezone: true }),
+    reportedBy: text("reported_by"),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    verifiedBy: text("verified_by"),
+    recurrenceOfTaskId: text("recurrence_of_task_id"),
     status: text("status").notNull().default("proposed"),
     proposedAt: time("proposed_at"),
     approvedAt: timestamp("approved_at", { withTimezone: true }),
@@ -162,7 +182,7 @@ export const tasks = pgTable(
     approver: text("approver"),
     approvalSnapshot: jsonb("approval_snapshot"),
   },
-  (t) => [uniqueIndex("tasks_theme_unique").on(t.themeId)],
+  (t) => [index("tasks_theme_idx").on(t.themeId)],
 );
 export const handoffs = pgTable("handoffs", {
   id: text("id").primaryKey(),
@@ -195,6 +215,9 @@ export const replies = pgTable("replies", {
   editedAt: timestamp("edited_at", { withTimezone: true }),
   approvedAt: timestamp("approved_at", { withTimezone: true }),
   approver: text("approver"),
+  partialWarning: text("partial_warning"),
+  partialApproved: boolean("partial_approved").notNull().default(false),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
 });
 export const events = pgTable("activity_events", {
   id: text("id").primaryKey(),
@@ -203,6 +226,7 @@ export const events = pgTable("activity_events", {
   type: text("type").notNull(),
   entityType: text("entity_type").notNull(),
   entityId: text("entity_id").notNull(),
+  businessId: text("business_id").references(() => businesses.id),
   description: text("description").notNull(),
   metadata: jsonb("metadata"),
   createdAt: time("created_at"),

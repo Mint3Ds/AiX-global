@@ -1,0 +1,268 @@
+[
+  {
+    "reviewId": "salon-001",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "appointment_delay",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "My appointment started twenty minutes late.",
+        "summary": "My appointment started twenty minutes late",
+        "normalizedDescription": "appointment delay feedback",
+        "expectedThemeId": "salon-delay"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-002",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "fragrance_free",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please offer a fragrance-free shampoo.",
+        "summary": "Please offer a fragrance-free shampoo",
+        "normalizedDescription": "fragrance free feedback",
+        "expectedThemeId": "salon-fragrance"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-003",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The wash station was tidy and clean.",
+        "summary": "The wash station was tidy and clean",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "salon-clean"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-004",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "stylist_communication",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The stylist explained the cut before starting.",
+        "summary": "The stylist explained the cut before starting",
+        "normalizedDescription": "stylist communication feedback",
+        "expectedThemeId": "salon-stylist-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-005",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "appointment_delay",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "My appointment started twenty minutes late.",
+        "summary": "My appointment started twenty minutes late",
+        "normalizedDescription": "appointment delay feedback",
+        "expectedThemeId": "salon-delay"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-006",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "fragrance_free",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please offer a fragrance-free shampoo.",
+        "summary": "Please offer a fragrance-free shampoo",
+        "normalizedDescription": "fragrance free feedback",
+        "expectedThemeId": "salon-fragrance"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-007",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The wash station was tidy and clean.",
+        "summary": "The wash station was tidy and clean",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "salon-clean"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-008",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "stylist_communication",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The stylist explained the cut before starting.",
+        "summary": "The stylist explained the cut before starting",
+        "normalizedDescription": "stylist communication feedback",
+        "expectedThemeId": "salon-stylist-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-009",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "salon-010",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "fragrance_free",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please offer a fragrance-free shampoo.",
+        "summary": "Please offer a fragrance-free shampoo",
+        "normalizedDescription": "fragrance free feedback",
+        "expectedThemeId": "salon-fragrance"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-011",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The wash station was tidy and clean.",
+        "summary": "The wash station was tidy and clean",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "salon-clean"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-012",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "stylist_communication",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The stylist explained the cut before starting.",
+        "summary": "The stylist explained the cut before starting",
+        "normalizedDescription": "stylist communication feedback",
+        "expectedThemeId": "salon-stylist-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-013",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "appointment_delay",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "My appointment started twenty minutes late.",
+        "summary": "My appointment started twenty minutes late",
+        "normalizedDescription": "appointment delay feedback",
+        "expectedThemeId": "salon-delay"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-014",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "fragrance_free",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please offer a fragrance-free shampoo.",
+        "summary": "Please offer a fragrance-free shampoo",
+        "normalizedDescription": "fragrance free feedback",
+        "expectedThemeId": "salon-fragrance"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-015",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The wash station was tidy and clean.",
+        "summary": "The wash station was tidy and clean",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "salon-clean"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-016",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "stylist_communication",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The stylist explained the cut before starting.",
+        "summary": "The stylist explained the cut before starting",
+        "normalizedDescription": "stylist communication feedback",
+        "expectedThemeId": "salon-stylist-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-017",
+    "useful": true,
+    "observations": [
+      {
+        "category": "salon_service",
+        "aspect": "appointment_delay",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "My appointment started twenty minutes late.",
+        "summary": "My appointment started twenty minutes late",
+        "normalizedDescription": "appointment delay feedback",
+        "expectedThemeId": "salon-delay"
+      }
+    ]
+  },
+  {
+    "reviewId": "salon-018",
+    "useful": false,
+    "observations": []
+  }
+]

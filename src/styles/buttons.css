@@ -1,0 +1,49 @@
+/* Action buttons in working screens. Navigation and review rows have their own styles. */
+
+main button:not(.link):not(.review-row),
+.notice button {
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--paper-light);
+  padding: 10px 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: 3px 3px 0 var(--violet);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+main button:not(.link):not(.review-row):hover,
+.notice button:hover {
+  background: var(--violet);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+main button:not(.link):not(.review-row):disabled,
+.notice button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+button.secondary:not(.link) {
+  background: var(--paper-light);
+  color: var(--ink);
+}
+button.secondary:not(.link):hover {
+  background: var(--violet-light);
+  color: var(--ink);
+}
+button.link {
+  border: 0;
+  background: none;
+  color: var(--violet);
+  text-decoration: underline;
+  padding: 0;
+  font-weight: 800;
+}
+button.link:hover {
+  color: var(--ink);
+}

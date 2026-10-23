@@ -1,0 +1,200 @@
+[
+  {
+    "id": "salon-001",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-001",
+    "rating": 2,
+    "reviewedAt": "2026-02-02T09:15:00+08:00",
+    "text": "My appointment started twenty minutes late.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-002",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-002",
+    "rating": 5,
+    "reviewedAt": "2026-03-03T10:15:00+08:00",
+    "text": "Please offer a fragrance-free shampoo.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-003",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-003",
+    "rating": 5,
+    "reviewedAt": "2026-04-04T11:15:00+08:00",
+    "text": "The wash station was tidy and clean.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-004",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-004",
+    "rating": 5,
+    "reviewedAt": "2026-05-05T12:15:00+08:00",
+    "text": "The stylist explained the cut before starting.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-005",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-005",
+    "rating": 2,
+    "reviewedAt": "2026-06-06T13:15:00+08:00",
+    "text": "My appointment started twenty minutes late.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-006",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-006",
+    "rating": 5,
+    "reviewedAt": "2026-07-07T14:15:00+08:00",
+    "text": "Please offer a fragrance-free shampoo.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-007",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-007",
+    "rating": 5,
+    "reviewedAt": "2026-08-08T15:15:00+08:00",
+    "text": "The wash station was tidy and clean.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-008",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-008",
+    "rating": 5,
+    "reviewedAt": "2026-09-09T16:15:00+08:00",
+    "text": "The stylist explained the cut before starting.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-009",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-009",
+    "rating": 5,
+    "reviewedAt": "2026-10-10T17:15:00+08:00",
+    "text": "Nice place!",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-010",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-010",
+    "rating": 5,
+    "reviewedAt": "2026-01-11T18:15:00+08:00",
+    "text": "Please offer a fragrance-free shampoo.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-011",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-011",
+    "rating": 5,
+    "reviewedAt": "2026-02-12T19:15:00+08:00",
+    "text": "The wash station was tidy and clean.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-012",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-012",
+    "rating": 5,
+    "reviewedAt": "2026-03-13T08:15:00+08:00",
+    "text": "The stylist explained the cut before starting.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-013",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-013",
+    "rating": 2,
+    "reviewedAt": "2026-04-14T09:15:00+08:00",
+    "text": "My appointment started twenty minutes late.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-014",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-014",
+    "rating": 5,
+    "reviewedAt": "2026-05-15T10:15:00+08:00",
+    "text": "Please offer a fragrance-free shampoo.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-015",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-015",
+    "rating": 5,
+    "reviewedAt": "2026-06-16T11:15:00+08:00",
+    "text": "The wash station was tidy and clean.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-016",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Map Reviews",
+    "sourceReviewId": "salon-source-016",
+    "rating": 5,
+    "reviewedAt": "2026-07-17T12:15:00+08:00",
+    "text": "The stylist explained the cut before starting.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-017",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Guest Form",
+    "sourceReviewId": "salon-source-017",
+    "rating": 2,
+    "reviewedAt": "2026-08-18T13:15:00+08:00",
+    "text": "My appointment started twenty minutes late.",
+    "isSynthetic": true
+  },
+  {
+    "id": "salon-018",
+    "businessId": "luma-salon",
+    "branchId": "salon-main",
+    "source": "Simulated Stay Portal",
+    "sourceReviewId": "salon-source-018",
+    "rating": 5,
+    "reviewedAt": "2026-09-19T14:15:00+08:00",
+    "text": "Nice place!",
+    "isSynthetic": true
+  }
+]

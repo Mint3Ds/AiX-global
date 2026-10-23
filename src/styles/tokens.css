@@ -1,0 +1,52 @@
+/* Design colors, typography defaults, and global accessibility. */
+
+:root {
+  --paper: #dcebd3;
+  --paper-light: #f3f5e9;
+  --paper-deep: #c9ddbd;
+  --surface: #fbfcf5;
+  --surface-alt: #fbfcf4;
+  --ink: #1b2c29;
+  --muted: #4e6259;
+  --line: #45594e;
+  --violet: #643c91;
+  --violet-light: #e8def3;
+  --violet-on-dark: #d0a9f3;
+  --live: #d9eec9;
+  --warning: #e5c56e;
+  --error: #8b312f;
+  --error-bg: #f5ded6;
+  --placeholder: #6b7a6e;
+  --white: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 3px;
+}
+::selection {
+  background: var(--violet);
+  color: var(--white);
+}

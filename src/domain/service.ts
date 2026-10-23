@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/data/db";
 import {
   businesses,
   branches,
+  employees,
   reviews,
   analysisRuns,
   observations,
@@ -22,8 +23,8 @@ import {
 } from "./analysis";
 import { requireOwner, requireTransition, canDraftReply } from "./workflow";
 import { fixtureForExactText, type FixtureAnalysis } from "@/data/fixtures";
-import { restaurantConfig } from "@/config/business";
-import { priorityFor } from "@/config/priority";
+import { defaultBusinessId } from "@/config/business";
+import { priorityFor, priorityRules } from "@/config/priority";
 import { detectReviewLanguage } from "./language";
 import { screenWithFallback } from "./screening";
 import { candidateThemes, distinctReviewCount } from "./themes";
@@ -36,6 +37,12 @@ import {
   modelName,
 } from "@/integrations/openai/client";
 import { localHandoff } from "@/integrations/orbyte/handoff";
+import {
+  assertReplyApproval,
+  canBatchApproveReply,
+  isPossibleRecurrence,
+  partialReplyWarning,
+} from "./replies";
 
 export const aiMode = () => {
   if (process.env.AI_MODE !== "live" && process.env.AI_MODE !== "fixture")
@@ -53,7 +60,27 @@ async function event(
   actor = "system",
   role = "system",
   metadata?: Record<string, unknown>,
+  businessId?: string,
 ) {
+  if (!businessId) {
+    if (entityType === "review")
+      businessId = (await oneReview(entityId)).businessId;
+    else if (entityType === "theme")
+      businessId = (await oneTheme(entityId)).businessId;
+    else if (entityType === "task")
+      businessId = (await oneTheme((await oneTask(entityId)).themeId))
+        .businessId;
+    else if (entityType === "reply")
+      businessId = (await oneReview((await oneReply(entityId)).reviewId))
+        .businessId;
+    else if (entityType === "observation") {
+      const [point] = await db
+        .select({ reviewId: observations.reviewId })
+        .from(observations)
+        .where(eq(observations.id, entityId));
+      if (point) businessId = (await oneReview(point.reviewId)).businessId;
+    }
+  }
   await db.insert(events).values({
     id: randomUUID(),
     type,
@@ -63,6 +90,7 @@ async function event(
     actor,
     role,
     metadata,
+    businessId,
   });
 }
 async function oneReview(id: string) {
@@ -106,17 +134,102 @@ function safeProviderError(error: unknown) {
 export async function recalculatePriority(themeId: string) {
   const theme = await oneTheme(themeId);
   const result = await db.execute(
-    sql`SELECT count(DISTINCT o.review_id)::integer AS count FROM theme_memberships m JOIN observations o ON o.id=m.observation_id WHERE m.theme_id=${themeId}`,
+    sql`SELECT count(DISTINCT o.review_id)::integer AS count,
+      count(DISTINCT o.review_id) FILTER (WHERE r.reviewed_at >= now() - (${priorityRules.recentDays} * interval '1 day'))::integer AS recent
+      FROM theme_memberships m JOIN observations o ON o.id=m.observation_id
+      JOIN reviews r ON r.id=o.review_id WHERE m.theme_id=${themeId}`,
   );
   const count = Number(result.rows[0]?.count ?? 0);
-  const p = priorityFor(theme.type, count, theme.severity);
+  const recent = Number(result.rows[0]?.recent ?? 0);
+  const [resolved] = await db
+    .select({ id: tasks.id })
+    .from(tasks)
+    .where(and(eq(tasks.themeId, themeId), eq(tasks.status, "resolved")))
+    .limit(1);
+  const p = priorityFor(
+    theme.type,
+    count,
+    theme.severity,
+    recent,
+    Boolean(resolved && theme.status === "recurrence"),
+  );
   await db
     .update(themes)
     .set({ priority: p.priority, priorityReason: p.reason, updatedAt: now() })
     .where(eq(themes.id, themeId));
   return count;
 }
-export async function getState() {
+async function refreshRecurrenceStatus(themeId: string) {
+  const theme = await oneTheme(themeId);
+  const [previous] = await db
+    .select({ resolvedAt: tasks.resolvedAt })
+    .from(tasks)
+    .where(and(eq(tasks.themeId, themeId), eq(tasks.status, "resolved")))
+    .orderBy(desc(tasks.resolvedAt))
+    .limit(1);
+  if (!previous?.resolvedAt || theme.status === "dismissed") {
+    await recalculatePriority(themeId);
+    return;
+  }
+  const [newer] = await db
+    .select({ id: observations.id })
+    .from(memberships)
+    .innerJoin(observations, eq(observations.id, memberships.observationId))
+    .innerJoin(reviews, eq(reviews.id, observations.reviewId))
+    .where(
+      and(
+        eq(memberships.themeId, themeId),
+        sql`${reviews.createdAt} > ${previous.resolvedAt}`,
+      ),
+    )
+    .limit(1);
+  const next = newer
+    ? "recurrence"
+    : theme.status === "recurrence"
+      ? "suggested"
+      : theme.status;
+  if (next !== theme.status)
+    await db
+      .update(themes)
+      .set({ status: next, updatedAt: now() })
+      .where(eq(themes.id, themeId));
+  await recalculatePriority(themeId);
+}
+export async function getState(businessId: string = defaultBusinessId) {
+  const [business] = await db
+    .select({ id: businesses.id })
+    .from(businesses)
+    .where(eq(businesses.id, businessId));
+  if (!business) throw new Error("Business not found");
+  const reviewIds = (
+    await db
+      .select({ id: reviews.id })
+      .from(reviews)
+      .where(eq(reviews.businessId, businessId))
+  ).map((row) => row.id);
+  const themeIds = (
+    await db
+      .select({ id: themes.id })
+      .from(themes)
+      .where(eq(themes.businessId, businessId))
+  ).map((row) => row.id);
+  const taskIds = themeIds.length
+    ? (
+        await db
+          .select({ id: tasks.id })
+          .from(tasks)
+          .where(inArray(tasks.themeId, themeIds))
+      ).map((row) => row.id)
+    : [];
+  const reviewWhere = reviewIds.length
+    ? inArray(observations.reviewId, reviewIds)
+    : sql`false`;
+  const themeWhere = themeIds.length
+    ? inArray(memberships.themeId, themeIds)
+    : sql`false`;
+  const taskWhere = taskIds.length
+    ? inArray(handoffs.approvedTaskId, taskIds)
+    : sql`false`;
   const [
     allBusinesses,
     allBranches,
@@ -129,18 +242,48 @@ export async function getState() {
     allHandoffs,
     allReplies,
     allEvents,
+    allEmployees,
   ] = await Promise.all([
     db.select().from(businesses),
-    db.select().from(branches),
-    db.select().from(reviews).orderBy(desc(reviews.reviewedAt)),
-    db.select().from(analysisRuns).orderBy(desc(analysisRuns.createdAt)),
-    db.select().from(observations),
-    db.select().from(themes).orderBy(desc(themes.createdAt)),
-    db.select().from(memberships),
-    db.select().from(tasks),
-    db.select().from(handoffs),
-    db.select().from(replies),
-    db.select().from(events).orderBy(desc(events.createdAt)),
+    db.select().from(branches).where(eq(branches.businessId, businessId)),
+    db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.businessId, businessId))
+      .orderBy(desc(reviews.reviewedAt)),
+    db
+      .select()
+      .from(analysisRuns)
+      .where(
+        reviewIds.length
+          ? inArray(analysisRuns.reviewId, reviewIds)
+          : sql`false`,
+      )
+      .orderBy(desc(analysisRuns.createdAt)),
+    db.select().from(observations).where(reviewWhere),
+    db
+      .select()
+      .from(themes)
+      .where(eq(themes.businessId, businessId))
+      .orderBy(desc(themes.createdAt)),
+    db.select().from(memberships).where(themeWhere),
+    db
+      .select()
+      .from(tasks)
+      .where(themeIds.length ? inArray(tasks.themeId, themeIds) : sql`false`),
+    db.select().from(handoffs).where(taskWhere),
+    db
+      .select()
+      .from(replies)
+      .where(
+        reviewIds.length ? inArray(replies.reviewId, reviewIds) : sql`false`,
+      ),
+    db
+      .select()
+      .from(events)
+      .where(eq(events.businessId, businessId))
+      .orderBy(desc(events.createdAt)),
+    db.select().from(employees).where(eq(employees.businessId, businessId)),
   ]);
   const themeSupport = Object.fromEntries(
     allThemes.map((theme) => [
@@ -152,7 +295,9 @@ export async function getState() {
     mode: aiMode(),
     synthetic: true,
     businesses: allBusinesses,
+    selectedBusinessId: businessId,
     branches: allBranches,
+    employees: allEmployees,
     reviews: allReviews,
     runs: allRuns,
     observations: allObservations,
@@ -167,36 +312,81 @@ export async function getState() {
 }
 export async function intake(input: unknown) {
   const data = intakeSchema.parse(input);
+  const [validBranch] = await db
+    .select({ id: branches.id })
+    .from(branches)
+    .where(
+      and(
+        eq(branches.id, data.branchId),
+        eq(branches.businessId, data.businessId),
+      ),
+    );
+  if (!validBranch)
+    throw new Error("Property does not belong to this business.");
   const existing = await db
-    .select({ id: reviews.id })
+    .select()
     .from(reviews)
     .where(
       and(
-        eq(reviews.businessId, restaurantConfig.businessId),
+        eq(reviews.businessId, data.businessId),
         eq(reviews.source, data.source),
         eq(reviews.sourceReviewId, data.sourceReviewId),
       ),
     )
     .limit(1);
-  if (existing.length)
-    throw new Error(
-      `Duplicate source review ID. Existing review: ${existing[0].id}`,
-    );
+  if (existing.length) {
+    const old = existing[0];
+    if (
+      old.originalText !== data.text ||
+      old.branchId !== data.branchId ||
+      old.rating !== data.rating
+    )
+      throw new Error(
+        `Feed conflict for ${old.id}: source evidence changed. Existing review preserved for manual review.`,
+      );
+    return { reviewId: old.id, duplicate: true };
+  }
   const id = randomUUID();
-  await db.insert(reviews).values({
-    id,
-    businessId: restaurantConfig.businessId,
-    branchId: data.branchId,
-    source: data.source,
-    sourceReviewId: data.sourceReviewId,
-    rating: data.rating,
-    reviewedAt: new Date(data.reviewedAt),
-    originalText: data.text,
-    isSynthetic: true,
-    processingStatus: "pending",
-    processingStage: "saved",
-    language: detectReviewLanguage(data.text),
-  });
+  const inserted = await db
+    .insert(reviews)
+    .values({
+      id,
+      businessId: data.businessId,
+      branchId: data.branchId,
+      source: data.source,
+      sourceReviewId: data.sourceReviewId,
+      rating: data.rating,
+      reviewedAt: new Date(data.reviewedAt),
+      originalText: data.text,
+      isSynthetic: true,
+      processingStatus: "pending",
+      processingStage: "saved",
+      language: detectReviewLanguage(data.text),
+    })
+    .onConflictDoNothing()
+    .returning({ id: reviews.id });
+  if (!inserted.length) {
+    const [old] = await db
+      .select()
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.businessId, data.businessId),
+          eq(reviews.source, data.source),
+          eq(reviews.sourceReviewId, data.sourceReviewId),
+        ),
+      );
+    if (
+      !old ||
+      old.originalText !== data.text ||
+      old.branchId !== data.branchId ||
+      old.rating !== data.rating
+    )
+      throw new Error(
+        "Feed conflict: source evidence changed. Existing review preserved for manual review.",
+      );
+    return { reviewId: old.id, duplicate: true };
+  }
   await event(
     "review_intake",
     "review",
@@ -205,8 +395,65 @@ export async function intake(input: unknown) {
     "demo user",
     "staff",
     { branchId: data.branchId, source: data.source },
+    data.businessId,
   );
   return { reviewId: id };
+}
+
+/** Every route mutation validates the selected workspace before domain work begins. */
+export async function assertActionScope(
+  businessId: string,
+  body: Record<string, unknown>,
+) {
+  const [business] = await db
+    .select({ id: businesses.id })
+    .from(businesses)
+    .where(eq(businesses.id, businessId));
+  if (!business) throw new Error("Unknown business workspace.");
+  if (body.type === "intake") {
+    const data = body.data as Record<string, unknown>;
+    if (data?.businessId !== businessId)
+      throw new Error("Review business does not match selected workspace.");
+  }
+  if (body.reviewId) {
+    if ((await oneReview(String(body.reviewId))).businessId !== businessId)
+      throw new Error("Review belongs to another business.");
+  }
+  if (body.themeId) {
+    if ((await oneTheme(String(body.themeId))).businessId !== businessId)
+      throw new Error("Issue belongs to another business.");
+  }
+  if (body.taskId) {
+    const taskTheme = await oneTheme(
+      (await oneTask(String(body.taskId))).themeId,
+    );
+    if (taskTheme.businessId !== businessId)
+      throw new Error("Task belongs to another business.");
+  }
+  if (body.replyId) {
+    if (
+      (await oneReview((await oneReply(String(body.replyId))).reviewId))
+        .businessId !== businessId
+    )
+      throw new Error("Reply belongs to another business.");
+  }
+  if (Array.isArray(body.replyIds)) {
+    for (const id of body.replyIds) {
+      if (
+        (await oneReview((await oneReply(String(id))).reviewId)).businessId !==
+        businessId
+      )
+        throw new Error("Reply belongs to another business.");
+    }
+  }
+  if (body.observationId) {
+    const [point] = await db
+      .select({ reviewId: observations.reviewId })
+      .from(observations)
+      .where(eq(observations.id, String(body.observationId)));
+    if (!point || (await oneReview(point.reviewId)).businessId !== businessId)
+      throw new Error("Observation belongs to another business.");
+  }
 }
 
 export async function analyzeReview(reviewId: string) {
@@ -246,7 +493,7 @@ export async function analyzeReview(reviewId: string) {
     let useful: boolean;
     let inputs: ObservationInput[] = [];
     if (aiMode() === "fixture") {
-      fixture = fixtureForExactText(review.originalText);
+      fixture = fixtureForExactText(review.originalText, review.businessId);
       if (!fixture) {
         await db.insert(analysisRuns).values({
           id: randomUUID(),
@@ -433,6 +680,28 @@ export async function analyzeReview(reviewId: string) {
         .where(eq(reviews.id, reviewId));
     });
     for (const themeId of changedThemes) await recalculatePriority(themeId);
+    for (const themeId of changedThemes) {
+      const [previous] = await db
+        .select()
+        .from(tasks)
+        .where(and(eq(tasks.themeId, themeId), eq(tasks.status, "resolved")))
+        .orderBy(desc(tasks.resolvedAt))
+        .limit(1);
+      if (
+        isPossibleRecurrence(review.createdAt, previous?.resolvedAt ?? null)
+      ) {
+        await refreshRecurrenceStatus(themeId);
+        await event(
+          "possible_recurrence",
+          "theme",
+          themeId,
+          "New related review arrived after a verified resolution; owner should inspect the evidence.",
+          "system",
+          "system",
+          { reviewId, priorTaskId: previous.id },
+        );
+      }
+    }
     await event(
       "analysis_completed",
       "review",
@@ -593,8 +862,8 @@ export async function correctMembership(
         confirmation: "owner_confirmed",
       });
   });
-  if (old) await recalculatePriority(old.themeId);
-  if (destinationThemeId) await recalculatePriority(destinationThemeId);
+  if (old) await refreshRecurrenceStatus(old.themeId);
+  if (destinationThemeId) await refreshRecurrenceStatus(destinationThemeId);
   await event(
     "membership_corrected",
     "observation",
@@ -655,11 +924,24 @@ export async function proposeTask(themeId: string, role: string) {
   const theme = await oneTheme(themeId);
   if (theme.type !== "operational_issue" || theme.status === "dismissed")
     throw new Error("Only an active operational issue can have a repair task.");
+  if ((await recalculatePriority(themeId)) < 1)
+    throw new Error(
+      "An operational task needs at least one supporting source review.",
+    );
   const [existing] = await db
     .select()
     .from(tasks)
-    .where(eq(tasks.themeId, themeId));
-  if (existing) return existing;
+    .where(eq(tasks.themeId, themeId))
+    .orderBy(desc(tasks.proposedAt));
+  if (
+    existing &&
+    !["resolved", "rejected", "deferred"].includes(existing.status)
+  )
+    return existing;
+  if (existing?.status === "resolved" && theme.status !== "recurrence")
+    throw new Error(
+      "A new related review is needed before opening a recurrence task.",
+    );
   const id = randomUUID();
   await db.insert(tasks).values({
     id,
@@ -669,6 +951,7 @@ export async function proposeTask(themeId: string, role: string) {
     description: `Inspect the evidence for ${theme.title.toLowerCase()} and record what was actually done.`,
     assigneeRole: "floor manager",
     status: "proposed",
+    recurrenceOfTaskId: existing?.status === "resolved" ? existing.id : null,
   });
   await event(
     "task_proposed",
@@ -683,7 +966,13 @@ export async function proposeTask(themeId: string, role: string) {
 export async function editTask(
   taskId: string,
   role: string,
-  input: { title: string; description: string; assigneeRole: string },
+  input: {
+    title: string;
+    description: string;
+    assigneeRole: string;
+    assigneeId?: string;
+    dueAt?: string;
+  },
 ) {
   requireOwner(role);
   const task = await oneTask(taskId);
@@ -693,9 +982,28 @@ export async function editTask(
     assigneeRole = input.assigneeRole.trim();
   if (!title || !description || !assigneeRole)
     throw new Error("Task title, description, and assignee are required.");
+  const employee = input.assigneeId
+    ? (
+        await db
+          .select()
+          .from(employees)
+          .where(eq(employees.id, input.assigneeId))
+      )[0]
+    : null;
+  if (input.assigneeId && (!employee || employee.branchId !== task.branchId))
+    throw new Error("Select an employee from this property.");
+  const dueAt = input.dueAt ? new Date(input.dueAt) : null;
+  if (dueAt && Number.isNaN(dueAt.getTime()))
+    throw new Error("Invalid due date.");
   await db
     .update(tasks)
-    .set({ title, description, assigneeRole })
+    .set({
+      title,
+      description,
+      assigneeRole,
+      assigneeId: employee?.id ?? null,
+      dueAt,
+    })
     .where(eq(tasks.id, taskId));
   await event(
     "task_edited",
@@ -729,6 +1037,19 @@ export async function decideTask(
     return await oneTask(taskId);
   }
   const theme = await oneTheme(task.themeId);
+  const [business] = await db
+    .select()
+    .from(businesses)
+    .where(eq(businesses.id, theme.businessId));
+  if (!task.assigneeId)
+    throw new Error("Select a fictional employee before approval.");
+  if (!task.dueAt) throw new Error("Set a due date before approving the task.");
+  const [employee] = await db
+    .select()
+    .from(employees)
+    .where(eq(employees.id, task.assigneeId));
+  if (!employee || employee.branchId !== theme.branchId)
+    throw new Error("Assigned employee is not at this property.");
   const evidence = await db
     .select({
       reviewId: observations.reviewId,
@@ -738,11 +1059,13 @@ export async function decideTask(
     .innerJoin(observations, eq(observations.id, memberships.observationId))
     .where(eq(memberships.themeId, task.themeId));
   const payload = {
-    business: restaurantConfig.businessName,
+    business: business.name,
     branch: theme.branchId,
     title: task.title,
     description: task.description,
     assigneeRole: task.assigneeRole,
+    assignee: employee.name,
+    dueAt: task.dueAt?.toISOString() ?? null,
     evidence,
     approvedBy: "demo owner",
     approvedAt: now().toISOString(),
@@ -777,6 +1100,7 @@ export async function decideTask(
       type: "task_approved",
       entityType: "task",
       entityId: taskId,
+      businessId: theme.businessId,
       description: "Owner approved the task proposal.",
       metadata: { evidenceCount: evidence.length },
     });
@@ -787,32 +1111,97 @@ export async function decideTask(
       type: "handoff_simulated",
       entityType: "task",
       entityId: taskId,
+      businessId: theme.businessId,
       description: "Simulated Orbyte integration handoff saved locally.",
     });
   });
   return await oneTask(taskId);
 }
-export async function resolveTask(taskId: string, role: string, note: string) {
+export async function startTask(
+  taskId: string,
+  role: string,
+  employeeId: string,
+) {
+  const task = await oneTask(taskId);
+  if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
+    throw new Error("Only the assigned employee can start this task.");
+  requireTransition(task.status, ["approved_open"], "in_progress");
+  await db
+    .update(tasks)
+    .set({ status: "in_progress" })
+    .where(eq(tasks.id, taskId));
+  await event(
+    "task_started",
+    "task",
+    taskId,
+    "Assigned employee started the work.",
+    role === "owner" ? "demo owner" : employeeId,
+    role,
+  );
+}
+export async function reportTask(
+  taskId: string,
+  role: string,
+  employeeId: string,
+  note: string,
+) {
+  const task = await oneTask(taskId);
+  if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
+    throw new Error("Only the assigned employee can report on this task.");
+  requireTransition(task.status, ["approved_open", "in_progress"], "reported");
+  if (note.trim().length < 10)
+    throw new Error("A work report of at least 10 characters is required.");
+  await db
+    .update(tasks)
+    .set({
+      status: "reported",
+      employeeReport: note.trim(),
+      reportedAt: now(),
+      reportedBy: role === "owner" ? "demo owner" : employeeId,
+    })
+    .where(eq(tasks.id, taskId));
+  await event(
+    "task_reported",
+    "task",
+    taskId,
+    "Work reported; waiting for managerial verification.",
+    role === "owner" ? "demo owner" : employeeId,
+    role,
+    { note: note.trim() },
+  );
+}
+export async function verifyTask(taskId: string, role: string, note: string) {
   requireOwner(role);
   const task = await oneTask(taskId);
-  requireTransition(task.status, ["approved_open"], "resolved");
+  requireTransition(task.status, ["reported"], "resolved");
+  if (!task.employeeReport) throw new Error("Employee work report is missing.");
   if (note.trim().length < 10)
     throw new Error(
-      "A resolution note of at least 10 characters is required. Describe what actually happened.",
+      "Verification note must describe what the manager checked.",
     );
   await db
     .update(tasks)
-    .set({ status: "resolved", resolutionNote: note.trim(), resolvedAt: now() })
+    .set({
+      status: "resolved",
+      resolutionNote: note.trim(),
+      resolvedAt: now(),
+      verifiedAt: now(),
+      verifiedBy: "demo owner",
+    })
     .where(eq(tasks.id, taskId));
   await event(
-    "task_resolved",
+    "task_verified",
     "task",
     taskId,
-    "Owner recorded the completed work and a resolution note.",
+    "Manager verified the reported work and recorded the confirmed resolution.",
     "demo owner",
     "owner",
-    { note: note.trim() },
+    { report: task.employeeReport, verification: note.trim() },
   );
+  return await oneTask(taskId);
+}
+export async function resolveTask(taskId: string, role: string, note: string) {
+  return verifyTask(taskId, role, note);
 }
 export async function createReply(
   reviewId: string,
@@ -828,6 +1217,9 @@ export async function createReply(
     .where(eq(replies.reviewId, reviewId));
   if (existing) return existing;
   const review = await oneReview(reviewId);
+  const theme = await oneTheme(task.themeId);
+  if (theme.businessId !== review.businessId)
+    throw new Error("Review and task belong to different businesses.");
   const linked = await db
     .select({ id: observations.id })
     .from(observations)
@@ -841,6 +1233,11 @@ export async function createReply(
     .limit(1);
   if (!linked.length)
     throw new Error("Review is not evidence for this resolved task.");
+  const unresolved = await unresolvedReviewComplaints(reviewId, task.themeId);
+  const [business] = await db
+    .select()
+    .from(businesses)
+    .where(eq(businesses.id, review.businessId));
   let text: string,
     provider: string,
     model: string | null = null;
@@ -848,12 +1245,14 @@ export async function createReply(
     const draft = await draftWithOpenAI(
       review.originalText,
       task.resolutionNote!,
+      business.name,
+      unresolved,
     );
     text = draft.text;
     provider = "openai";
     model = modelName();
   } else {
-    text = `Thank you for sharing your experience at Nusa Table. We appreciate your feedback about the seating${/fried rice|nasi goreng/i.test(review.originalText) ? " and your kind words about the fried rice" : ""}. Our team has reviewed the concern and recorded the action taken. Thank you for helping us improve.`;
+    text = `Thank you for sharing your experience at ${business.name}. We reviewed your feedback about ${theme.title.toLowerCase()}. Our team has verified this work: ${task.resolutionNote!.trim()}${unresolved.length ? ` We are still reviewing your other concern${unresolved.length === 1 ? "" : "s"} and cannot yet claim those are resolved.` : ""} Thank you for helping us improve.`;
     provider = "fixture";
   }
   const id = randomUUID();
@@ -869,6 +1268,7 @@ export async function createReply(
       mode: aiMode(),
       model,
       status: "draft",
+      partialWarning: partialReplyWarning(unresolved),
     })
     .onConflictDoNothing();
   await event(
@@ -881,11 +1281,55 @@ export async function createReply(
   );
   return await oneReply(id);
 }
+async function unresolvedReviewComplaints(
+  reviewId: string,
+  resolvedThemeId: string,
+) {
+  const points = await db
+    .select({
+      id: observations.id,
+      summary: observations.summary,
+      themeId: memberships.themeId,
+    })
+    .from(observations)
+    .leftJoin(memberships, eq(memberships.observationId, observations.id))
+    .where(
+      and(
+        eq(observations.reviewId, reviewId),
+        eq(observations.kind, "operational_complaint"),
+      ),
+    );
+  const unresolved: string[] = [];
+  for (const point of points) {
+    if (point.themeId === resolvedThemeId) continue;
+    if (!point.themeId) {
+      unresolved.push(point.summary);
+      continue;
+    }
+    const [fixed] = await db
+      .select({ id: tasks.id })
+      .from(tasks)
+      .where(
+        and(eq(tasks.themeId, point.themeId), eq(tasks.status, "resolved")),
+      )
+      .limit(1);
+    if (!fixed) unresolved.push(point.summary);
+  }
+  return unresolved;
+}
 export async function editReply(replyId: string, role: string, text: string) {
   requireOwner(role);
   const reply = await oneReply(replyId);
+  if (reply.status === "simulated_published")
+    throw new Error(
+      "A simulated published reply is a historical record and cannot be edited.",
+    );
   if (text.trim().length < 10 || text.length > 1200)
     throw new Error("Reply must be 10–1200 characters.");
+  const unresolved = await unresolvedReviewComplaints(
+    reply.reviewId,
+    reply.themeId,
+  );
   await db
     .update(replies)
     .set({
@@ -894,6 +1338,8 @@ export async function editReply(replyId: string, role: string, text: string) {
       editedAt: now(),
       approvedAt: null,
       approver: null,
+      partialApproved: false,
+      partialWarning: partialReplyWarning(unresolved),
     })
     .where(eq(replies.id, replyId));
   await event(
@@ -907,19 +1353,36 @@ export async function editReply(replyId: string, role: string, text: string) {
     "owner",
   );
 }
-export async function approveReply(replyId: string, role: string) {
+export async function approveReply(
+  replyId: string,
+  role: string,
+  partialApproved = false,
+) {
   requireOwner(role);
   const reply = await oneReply(replyId);
   if (reply.status === "approved_ready") return reply;
   requireTransition(reply.status, ["draft"], "approved_ready");
   const task = await oneTask(reply.taskId);
   canDraftReply(task.status, task.resolutionNote);
+  const unresolved = await unresolvedReviewComplaints(
+    reply.reviewId,
+    reply.themeId,
+  );
+  if (unresolved.length && !reply.partialWarning) {
+    await db
+      .update(replies)
+      .set({ partialWarning: partialReplyWarning(unresolved) })
+      .where(eq(replies.id, replyId));
+  }
+  assertReplyApproval(reply.text, unresolved, partialApproved);
   await db
     .update(replies)
     .set({
       status: "approved_ready",
       approvedAt: now(),
       approver: "demo owner",
+      partialApproved: unresolved.length > 0,
+      partialWarning: partialReplyWarning(unresolved),
     })
     .where(eq(replies.id, replyId));
   await event(
@@ -932,11 +1395,57 @@ export async function approveReply(replyId: string, role: string) {
   );
   return await oneReply(replyId);
 }
-export async function analyzePendingBatch(limit = 5) {
+export async function approveReplyBatch(replyIds: unknown, role: string) {
+  requireOwner(role);
+  if (
+    !Array.isArray(replyIds) ||
+    replyIds.length < 1 ||
+    replyIds.length > 10 ||
+    !replyIds.every((id) => typeof id === "string")
+  )
+    throw new Error("Select 1–10 replies for batch review.");
+  const unique = [...new Set(replyIds)];
+  for (const id of unique) {
+    const reply = await oneReply(id);
+    const theme = await oneTheme(reply.themeId);
+    if (
+      !canBatchApproveReply(reply.status, reply.partialWarning, theme.severity)
+    )
+      throw new Error(
+        "Only unambiguous lower-severity drafts can be batch approved. Review this reply individually.",
+      );
+  }
+  for (const id of unique) await approveReply(id, role);
+  return { approved: unique.length };
+}
+export async function simulatePublish(replyId: string, role: string) {
+  requireOwner(role);
+  const reply = await oneReply(replyId);
+  requireTransition(reply.status, ["approved_ready"], "simulated_published");
+  await db
+    .update(replies)
+    .set({ status: "simulated_published", publishedAt: now() })
+    .where(eq(replies.id, replyId));
+  await event(
+    "reply_simulated_published",
+    "reply",
+    replyId,
+    "Reply marked as simulated published locally. No review platform was contacted.",
+    "demo owner",
+    "owner",
+  );
+  return await oneReply(replyId);
+}
+export async function analyzePendingBatch(businessId: string, limit = 5) {
   const pending = await db
     .select({ id: reviews.id })
     .from(reviews)
-    .where(eq(reviews.processingStatus, "pending"))
+    .where(
+      and(
+        eq(reviews.processingStatus, "pending"),
+        eq(reviews.businessId, businessId),
+      ),
+    )
     .limit(Math.max(1, Math.min(limit, 5)));
   const results = [];
   for (const item of pending) results.push(await analyzeReview(item.id));

@@ -29,12 +29,9 @@ export type ObservationInput = z.infer<typeof observationSchema>;
 export type Screening = z.infer<typeof screeningSchema>;
 export type Match = z.infer<typeof matchingSchema>;
 export const intakeSchema = z.object({
-  branchId: z.enum(["sunway", "bangsar"]),
-  source: z.enum([
-    "Demo Review Portal A",
-    "Demo Review Portal B",
-    "Demo Feedback Form",
-  ]),
+  businessId: z.string().min(1),
+  branchId: z.string().min(1),
+  source: z.string().min(3).max(100),
   sourceReviewId: z.string().min(3).max(100),
   rating: z.number().int().min(1).max(5),
   reviewedAt: z.iso.datetime({ offset: true }),

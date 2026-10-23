@@ -1,0 +1,4042 @@
+[
+  {
+    "reviewId": "hotel-001",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The air conditioning in room 202 did not cool the room overnight.",
+        "summary": "The air conditioning in room 202 did not cool the room overnight",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-002",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Room 203 stayed warm even with the AC set low.",
+        "summary": "Room 203 stayed warm even with the AC set low",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-003",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The aircon in room 204 kept blowing warm air.",
+        "summary": "The aircon in room 204 kept blowing warm air",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-004",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Penghawa dingin bilik 205 tidak sejuk sepanjang malam.",
+        "summary": "Penghawa dingin bilik 205 tidak sejuk sepanjang malam",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "Check-in staff explained everything clearly.",
+        "summary": "Check-in staff explained everything clearly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-005",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Our room 206 was stuffy because the cooling was weak.",
+        "summary": "Our room 206 was stuffy because the cooling was weak",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-006",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "AC bilik 207 tak sejuk and we barely slept.",
+        "summary": "AC bilik 207 tak sejuk and we barely slept",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-007",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The air conditioning in room 208 did not cool the room overnight.",
+        "summary": "The air conditioning in room 208 did not cool the room overnight",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "We noticed a small insect near the bathroom sink in room 208.",
+        "summary": "We noticed a small insect near the bathroom sink in room 208",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-008",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Room 209 stayed warm even with the AC set low.",
+        "summary": "Room 209 stayed warm even with the AC set low",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "Staf kaunter sangat mesra.",
+        "summary": "Staf kaunter sangat mesra",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-009",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The aircon in room 210 kept blowing warm air.",
+        "summary": "The aircon in room 210 kept blowing warm air",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-010",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Penghawa dingin bilik 211 tidak sejuk sepanjang malam.",
+        "summary": "Penghawa dingin bilik 211 tidak sejuk sepanjang malam",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-011",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Our room 212 was stuffy because the cooling was weak.",
+        "summary": "Our room 212 was stuffy because the cooling was weak",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-012",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "AC bilik 213 tak sejuk and we barely slept.",
+        "summary": "AC bilik 213 tak sejuk and we barely slept",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The front desk team were welcoming.",
+        "summary": "The front desk team were welcoming",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-013",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The air conditioning in room 214 did not cool the room overnight.",
+        "summary": "The air conditioning in room 214 did not cool the room overnight",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-014",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Room 215 stayed warm even with the AC set low.",
+        "summary": "Room 215 stayed warm even with the AC set low",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "We noticed a small insect near the bathroom sink in room 215.",
+        "summary": "We noticed a small insect near the bathroom sink in room 215",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-015",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The aircon in room 216 kept blowing warm air.",
+        "summary": "The aircon in room 216 kept blowing warm air",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-016",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Penghawa dingin bilik 217 tidak sejuk sepanjang malam.",
+        "summary": "Penghawa dingin bilik 217 tidak sejuk sepanjang malam",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "Check-in staff explained everything clearly.",
+        "summary": "Check-in staff explained everything clearly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-017",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Our room 218 was stuffy because the cooling was weak.",
+        "summary": "Our room 218 was stuffy because the cooling was weak",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-018",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "AC bilik 219 tak sejuk and we barely slept.",
+        "summary": "AC bilik 219 tak sejuk and we barely slept",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-019",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The air conditioning in room 220 did not cool the room overnight.",
+        "summary": "The air conditioning in room 220 did not cool the room overnight",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-020",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Room 221 stayed warm even with the AC set low.",
+        "summary": "Room 221 stayed warm even with the AC set low",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "Staf kaunter sangat mesra.",
+        "summary": "Staf kaunter sangat mesra",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-021",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The aircon in room 222 kept blowing warm air.",
+        "summary": "The aircon in room 222 kept blowing warm air",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "We noticed a small insect near the bathroom sink in room 222.",
+        "summary": "We noticed a small insect near the bathroom sink in room 222",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-022",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Penghawa dingin bilik 223 tidak sejuk sepanjang malam.",
+        "summary": "Penghawa dingin bilik 223 tidak sejuk sepanjang malam",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-023",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Our room 224 was stuffy because the cooling was weak.",
+        "summary": "Our room 224 was stuffy because the cooling was weak",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-024",
+    "useful": true,
+    "observations": [
+      {
+        "category": "room_comfort",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "AC bilik 225 tak sejuk and we barely slept.",
+        "summary": "AC bilik 225 tak sejuk and we barely slept",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-central-ac"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The front desk team were welcoming.",
+        "summary": "The front desk team were welcoming",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-025",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Ada serangga kecil di bilik air, room 326.",
+        "summary": "Ada serangga kecil di bilik air, room 326",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-026",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "An insect was crawling near the sink in room 327.",
+        "summary": "An insect was crawling near the sink in room 327",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-027",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "I saw a small insect by the bathroom drain in room 328.",
+        "summary": "I saw a small insect by the bathroom drain in room 328",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-028",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Ada serangga kecil di bilik air, room 329.",
+        "summary": "Ada serangga kecil di bilik air, room 329",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-029",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "An insect was crawling near the sink in room 330.",
+        "summary": "An insect was crawling near the sink in room 330",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-030",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "I saw a small insect by the bathroom drain in room 331.",
+        "summary": "I saw a small insect by the bathroom drain in room 331",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-031",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Ada serangga kecil di bilik air, room 332.",
+        "summary": "Ada serangga kecil di bilik air, room 332",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-032",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "An insect was crawling near the sink in room 333.",
+        "summary": "An insect was crawling near the sink in room 333",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-033",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "I saw a small insect by the bathroom drain in room 334.",
+        "summary": "I saw a small insect by the bathroom drain in room 334",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-034",
+    "useful": true,
+    "observations": [
+      {
+        "category": "cleanliness",
+        "aspect": "insect_sighting",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Ada serangga kecil di bilik air, room 335.",
+        "summary": "Ada serangga kecil di bilik air, room 335",
+        "normalizedDescription": "insect sighting feedback",
+        "expectedThemeId": "hotel-central-insects"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-035",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-036",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-037",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-038",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-039",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-040",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-041",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-042",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-043",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-044",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-045",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-046",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-047",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-048",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-049",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-050",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-051",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-052",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-053",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-054",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-055",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-056",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-057",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-058",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-059",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-060",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-061",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-062",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-063",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-064",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-065",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-066",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-067",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-068",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-069",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-070",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-071",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-072",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-073",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-074",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-075",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-076",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-077",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-078",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-079",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-080",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-081",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-082",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-083",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-084",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-085",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-086",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-087",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-088",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-089",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-090",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-091",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-092",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-093",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-094",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-095",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-096",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-097",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-098",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-099",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-100",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-101",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-102",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-103",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-104",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-105",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-106",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-107",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-108",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-109",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-110",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-111",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-112",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-113",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-114",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-115",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-116",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-117",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-118",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-119",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-120",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-121",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-122",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-123",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-124",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-125",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-126",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-127",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-128",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-129",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-130",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-131",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-132",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-133",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-134",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-135",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-136",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-137",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-138",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-139",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-140",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-141",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-142",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-143",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-144",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-145",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-146",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-147",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-148",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-149",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-150",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-151",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-152",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-153",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-154",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-155",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-156",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-157",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-158",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-159",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-160",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-161",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-162",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-163",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-164",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-165",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-166",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-167",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-168",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-169",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-170",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-171",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-172",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-173",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-174",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-175",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-176",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-177",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-178",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-179",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-180",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-181",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-182",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-183",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-184",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-185",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-186",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-187",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-188",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-189",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-190",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-191",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-192",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-193",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-194",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-195",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-196",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-197",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-198",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-199",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-200",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-201",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-202",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-203",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Traffic noise came through the window late at night.",
+        "summary": "Traffic noise came through the window late at night",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-central-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-204",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-205",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-206",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "price",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The breakfast surcharge felt high for the choices offered.",
+        "summary": "The breakfast surcharge felt high for the choices offered",
+        "normalizedDescription": "price feedback",
+        "expectedThemeId": "hotel-central-pricing"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-207",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-208",
+    "useful": false,
+    "observations": []
+  },
+  {
+    "reviewId": "hotel-209",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "beds",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The mattress was firm and comfortable.",
+        "summary": "The mattress was firm and comfortable",
+        "normalizedDescription": "beds feedback",
+        "expectedThemeId": "hotel-central-beds"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-210",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-211",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The bathroom mirror still had marks when we entered.",
+        "summary": "The bathroom mirror still had marks when we entered",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-central-cleanliness"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-212",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Please add another vegetarian breakfast option.",
+        "summary": "Please add another vegetarian breakfast option",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-central-breakfast"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-213",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-214",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "staff_helpfulness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The concierge helped us find an accessible taxi.",
+        "summary": "The concierge helped us find an accessible taxi",
+        "normalizedDescription": "staff helpfulness feedback",
+        "expectedThemeId": "hotel-central-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-215",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "pool",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "Longer pool hours would help guests arriving late.",
+        "summary": "Longer pool hours would help guests arriving late",
+        "normalizedDescription": "pool feedback",
+        "expectedThemeId": "hotel-central-pool"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-216",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      },
+      {
+        "category": "service",
+        "aspect": "front_desk",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The reception staff greeted us warmly.",
+        "summary": "The reception staff greeted us warmly",
+        "normalizedDescription": "front desk feedback",
+        "expectedThemeId": "hotel-garden-staff-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-217",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "accessibility",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The lift button near our floor was hard to reach from a wheelchair.",
+        "summary": "The lift button near our floor was hard to reach from a wheelchair",
+        "normalizedDescription": "accessibility feedback",
+        "expectedThemeId": "hotel-central-accessibility"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-218",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "wifi",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The Wi-Fi disconnected several times during a video call.",
+        "summary": "The Wi-Fi disconnected several times during a video call",
+        "normalizedDescription": "wifi feedback",
+        "expectedThemeId": "hotel-central-wifi"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-219",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-220",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Check-in took almost forty minutes after the stated arrival time.",
+        "summary": "Check-in took almost forty minutes after the stated arrival time",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-central-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-221",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-222",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Music from the street carried into our room after midnight.",
+        "summary": "Music from the street carried into our room after midnight",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-garden-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-223",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The room and bathroom were spotless on arrival.",
+        "summary": "The room and bathroom were spotless on arrival",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-garden-clean-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-224",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-225",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "amenity",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "A water refill station on each floor would be useful.",
+        "summary": "A water refill station on each floor would be useful",
+        "normalizedDescription": "amenity feedback",
+        "expectedThemeId": "hotel-garden-water"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-226",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
+        "summary": "The AC in room 508 made a loud clicking sound",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-garden-ac-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-227",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-228",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Music from the street carried into our room after midnight.",
+        "summary": "Music from the street carried into our room after midnight",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-garden-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-229",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The room and bathroom were spotless on arrival.",
+        "summary": "The room and bathroom were spotless on arrival",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-garden-clean-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-230",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-231",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "amenity",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "A water refill station on each floor would be useful.",
+        "summary": "A water refill station on each floor would be useful",
+        "normalizedDescription": "amenity feedback",
+        "expectedThemeId": "hotel-garden-water"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-232",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
+        "summary": "The AC in room 508 made a loud clicking sound",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-garden-ac-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-233",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-234",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Music from the street carried into our room after midnight.",
+        "summary": "Music from the street carried into our room after midnight",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-garden-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-235",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The room and bathroom were spotless on arrival.",
+        "summary": "The room and bathroom were spotless on arrival",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-garden-clean-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-236",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-237",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "amenity",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "A water refill station on each floor would be useful.",
+        "summary": "A water refill station on each floor would be useful",
+        "normalizedDescription": "amenity feedback",
+        "expectedThemeId": "hotel-garden-water"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-238",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
+        "summary": "The AC in room 508 made a loud clicking sound",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-garden-ac-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-239",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "breakfast",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The breakfast spread had fresh fruit and warm bread.",
+        "summary": "The breakfast spread had fresh fruit and warm bread",
+        "normalizedDescription": "breakfast feedback",
+        "expectedThemeId": "hotel-garden-breakfast-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-240",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "noise",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "Music from the street carried into our room after midnight.",
+        "summary": "Music from the street carried into our room after midnight",
+        "normalizedDescription": "noise feedback",
+        "expectedThemeId": "hotel-garden-noise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-241",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "cleanliness",
+        "kind": "specific_praise",
+        "sentiment": "positive",
+        "evidenceQuote": "The room and bathroom were spotless on arrival.",
+        "summary": "The room and bathroom were spotless on arrival",
+        "normalizedDescription": "cleanliness feedback",
+        "expectedThemeId": "hotel-garden-clean-praise"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-242",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "check_in",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The check-in queue moved slowly on Saturday afternoon.",
+        "summary": "The check-in queue moved slowly on Saturday afternoon",
+        "normalizedDescription": "check in feedback",
+        "expectedThemeId": "hotel-garden-checkin"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-243",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "amenity",
+        "kind": "suggestion",
+        "sentiment": "neutral",
+        "evidenceQuote": "A water refill station on each floor would be useful.",
+        "summary": "A water refill station on each floor would be useful",
+        "normalizedDescription": "amenity feedback",
+        "expectedThemeId": "hotel-garden-water"
+      }
+    ]
+  },
+  {
+    "reviewId": "hotel-244",
+    "useful": true,
+    "observations": [
+      {
+        "category": "guest_experience",
+        "aspect": "air_conditioning",
+        "kind": "operational_complaint",
+        "sentiment": "negative",
+        "evidenceQuote": "The AC in room 508 made a loud clicking sound.",
+        "summary": "The AC in room 508 made a loud clicking sound",
+        "normalizedDescription": "air conditioning feedback",
+        "expectedThemeId": "hotel-garden-ac-noise"
+      }
+    ]
+  }
+]

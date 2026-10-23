@@ -89,10 +89,10 @@ describe("review and workflow rules", () => {
       { themeId: "seat", observationId: "c" },
     ];
     expect(distinctReviewCount(points, membership, "seat")).toBe(2);
-    expect(priorityFor("operational_issue", 2, 3).priority).toBe("high");
+    expect(priorityFor("operational_issue", 2, 3).priority).toBe("urgent");
     const corrected = membership.filter((item) => item.observationId !== "c");
     expect(distinctReviewCount(points, corrected, "seat")).toBe(1);
-    expect(priorityFor("operational_issue", 1, 3).priority).toBe("low");
+    expect(priorityFor("operational_issue", 1, 3).priority).toBe("urgent");
   });
   it("enforces owner decisions and resolution before reply", () => {
     expect(() => requireOwner("staff")).toThrow("Owner approval");
