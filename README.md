@@ -4,6 +4,30 @@ Visit2Value is a synthetic review-to-resolution workspace for small businesses. 
 
 Every business, employee, guest review, source label, and outcome in this repository is team-created fiction. All three hotel review sources are **simulated**. No source is scraped or connected. The Orbyte handoff and reply publication are local simulations; there is no Orbyte or review-platform API call. The role switcher demonstrates workflow rules, but it is not production authentication.
 
+## Team Information
+
+| Field                  | Details                                     |
+| ---------------------- | ------------------------------------------- |
+| **Team Name**          | AIx Global                                  |
+| **Team Domain**        | Domain 2                                    |
+| **SDG Track (1–17)**   | SDG 8 — Decent Work and Economic Growth     |
+| **Team Leader**        | Bhone Myat Paing Soe                        |
+| **University**         | Monash University, Sunway University, Univeristy of Nottingham Malaysia |
+| **Number of Members**  | 4                                           |
+
+## Links
+
+| Resource          | Link                                           |
+| ----------------- | ---------------------------------------------- |
+| GitHub Repository | https://github.com/Mint3Ds/AiX-global          |
+| Live Demo         | insert youtube link here                       |
+| RunPod Endpoint   | insert runpoint endpoint here                  |
+| Slide Deck        | https://canva.link/gjz6konw9zie5y9             |
+| Demo Video        | insert youtube link here                       |
+
+---
+
+
 ## Run locally with teammates
 
 Requires Node.js 22.12+ (or Node 24+) and PostgreSQL 16+. Clone the shared GitHub repository, then run:
