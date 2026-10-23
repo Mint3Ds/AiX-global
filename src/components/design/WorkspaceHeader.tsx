@@ -75,7 +75,7 @@ export function WorkspaceHeader({
         </div>
       </header>
 
-      <nav aria-label="Main navigation">
+      <nav className="main-nav" aria-label="Main navigation">
         {tabs.map((item) => (
           <button
             key={item}
