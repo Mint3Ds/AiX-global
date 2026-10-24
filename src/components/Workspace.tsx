@@ -1446,11 +1446,11 @@ export function Workspace() {
                         )}
                       {["approved_open", "in_progress"].includes(task.status) &&
                         (owner || task.assigneeId === employeeId) && (
-                          <div className="form">
+                          <div className="task-action-form">
                             <label>
-                              Employee work report
+                              <span>Employee work report</span>
                               <textarea
-                                rows={4}
+                                rows={3}
                                 value={workReport}
                                 onChange={(event) =>
                                   setWorkReport(event.target.value)
@@ -1477,11 +1477,11 @@ export function Workspace() {
                         </p>
                       )}
                       {task.status === "reported" && owner && (
-                        <div className="form">
+                        <div className="task-action-form">
                           <label>
-                            What did you verify?
+                            <span>What did you verify?</span>
                             <textarea
-                              rows={4}
+                              rows={3}
                               value={resolution}
                               onChange={(event) =>
                                 setResolution(event.target.value)

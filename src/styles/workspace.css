@@ -74,6 +74,8 @@ textarea::placeholder {
 }
 .form > button {
   width: max-content;
+  align-self: end;
+  height: fit-content;
 }
 .split {
   display: grid;
@@ -123,7 +125,7 @@ main .issue-category-tabs button:not(.review-row) {
   font-size: 13px;
 }
 main .issue-category-tabs button.active:not(.review-row) {
-  border-color: var(--violet);
+  border-color: #252525;
   background: var(--paper-deep);
 }
 main .issue-category-tabs button span {
@@ -215,8 +217,8 @@ main .page-controls button.secondary:not(:disabled):hover {
 }
 .review-row:hover,
 .review-row.chosen {
-  border-color: #9bc7ef;
-  background: var(--violet-light);
+  border-color: #454541;
+  background: var(--surface-alt);
 }
 .review-row b {
   font-weight: 600;
@@ -367,7 +369,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .detail blockquote.evidence-quote {
   margin: 12px 0;
   padding: 0 0 0 14px;
-  border-left-color: var(--violet);
+  border-left-color: #252525;
   border-radius: 0;
   background: transparent;
   font-size: 16px;
@@ -433,7 +435,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   min-height: 44px;
   align-items: center;
   cursor: pointer;
-  color: var(--violet);
+  color: #252525;
   font-size: 13px;
   font-weight: 550;
 }
@@ -482,7 +484,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .detail blockquote.review-original {
   margin: 0 0 30px;
   padding: 20px 22px;
-  border-left-color: var(--violet);
+  border-left-color: #252525;
   background: var(--surface-alt);
   font-size: 17px;
   line-height: 1.65;

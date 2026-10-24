@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Visit2Value",
-  description: "Synthetic customer reviews into owner-approved actions",
+  title: "Clarity",
+  description: "Review intelligence workspace",
 };
 export default function RootLayout({
   children,

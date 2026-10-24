@@ -7,8 +7,8 @@
   --ink: #1d1d1f;
   --muted: #6e6e73;
   --line: #d2d2d7;
-  --violet: #0071e3;
-  --violet-light: #e8f2fc;
+  --violet: #252525;
+  --violet-light: #f5f5f3;
   --violet-on-dark: #ffffff;
   --live: #e8f5ea;
   --warning: #fff4d6;
@@ -43,10 +43,10 @@ button {
   cursor: pointer;
 }
 :focus-visible {
-  outline: 3px solid var(--violet);
+  outline: 2px solid #252525;
   outline-offset: 2px;
 }
 ::selection {
-  background: #cfe5ff;
+  background: #e5e5e1;
   color: var(--ink);
 }

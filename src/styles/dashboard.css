@@ -18,7 +18,7 @@
   font-weight: 650;
 }
 .hero-copy h2 em {
-  color: var(--violet);
+  color: var(--ink);
   font-style: normal;
 }
 .hero-copy > p:not(.eyebrow):not(.hero-footnote) {
@@ -123,10 +123,10 @@
 }
 .machine-output {
   padding: 12px;
-  border: 1px solid #c8ddf2;
+  border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--violet-light);
-  color: #164b7c;
+  background: var(--paper-light);
+  color: var(--ink);
   text-align: center;
   font-size: 11px;
   font-weight: 600;
@@ -261,7 +261,7 @@ main button.reply-review-text {
 }
 main button.reply-review-text:hover {
   background: transparent;
-  color: var(--violet);
+  color: var(--ink);
 }
 .reply-review-option > button {
   min-height: 44px;

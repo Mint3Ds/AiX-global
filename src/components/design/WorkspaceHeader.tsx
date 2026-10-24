@@ -35,17 +35,15 @@ export function WorkspaceHeader({
     <>
       <header className="top">
         <div className="brand-lockup">
-          <div className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <div>
-            <h1>
-              Visit<span>2</span>Value
-            </h1>
-            <p>Review workspace</p>
+          <div className="brand-identity">
+            <img
+              src="/clarity-logo.png"
+              alt="Clarity logo"
+              className="brand-logo-img"
+              height={30}
+            />
+            <h1 className="visually-hidden">Clarity</h1>
+            <p className="brand-tagline">Review workspace</p>
           </div>
         </div>
         <div className="badges">

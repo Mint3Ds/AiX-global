@@ -17,22 +17,36 @@
 .top {
   min-height: 88px;
 }
-.brand-mark {
-  width: 31px;
-  height: 31px;
-  border-radius: 6px;
-  background: #fff;
+.brand-identity {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
 }
-.brand-lockup h1 {
-  font-size: 18px;
-  font-weight: 700;
+.brand-logo-img {
+  height: 28px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  display: block;
 }
-.brand-lockup h1 span {
-  color: #0071e3;
-}
-.brand-lockup p {
+.brand-tagline {
+  margin: 0;
+  color: var(--muted);
   font-size: 11px;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .badges {
   gap: 18px;
@@ -719,3 +733,88 @@ main .issues-page .issue-decision-actions button.secondary:hover {
     margin-left: 0;
   }
 }
+
+main .reviews-page button:not(.link):not(.review-row),
+main .new-review-page button:not(.link),
+main .tasks-page button:not(.link):not(.secondary),
+main .replies-page button:not(.link):not(.secondary),
+.notice button {
+  border-color: #252525;
+  border-radius: 999px;
+  background: #252525;
+  color: #fff;
+  padding: 8px 18px;
+}
+main .reviews-page button:not(.link):not(.review-row):hover,
+main .new-review-page button:not(.link):hover,
+main .tasks-page button:not(.link):not(.secondary):hover,
+main .replies-page button:not(.link):not(.secondary):hover,
+.notice button:hover {
+  border-color: #454545;
+  background: #454545;
+}
+
+/* Task action forms (report & verify) */
+.task-action-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  margin: 16px 0;
+}
+.task-action-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  color: #777a78;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.task-action-form textarea {
+  width: 100%;
+  min-height: 84px;
+  padding: 10px 14px;
+  border: 1px solid #e2e2de;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  box-sizing: border-box;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  resize: vertical;
+}
+.task-action-form textarea:focus {
+  outline: 2px solid #252525;
+  border-color: #252525;
+}
+.task-action-form button {
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  padding: 0 20px !important;
+  border-radius: 999px !important;
+  background: #252525 !important;
+  border-color: #252525 !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 36px !important;
+  white-space: nowrap !important;
+  align-self: flex-start;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.task-action-form button:hover {
+  background: #454545 !important;
+  border-color: #454545 !important;
+}
+
+
