@@ -23,7 +23,7 @@ Every business, employee, guest review, source label, and outcome in this reposi
 | Live Demo          | https://ai-x-global.replit.app/ (password below) |
 | Live Demo Password | AixGlobal123456789                    |
 | Slide Deck         | https://canva.link/gjz6konw9zie5y9    |
-| Demo Video         | insert youtube link here              |
+| Demo Video         | https://youtu.be/laQ-Ig410YM          |
 
 ---
 
