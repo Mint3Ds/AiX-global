@@ -35,7 +35,12 @@ export const intakeSchema = z.object({
   sourceReviewId: z.string().min(3).max(100),
   rating: z.number().int().min(1).max(5),
   reviewedAt: z.iso.datetime({ offset: true }),
-  text: z.string().trim().min(5).max(3000),
+  text: z
+    .string()
+    .max(3000, "Review text must be 3000 characters or fewer.")
+    .refine((text) => text.trim().length >= 5, {
+      message: "Write at least 5 characters of review text.",
+    }),
   isSynthetic: z.literal(true),
 });
 export function verifyEvidence(text: string, inputs: ObservationInput[]) {

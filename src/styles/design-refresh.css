@@ -105,6 +105,8 @@
   border: 1px solid #deded8;
   border-radius: 6px;
   background: #e9e8e3;
+  scrollbar-width: thin;
+  scrollbar-color: #aaa9a2 transparent;
 }
 .main-nav button {
   min-height: 32px;
@@ -434,7 +436,7 @@ main .dashboard .compact-issues > button:hover {
   font-size: 11px;
 }
 .reviews-page .filters {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: minmax(180px, 1.6fr) repeat(5, minmax(100px, 1fr));
   gap: 12px;
   margin: 22px 0;
   padding: 20px;
@@ -452,6 +454,7 @@ main .dashboard .compact-issues > button:hover {
 .reviews-page .filters input,
 .reviews-page .filters select {
   min-height: 38px;
+  padding-right: 32px;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0;
@@ -465,6 +468,20 @@ main .dashboard .compact-issues > button:hover {
 .reviews-page .review-list {
   max-height: 70vh;
   padding-right: 8px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
 }
 .reviews-page .review-row {
   gap: 9px;

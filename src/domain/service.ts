@@ -339,7 +339,8 @@ export async function intake(input: unknown) {
     if (
       old.originalText !== data.text ||
       old.branchId !== data.branchId ||
-      old.rating !== data.rating
+      old.rating !== data.rating ||
+      old.reviewedAt.getTime() !== new Date(data.reviewedAt).getTime()
     )
       throw new Error(
         `Feed conflict for ${old.id}: source evidence changed. Existing review preserved for manual review.`,
@@ -380,7 +381,8 @@ export async function intake(input: unknown) {
       !old ||
       old.originalText !== data.text ||
       old.branchId !== data.branchId ||
-      old.rating !== data.rating
+      old.rating !== data.rating ||
+      old.reviewedAt.getTime() !== new Date(data.reviewedAt).getTime()
     )
       throw new Error(
         "Feed conflict: source evidence changed. Existing review preserved for manual review.",
@@ -890,21 +892,33 @@ export async function correctMembership(
 }
 export async function setThemeStatus(
   themeId: string,
-  status: "owner_confirmed" | "dismissed",
+  status: "owner_confirmed" | "dismissed" | "suggested",
   role: string,
 ) {
   requireOwner(role);
   const theme = await oneTheme(themeId);
-  requireTransition(theme.status, ["suggested"], status);
+  requireTransition(
+    theme.status,
+    status === "suggested" ? ["dismissed"] : ["suggested"],
+    status,
+  );
   await db
     .update(themes)
     .set({ status, updatedAt: now() })
     .where(eq(themes.id, themeId));
   await event(
-    status === "dismissed" ? "theme_dismissed" : "theme_confirmed",
+    status === "dismissed"
+      ? "theme_dismissed"
+      : status === "suggested"
+        ? "theme_reopened"
+        : "theme_confirmed",
     "theme",
     themeId,
-    `Owner ${status === "dismissed" ? "dismissed" : "confirmed"} the suggested theme.`,
+    status === "dismissed"
+      ? "Owner dismissed the suggested theme."
+      : status === "suggested"
+        ? "Owner reopened the dismissed theme for review."
+        : "Owner confirmed the suggested theme.",
     "demo owner",
     "owner",
   );

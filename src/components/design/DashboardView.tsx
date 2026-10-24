@@ -34,7 +34,7 @@ export function DashboardView({
   activity: ActivityItem[];
   onNewReview: () => void;
   onInspect: (id: string) => void;
-  onNavigate: (destination: Destination) => void;
+  onNavigate: (destination: Destination, metricTitle?: string) => void;
 }) {
   const [featured, ...rest] = issues;
   return (
@@ -53,7 +53,7 @@ export function DashboardView({
           <button
             className="metric"
             key={metric.title}
-            onClick={() => onNavigate(metric.destination)}
+            onClick={() => onNavigate(metric.destination, metric.title)}
           >
             <span className="metric-title">{metric.title}</span>
             <strong>{metric.value}</strong>

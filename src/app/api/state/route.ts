@@ -10,10 +10,11 @@ export async function GET(request: Request) {
         new URL(request.url).searchParams.get("businessId") || undefined,
       ),
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Database unavailable",
+        error:
+          "Workspace unavailable. Check the database connection and try again.",
       },
       { status: 500 },
     );

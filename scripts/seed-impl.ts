@@ -171,6 +171,7 @@ try {
         reviewedAt: new Date(review.reviewedAt),
         originalText: review.text,
         isSynthetic: true,
+        isHistoricalImport: true,
         processingStatus: "pending",
         language: detectReviewLanguage(review.text),
       })

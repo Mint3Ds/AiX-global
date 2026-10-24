@@ -6,27 +6,26 @@ Every business, employee, guest review, source label, and outcome in this reposi
 
 ## Team Information
 
-| Field                  | Details                                     |
-| ---------------------- | ------------------------------------------- |
-| **Team Name**          | AIx Global                                  |
-| **Team Domain**        | Domain 2                                    |
-| **SDG Track (1–17)**   | SDG 8 — Decent Work and Economic Growth     |
-| **Team Leader**        | Bhone Myat Paing Soe                        |
-| **University**         | Monash University, Sunway University, Univeristy of Nottingham Malaysia |
-| **Number of Members**  | 4                                           |
+| Field                 | Details                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| **Team Name**         | AIx Global                                                              |
+| **Team Domain**       | Domain 2                                                                |
+| **SDG Track (1–17)**  | SDG 8 — Decent Work and Economic Growth                                 |
+| **Team Leader**       | Bhone Myat Paing Soe                                                    |
+| **University**        | Monash University, Sunway University, Univeristy of Nottingham Malaysia |
+| **Number of Members** | 4                                                                       |
 
 ## Links
 
-| Resource          | Link                                           |
-| ----------------- | ---------------------------------------------- |
-| GitHub Repository | https://github.com/Mint3Ds/AiX-global          |
-| Live Demo         | insert youtube link here                       |
-| RunPod Endpoint   | insert runpoint endpoint here                  |
-| Slide Deck        | https://canva.link/gjz6konw9zie5y9             |
-| Demo Video        | insert youtube link here                       |
+| Resource          | Link                                  |
+| ----------------- | ------------------------------------- |
+| GitHub Repository | https://github.com/Mint3Ds/AiX-global |
+| Live Demo         | insert youtube link here              |
+| RunPod Endpoint   | insert runpoint endpoint here         |
+| Slide Deck        | https://canva.link/gjz6konw9zie5y9    |
+| Demo Video        | insert youtube link here              |
 
 ---
-
 
 ## Run locally with teammates
 
@@ -38,10 +37,12 @@ cp .env.example .env.local
 # Set DATABASE_URL in the ignored .env.local file and start PostgreSQL.
 npm run db:migrate
 npm run db:seed
+# Optional: load the historical synthetic demo reviews into a fresh database.
+SEED_LEGACY_REVIEWS=yes npm run db:seed
 npm run dev
 ```
 
-Open `http://localhost:3000`. The default `AI_MODE=fixture` needs no AI keys. Each teammate runs their own database and migration/seed; GitHub shares code and JSON fixtures, not local PostgreSQL rows. `db:migrate` and `db:seed` are repeatable and do not reset owner work. They insert the source fixtures and labelled historical analyses only when those rows are absent. The separate demo review is never seeded. Do not commit `.env.local`.
+Open `http://localhost:3000`. The default `AI_MODE=fixture` needs no AI keys. Each teammate runs their own database and migration/seed; GitHub shares code and JSON fixtures, not local PostgreSQL rows. `db:migrate` and `db:seed` are repeatable and do not reset owner work. Ordinary `db:seed` adds businesses, properties, employees, and themes. `SEED_LEGACY_REVIEWS=yes npm run db:seed` also loads the historical synthetic reviews and labelled analyses where missing. The separate demo review is never seeded. Do not commit `.env.local`.
 
 For a fresh local PostgreSQL installation on macOS, the previous setup still applies: install/start `postgresql@16`, create a `visit2value` role and database, then use the URL in `.env.example`. Replit requires a provisioned PostgreSQL database and `DATABASE_URL` Secret. Import this repository, run the same migration/seed commands, and set `AI_MODE=fixture` as a Secret. If publishing a Replit App, check its published database and Secrets separately.
 
@@ -63,14 +64,14 @@ In live mode, Jev decides whether a review has any specific business feedback; O
 ## Judge journey
 
 1. Open **Harbour House Hotel**. There are 244 historical synthetic reviews across three simulated sources, with at least 24 distinct source reviews supporting the Central property's air-conditioning issue and a separate insect issue. Open an issue and inspect the exact quotes, full reviews, dates, ratings, and source labels. The Garden property stays separate.
-2. Open **New review**. The prefilled hotel text mentions warm AC, a small insect, and helpful front-desk staff. Give it a new source review ID if you have previously run the demo, then save and analyse. It is not part of the seed. In fixture mode its exact text yields three labelled observations. In live mode it goes through Jev and OpenAI. The review is saved before analysis, and the AC issue gains one distinct source review.
+2. Open **New review** and paste this exact synthetic text into the blank form: “The AC in room 226 blew warm air all night. We also saw a small insect near the bathroom sink. The front desk was patient and helpful.” The form generates a new source ID when you save. In fixture mode this exact text yields three labelled observations; other new wording stays in **Needs review**. In live mode it goes through Jev and OpenAI. The review is saved before analysis, and the AC issue gains one distinct source review.
 3. Open **Issues**, inspect the new evidence, and optionally remove and restore a mistaken grouping. The distinct-review count follows the evidence.
 4. Confirm the AC issue, then create a work task. Choose a fictional employee and due date, then approve and assign it. The task moves to **Assigned work**. The Orbyte handoff is saved locally as a simulation; there is no external delivery.
 5. Switch to **Staff** to simulate the assigned employee submitting a specific work report. Switch back to **Owner** to inspect it and press **Verify completed work**. This moves the task to **Completed work tasks**.
 6. Prepare replies from the completed task, then use **Manage replies** to inspect each original review beside its draft. The unresolved insect concern triggers a conspicuous partial-reply warning. An owner may leave it for later or explicitly approve a truthful partial reply. Approve and simulate posting records a local status change; no external post occurs. Safe drafts can be batch approved without posting.
-7. Return to **Reviews** to search all original text, including generic reviews, and filter by property, simulated source, rating, status, and observation category. Search for a topic such as “breakfast.” A later review related to a verified issue flags possible recurrence and permits a new task while preserving the first task's history.
+7. Return to **Reviews** to search all original text, including generic reviews, and filter by property, rating, status, observation category, and arrival date. Search for a topic such as “breakfast.” A later review related to a verified issue flags possible recurrence and permits a new task while preserving the first task's history.
 
-The restaurant and salon use the same review and issue model, with their own data. The hotel has the complete demonstration. On an already used local database, the prefilled source ID may be taken; enter a different synthetic source ID to inject the same prepared text again. The app rejects a source ID if its original evidence is changed.
+The restaurant and salon use the same review and issue model, with their own data. The hotel has the complete demonstration. The form creates a new synthetic source ID for each submitted review. Feed replays with the same source identity must preserve the original wording, property, rating, and review timestamp.
 
 ## Commands and code map
 

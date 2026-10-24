@@ -15,7 +15,9 @@ type Review = {
   sourceReviewId: string;
   rating: number;
   reviewedAt: string;
+  createdAt: string;
   originalText: string;
+  isHistoricalImport: boolean;
   processingStatus: string;
   processingStage: string | null;
   language: string;
@@ -148,6 +150,13 @@ const date = (value: string | null) =>
         timeZone: "Asia/Kuala_Lumpur",
       })
     : "—";
+const localDay = (value: string) =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kuala_Lumpur",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
 const label = (value: string) =>
   value === "simulated_published" || value === "reply_simulated_published"
     ? "posted"
@@ -259,6 +268,9 @@ const isOwnerVisibleTheme = (theme: Theme, support: number) =>
 export function Workspace() {
   const [state, setState] = useState<State | null>(null);
   const [error, setError] = useState("");
+  const [errorSource, setErrorSource] = useState<"load" | "action" | null>(
+    null,
+  );
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -281,7 +293,9 @@ export function Workspace() {
   const [rating, setRating] = useState("all");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
+  const [received, setReceived] = useState("all");
   const [newText, setNewText] = useState("");
+  const [newTextError, setNewTextError] = useState("");
   const [preparedReviewId, setPreparedReviewId] = useState<string | null>(null);
   const [newBranch, setNewBranch] = useState("hotel-central");
   const [preparedReviews, setPreparedReviews] = useState<
@@ -311,10 +325,12 @@ export function Workspace() {
       if (!response.ok) throw new Error(body.error || "Could not load data");
       setState(body);
       setError("");
+      setErrorSource(null);
     } catch (reason) {
       setError(
         reason instanceof Error ? reason.message : "Could not load data",
       );
+      setErrorSource("load");
     }
   }, [businessId]);
   useEffect(() => {
@@ -331,6 +347,7 @@ export function Workspace() {
       setBusy(type);
       setMessage("");
       setError("");
+      setErrorSource(null);
       try {
         const response = await fetch("/api/action", {
           method: "POST",
@@ -341,10 +358,57 @@ export function Workspace() {
         if (!response.ok || !body.ok)
           throw new Error(body.error || "Action failed");
         await refresh();
-        setMessage(`${label(type)} saved.`);
+        const result = body.result as {
+          status?: string;
+          error?: string;
+          count?: number;
+        } | null;
+        if (type === "analyze" && result?.status === "failed") {
+          setError(
+            `Analysis failed. ${result.error || "Try again after checking the provider."}`,
+          );
+          setErrorSource("action");
+        } else {
+          setMessage(
+            type === "analyze"
+              ? result?.status === "needs_review"
+                ? "No exact fixture matches this review. It remains searchable and needs review."
+                : result?.status === "generic"
+                  ? "Analysis complete. No specific feedback found."
+                  : "Analysis complete."
+              : type === "intake"
+                ? "Review saved. Analysis is starting…"
+                : type === "severity"
+                  ? "Priority updated."
+                  : type === "theme_status"
+                    ? values.status === "dismissed"
+                      ? "Issue dismissed."
+                      : values.status === "suggested"
+                        ? "Issue reopened for review."
+                        : "Issue confirmed."
+                    : type === "edit_task"
+                      ? "Work task saved."
+                      : type === "decide_task"
+                        ? values.decision === "defer"
+                          ? "Task saved for later."
+                          : "Task assigned."
+                        : type === "report_task"
+                          ? "Work update submitted."
+                          : type === "verify_task"
+                            ? "Work verified."
+                            : type === "prepare_replies"
+                              ? `${result?.count ?? 0} linked replies ready for review.`
+                              : type === "approve_reply_batch"
+                                ? "Eligible replies approved."
+                                : type === "simulate_publish"
+                                  ? "Reply marked as posted in this demo."
+                                  : `${label(type)} saved.`,
+          );
+        }
         return body.result;
       } catch (reason) {
         setError(reason instanceof Error ? reason.message : "Action failed");
+        setErrorSource("action");
         return null;
       } finally {
         setBusy("");
@@ -354,6 +418,15 @@ export function Workspace() {
   );
   const submitNew = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (newText.trim().length < 5) {
+      setNewTextError("Write at least 5 characters of review text.");
+      return;
+    }
+    if (newText.length > 3000) {
+      setNewTextError("Review text must be 3000 characters or fewer.");
+      return;
+    }
+    setNewTextError("");
     const prepared = preparedReviews.find(
       (review) => review.id === preparedReviewId && review.text === newText,
     );
@@ -397,13 +470,19 @@ export function Workspace() {
       error?: string;
     } | null;
     if (outcome) {
-      setMessage(
-        outcome.status === "needs_review"
-          ? "Review saved. Please check the highlighted feedback."
-          : outcome.status === "generic"
-            ? "Review saved. No specific feedback was found."
-            : "Review saved and analyzed.",
-      );
+      if (outcome.status === "failed") {
+        setMessage("");
+        setError(
+          `Review saved, but analysis failed. ${outcome.error || "Try again after checking the provider."}`,
+        );
+        setErrorSource("action");
+      } else if (outcome.status === "needs_review")
+        setMessage(
+          "Review saved. No exact fixture matched; this review needs attention.",
+        );
+      else if (outcome.status === "generic")
+        setMessage("Review saved. No specific feedback was found.");
+      else setMessage("Review saved and analyzed.");
       setTab("reviews");
     }
   };
@@ -567,6 +646,10 @@ export function Workspace() {
           (branch === "all" || review.branchId === branch) &&
           (rating === "all" || review.rating === Number(rating)) &&
           (status === "all" || review.processingStatus === status) &&
+          (received === "all" ||
+            (!review.isHistoricalImport &&
+              localDay(review.createdAt) ===
+                localDay(new Date().toISOString()))) &&
           (category === "all" ||
             points.some((point) => point.category === category)) &&
           (!query ||
@@ -578,7 +661,7 @@ export function Workspace() {
             ))
         );
       }) || [],
-    [state, search, branch, rating, category, status],
+    [state, search, branch, rating, category, status, received],
   );
   const selected =
     filtered.find((review) => review.id === selectedReview) || filtered[0];
@@ -687,6 +770,9 @@ export function Workspace() {
         onBusinessChange={(id) => {
           setBusinessId(id);
           setState(null);
+          setMessage("");
+          setError("");
+          setErrorSource(null);
           setSelectedReview(null);
           setIssueType("operational_issue");
           setIssuePage(0);
@@ -719,6 +805,11 @@ export function Workspace() {
           );
           setBranch("all");
           setSearch("");
+          setRating("all");
+          setCategory("all");
+          setStatus("all");
+          setReceived("all");
+          setNewTextError("");
           setTab("dashboard");
         }}
         tab={tab}
@@ -735,7 +826,10 @@ export function Workspace() {
       />
       {error && (
         <div role="alert" className="notice error">
-          {error} <button onClick={() => void refresh()}>Retry load</button>
+          <span>{error}</span>
+          {errorSource === "load" && (
+            <button onClick={() => void refresh()}>Retry load</button>
+          )}
         </div>
       )}
       {message && (
@@ -766,8 +860,9 @@ export function Workspace() {
                   title: "New today",
                   value: state.reviews.filter(
                     (review) =>
-                      new Date(review.reviewedAt).toDateString() ===
-                      new Date().toDateString(),
+                      !review.isHistoricalImport &&
+                      localDay(review.createdAt) ===
+                        localDay(new Date().toISOString()),
                   ).length,
                   hint: "Received today",
                   destination: "reviews",
@@ -830,7 +925,19 @@ export function Workspace() {
               }))}
               onNewReview={() => setTab("new")}
               onInspect={openTheme}
-              onNavigate={setTab}
+              onNavigate={(destination, metricTitle) => {
+                if (metricTitle === "New today") {
+                  setReceived("today");
+                  setStatus("all");
+                } else if (metricTitle === "Specific feedback") {
+                  setReceived("all");
+                  setStatus("complete");
+                } else if (metricTitle === "Total reviews") {
+                  setReceived("all");
+                  setStatus("all");
+                }
+                setTab(destination);
+              }}
             />
           )}
           {tab === "new" && (
@@ -874,18 +981,33 @@ export function Workspace() {
                       ))}
                     </select>
                   </label>
-                  <label className="wide">
+                  <label className="wide" htmlFor="new-review-text">
                     Original review text
                     <textarea
+                      id="new-review-text"
                       rows={8}
                       value={newText}
                       onChange={(event) => {
                         setNewText(event.target.value);
+                        if (newTextError) setNewTextError("");
                         setPreparedReviewId(null);
                       }}
+                      aria-invalid={!!newTextError}
+                      aria-describedby={
+                        newTextError ? "new-review-text-error" : undefined
+                      }
                       required
                       placeholder="Paste the guest's review here…"
                     />
+                    {newTextError && (
+                      <span
+                        id="new-review-text-error"
+                        className="field-error"
+                        role="alert"
+                      >
+                        {newTextError}
+                      </span>
+                    )}
                   </label>
                   <div className="new-review-form-footer">
                     <button disabled={!!busy}>
@@ -1047,6 +1169,16 @@ export function Workspace() {
                     ))}
                   </select>
                 </label>
+                <label>
+                  Received
+                  <select
+                    value={received}
+                    onChange={(event) => setReceived(event.target.value)}
+                  >
+                    <option value="all">All dates</option>
+                    <option value="today">Today</option>
+                  </select>
+                </label>
               </div>
               <p className="reviews-result-count">
                 Showing {filtered.length} of {state.reviews.length} reviews
@@ -1138,10 +1270,32 @@ export function Workspace() {
                         })
                       ) : (
                         <div className="empty-complaints">
-                          <b>No operational complaints</b>
+                          <b>
+                            {selected.processingStatus === "failed"
+                              ? "Analysis failed"
+                              : selected.processingStatus === "needs_review"
+                                ? "Needs review"
+                                : ["pending", "processing"].includes(
+                                      selected.processingStatus,
+                                    )
+                                  ? "Analysis in progress"
+                                  : "No operational complaints"}
+                          </b>
                           <p>
-                            This review has no reported service or facility
-                            issue.
+                            {selected.processingStatus === "failed"
+                              ? state.runs.find(
+                                  (run) =>
+                                    run.reviewId === selected.id &&
+                                    run.decision === "failed",
+                                )?.safeError ||
+                                "The review is saved. Try analysis again."
+                              : selected.processingStatus === "needs_review"
+                                ? "No exact fixture matched this wording. The original review is saved for follow-up."
+                                : ["pending", "processing"].includes(
+                                      selected.processingStatus,
+                                    )
+                                  ? "The original review is saved. Check back for the result."
+                                  : "This review has no reported service or facility issue."}
                           </p>
                         </div>
                       )}
@@ -1155,7 +1309,9 @@ export function Workspace() {
                               void act("analyze", { reviewId: selected.id })
                             }
                           >
-                            Retry analysis
+                            {selected.processingStatus === "pending"
+                              ? "Analyze review"
+                              : "Retry analysis"}
                           </button>
                         </div>
                       )}
@@ -1289,7 +1445,9 @@ export function Workspace() {
                                   ? theme.type === "operational_issue"
                                     ? "Confirm this issue to make a work task available."
                                     : "Confirm to keep this suggestion for follow-up."
-                                  : "Severity sets the issue priority."}
+                                  : theme.status === "dismissed"
+                                    ? "Dismissed issues stay in the record. Reopen to review them again."
+                                    : "Severity sets the issue priority."}
                               </p>
                             </div>
                             <label>
@@ -1332,6 +1490,21 @@ export function Workspace() {
                                 }
                               >
                                 Dismiss
+                              </button>
+                            </div>
+                          )}
+                          {theme.status === "dismissed" && (
+                            <div className="issue-decision-actions">
+                              <button
+                                className="secondary"
+                                onClick={() =>
+                                  void act("theme_status", {
+                                    themeId: theme.id,
+                                    status: "suggested",
+                                  })
+                                }
+                              >
+                                Reopen issue
                               </button>
                             </div>
                           )}
@@ -1397,7 +1570,9 @@ export function Workspace() {
                       )}
                       {theme.type === "operational_issue" &&
                         owner &&
-                        theme.status !== "suggested" && (
+                        ["owner_confirmed", "recurrence"].includes(
+                          theme.status,
+                        ) && (
                           <button
                             className="create-task-button"
                             onClick={async () => {
@@ -2004,7 +2179,7 @@ function ReplyCard({
 }) {
   const [text, setText] = useState(reply.text);
   const unresolvedConcerns = reply.partialWarning
-    ?.replace(/^Other complaints? in this review remain unresolved:\s*/i, "")
+    ?.replace(/^Other complaints? in this review remains? unresolved:\s*/i, "")
     .split(/;\s*/)
     .map((concern) => concern.trim().replace(/[.;]+$/, ""))
     .filter(Boolean);

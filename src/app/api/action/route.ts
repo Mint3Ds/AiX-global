@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertDatabaseConfigured } from "@/data/db";
+import { publicActionError } from "@/domain/public-errors";
 import {
   intake,
   analyzeReview,
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Action failed",
+        error: publicActionError(error),
       },
       { status: 400 },
     );

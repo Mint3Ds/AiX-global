@@ -26,11 +26,37 @@ describe("reply and recurrence safeguards", () => {
     ).toThrow(/all concerns/);
     expect(() =>
       assertReplyApproval(
+        "Every concern has been resolved.",
+        ["Insect sighting"],
+        true,
+      ),
+    ).toThrow(/all concerns/);
+    expect(() =>
+      assertReplyApproval(
+        "All issues are now addressed.",
+        ["Insect sighting"],
+        true,
+      ),
+    ).toThrow(/all concerns/);
+    expect(() =>
+      assertReplyApproval(
         "The AC was checked; the insect concern remains under review.",
         ["Insect sighting"],
         true,
       ),
     ).not.toThrow();
+    expect(() =>
+      assertReplyApproval(
+        "Not all issues have been resolved; we are still checking the insect concern.",
+        ["Insect sighting"],
+        true,
+      ),
+    ).not.toThrow();
+  });
+  it("uses singular wording for one unresolved complaint", () => {
+    expect(partialReplyWarning(["Insect sighting"])).toBe(
+      "Other complaint in this review remains unresolved: Insect sighting",
+    );
   });
   it("keeps high-severity and partial replies out of batch approval", () => {
     expect(canBatchApproveReply("draft", null, 2)).toBe(true);

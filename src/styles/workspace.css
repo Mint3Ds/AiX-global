@@ -14,6 +14,15 @@
 .notice button {
   margin-left: 10px;
 }
+.field-error {
+  color: var(--error);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.new-review-form [aria-invalid="true"] {
+  border-color: var(--error);
+}
 .filters {
   display: grid;
   grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(110px, 1fr));

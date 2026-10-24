@@ -33,6 +33,7 @@ const titles: Record<string, string> = {
   possible_recurrence: "Possible recurrence",
   theme_confirmed: "Issue confirmed",
   theme_dismissed: "Issue dismissed",
+  theme_reopened: "Issue reopened",
   priority_adjusted: "Priority changed",
   task_proposed: "Work task created",
   task_edited: "Work task edited",
@@ -108,6 +109,8 @@ export function ActivityView({
       previous.event.type === event.type &&
       previous.event.description === event.description &&
       previous.event.actor === event.actor &&
+      (previous.event.entityId === event.entityId ||
+        ["reply_drafted", "reply_approved"].includes(event.type)) &&
       previous.event.createdAt.slice(0, 16) === event.createdAt.slice(0, 16)
     ) {
       previous.count += 1;
@@ -180,8 +183,10 @@ export function ActivityView({
             index === 0 ||
             day(visible[index - 1].event.createdAt) !== day(event.createdAt);
           const title = titles[event.type] || event.type.replaceAll("_", " ");
-          const subject =
-            count > 1 ? `${count} ${category(event)}` : context(event);
+          const groupedReplies =
+            count > 1 &&
+            ["reply_drafted", "reply_approved"].includes(event.type);
+          const subject = groupedReplies ? `${count} replies` : context(event);
           return (
             <div key={event.id}>
               {showDay && (
@@ -194,7 +199,9 @@ export function ActivityView({
                     <strong>
                       {count > 1 && event.type === "reply_drafted"
                         ? "Replies drafted"
-                        : title}
+                        : count > 1 && !groupedReplies
+                          ? `${title} (${count} updates)`
+                          : title}
                     </strong>
                     {subject && (
                       <span className="activity-subject">{subject}</span>

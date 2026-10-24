@@ -63,6 +63,16 @@ integration("business-scoped persisted route handlers", () => {
     });
     expect(conflict.status).toBe(400);
     expect(conflict.body.error).toMatch(/preserved/);
+    const changedDate = await action({
+      type: "intake",
+      role: "staff",
+      data: {
+        ...data,
+        reviewedAt: "2026-10-22T10:00:00+08:00",
+      },
+    });
+    expect(changedDate.status).toBe(400);
+    expect(changedDate.body.error).toMatch(/preserved/);
     const hotel = await state();
     expect(
       hotel.reviews.filter(

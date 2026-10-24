@@ -56,6 +56,9 @@ export const reviews = pgTable(
     reviewedAt: timestamp("reviewed_at", { withTimezone: true }).notNull(),
     originalText: text("original_text").notNull(),
     isSynthetic: boolean("is_synthetic").notNull(),
+    isHistoricalImport: boolean("is_historical_import")
+      .notNull()
+      .default(false),
     processingStatus: text("processing_status").notNull().default("pending"),
     processingStage: text("processing_stage"),
     language: text("language").notNull().default("unknown"),
