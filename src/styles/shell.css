@@ -22,14 +22,14 @@
   height: 30px;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 5px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 3px;
 }
 .brand-mark span {
   background: var(--ink);
-  border-radius: 2px;
+  border-radius: 1px;
 }
 .brand-mark span:nth-child(2) {
   background: var(--violet);
@@ -68,7 +68,7 @@
 }
 .badges strong {
   padding: 6px 9px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--paper-deep);
   white-space: nowrap;
 }
@@ -83,7 +83,7 @@
   width: 7px;
   height: 7px;
   margin-right: 5px;
-  border-radius: 50%;
+  border-radius: 3px;
   background: #34a853;
 }
 .badges select {
@@ -91,7 +91,7 @@
   max-width: 110px;
   padding: 6px 8px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 5px;
   background: var(--paper-light);
   color: var(--ink);
 }
@@ -112,7 +112,7 @@ nav button {
   min-height: 36px;
   padding: 8px 13px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 5px;
   background: transparent;
   color: var(--muted);
   font-size: 13px;
@@ -146,7 +146,7 @@ nav button.active {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 7px;
   overflow: hidden;
   background: var(--paper-light);
 }

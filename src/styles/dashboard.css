@@ -6,7 +6,7 @@
   min-height: 0;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 10px;
   background: var(--paper-light);
 }
 .hero-copy h2 {
@@ -51,7 +51,7 @@
   justify-self: end;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--surface-alt);
 }
 .machine-head,
@@ -73,7 +73,7 @@
 }
 .machine-review {
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--paper-light);
   padding: 14px;
 }
@@ -105,7 +105,7 @@
   gap: 8px;
   min-height: 52px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 10px;
   background: var(--paper-light);
   font-size: 12px;
@@ -116,7 +116,7 @@
   flex: 0 0 24px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 3px;
   background: var(--paper-deep);
   color: var(--ink);
   font-size: 14px;
@@ -124,7 +124,7 @@
 .machine-output {
   padding: 12px;
   border: 1px solid #c8ddf2;
-  border-radius: 9px;
+  border-radius: 5px;
   background: var(--violet-light);
   color: #164b7c;
   text-align: center;
@@ -159,7 +159,7 @@
   gap: 1px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 7px;
   background: var(--line);
 }
 .metric {
@@ -189,7 +189,7 @@
 .card {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 7px;
   background: var(--paper-light);
   padding: 20px;
 }
@@ -230,7 +230,7 @@
   gap: 16px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--paper-light);
 }
 .reply-review-content {
@@ -278,7 +278,7 @@ main button.reply-review-text:hover {
 }
 .priority-tag {
   padding: 5px 8px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--warning);
   color: #705500;
   font-size: 10px;

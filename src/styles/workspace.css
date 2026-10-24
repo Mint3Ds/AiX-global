@@ -1,7 +1,7 @@
 .notice {
   margin: 14px 0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 12px 15px;
   background: var(--paper-light);
   font-weight: 500;
@@ -39,7 +39,7 @@ select {
   max-width: 100%;
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 5px;
   background: var(--surface);
   color: var(--ink);
   padding: 10px 11px;
@@ -117,7 +117,7 @@ main .issue-category-tabs button:not(.review-row) {
   gap: 8px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 5px;
   background: var(--paper-light);
   color: var(--ink);
   font-size: 13px;
@@ -159,7 +159,7 @@ main .page-controls button.secondary:not(.link) {
   min-height: 34px;
   padding: 5px 8px;
   border-color: transparent;
-  border-radius: 7px;
+  border-radius: 4px;
   background: transparent;
   color: var(--muted);
   font-size: 11px;
@@ -207,7 +207,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   margin: 0 0 8px;
   padding: 13px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 5px;
   background: var(--paper-light);
   color: var(--ink);
   text-align: left;
@@ -244,7 +244,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   align-items: center;
   min-height: 24px;
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
@@ -305,7 +305,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   margin: 18px 0 24px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 6px;
   background: var(--surface-alt);
 }
 .issue-decision-header {
@@ -349,7 +349,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .evidence-group {
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 6px;
   background: var(--paper-light);
 }
 .evidence-group-header {
@@ -458,7 +458,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   color: #a1a1a6;
 }
 .status-pill {
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 4px 10px;
   background: var(--paper-deep);
   color: var(--ink);
@@ -472,7 +472,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   margin: 13px 0;
   padding: 15px;
   border-left: 3px solid var(--line);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 5px 5px 0;
   background: var(--surface-alt);
   white-space: pre-wrap;
   font-size: 15px;
@@ -496,7 +496,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   margin: 14px 0;
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 6px;
   background: var(--surface-alt);
 }
 .complaint-card-heading {
@@ -532,7 +532,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .empty-complaints {
   margin-top: 12px;
   padding: 18px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface-alt);
 }
 .empty-complaints p {
@@ -544,7 +544,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   margin: 16px 0;
   padding: 15px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface-alt);
 }
 .observation p {
@@ -557,7 +557,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .provider {
   margin: 16px 0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface-alt);
   padding: 14px;
   line-height: 1.5;
@@ -571,7 +571,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   overflow: auto;
   background: var(--paper-light);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 .controls {
   display: flex;
