@@ -1,6 +1,6 @@
-# Visit2Value
+# Clarity
 
-Visit2Value is a synthetic review-to-resolution workspace for small businesses. The default judge demo is **Harbour House Hotel**, a fictional independent hotel with two properties. The original Nusa Table restaurant remains available, and a smaller Luma Salon workspace demonstrates that the same review workflow can serve another business type. Use the business selector at the top of the app. The selector scopes reviews, issues, staff, tasks, replies, and activity to that business.
+Clarity is a synthetic review-to-resolution workspace for small businesses. The default judge demo is **Harbour House Hotel**, a fictional independent hotel with two properties. The original Nusa Table restaurant remains available, and a smaller Luma Salon workspace demonstrates that the same review workflow can serve another business type. Use the business selector at the top of the app. The selector scopes reviews, issues, staff, tasks, replies, and activity to that business.
 
 Every business, employee, guest review, source label, and outcome in this repository is team-created fiction. All three hotel review sources are **simulated**. No source is scraped or connected. The Orbyte handoff and reply publication are local simulations; there is no Orbyte or review-platform API call. The role switcher demonstrates workflow rules, but it is not production authentication.
 
@@ -45,6 +45,8 @@ Open `http://localhost:3000`. The default `AI_MODE=fixture` needs no AI keys. Ea
 
 For a fresh local PostgreSQL installation on macOS, the previous setup still applies: install/start `postgresql@16`, create a `visit2value` role and database, then use the URL in `.env.example`. Replit requires a provisioned PostgreSQL database and `DATABASE_URL` Secret. Import this repository, run the same migration/seed commands, and set `AI_MODE=fixture` as a Secret. If publishing a Replit App, check its published database and Secrets separately.
 
+NOTE: The old project name was named 'visited2value' and its name is still present within the code. This shouldn't matter to anyone running the live prototype, but if you're configuring yourself, please keep note.
+
 ### Configuration
 
 | Variable           | Purpose                                                                        |
@@ -63,7 +65,7 @@ In live mode, Jev decides whether a review has any specific business feedback; O
 1. Open **Harbour House Hotel**. There are 244 historical synthetic reviews across three simulated sources, with at least 24 distinct source reviews supporting the Central property's air-conditioning issue and a separate insect issue. Open an issue and inspect the exact quotes, full reviews, dates, ratings, and source labels. The Garden property stays separate.
 2. Open **New review**. The prefilled hotel text mentions warm AC, a small insect, and helpful front-desk staff. Give it a new source review ID if you have previously run the demo, then save and analyse. It is not part of the seed. In fixture mode its exact text yields three labelled observations. In live mode it goes through Jev and OpenAI. The review is saved before analysis, and the AC issue gains one distinct source review.
 3. Open **Issues**, inspect the new evidence, and optionally remove and restore a mistaken grouping. The distinct-review count follows the evidence.
-4. Propose an AC task. Select a fictional employee, set a due date, save, and approve. The approved task remains in Visit2Value. **Activity** shows a locally simulated Orbyte handoff with the approval, assignee, property, due date, and evidence references.
+4. Propose an AC task. Select a fictional employee, set a due date, save, and approve. The approved task remains in Clarity. **Activity** shows a locally simulated Orbyte handoff with the approval, assignee, property, due date, and evidence references.
 5. Switch to **Staff**, choose the assigned fictional employee, start work, and submit a specific work report. Switch back to **Owner** to inspect the report and enter a separate verification note. Only this verification resolves the task.
 6. Draft a reply to the new review. It must address the whole source review: the unresolved insect concern triggers a conspicuous partial-reply warning. Read or edit the draft and explicitly approve a truthful partial reply. Approval leaves it ready; **Simulate publishing** changes the local demo status to `simulated_published` and adds an activity event. No external post occurs.
 7. Return to **Reviews** to search all original text, including generic reviews, and filter by property, simulated source, rating, status, and observation category. Search for a topic such as “breakfast.” A later review related to a verified issue flags possible recurrence and permits a new task while preserving the first task's history.
