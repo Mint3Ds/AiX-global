@@ -8,7 +8,7 @@ Every business, employee, guest review, source label, and outcome in this reposi
 
 | Field                 | Details                                                                 |
 | --------------------- | ----------------------------------------------------------------------- |
-| **Team Name**         | AIx Global                                                              |
+| **Team Name**         | AiX Global                                                              |
 | **Team Domain**       | Domain 2                                                                |
 | **SDG Track (1–17)**  | SDG 8 — Decent Work and Economic Growth                                 |
 | **Team Leader**       | Bhone Myat Paing Soe                                                    |
