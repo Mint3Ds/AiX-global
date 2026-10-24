@@ -1,4 +1,6 @@
 /** Visual shell only. Review state and actions remain in Workspace.tsx. */
+import Image from "next/image";
+import { LaunchFilm } from "./LaunchFilm";
 export type WorkspaceTab =
   "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
 
@@ -35,20 +37,16 @@ export function WorkspaceHeader({
     <>
       <header className="top">
         <div className="brand-lockup">
-          <div className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+          <Image className="brand-mark" src="/clarity-symbol.svg" alt="" width={44} height={44} />
           <div>
             <h1>
-              Visit<span>2</span>Value
+              Clarity
             </h1>
             <p>Review workspace</p>
           </div>
         </div>
         <div className="badges">
+          <LaunchFilm />
           <label className="business-switcher">
             Business
             <select
