@@ -1,6 +1,5 @@
 /** Visual shell only. Review state and actions remain in Workspace.tsx. */
 import Image from "next/image";
-import { LaunchFilm } from "./LaunchFilm";
 export type WorkspaceTab =
   "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
 
@@ -44,7 +43,6 @@ export function WorkspaceHeader({
           </div>
         </div>
         <div className="header-actions">
-          <LaunchFilm />
           <div className="workspace-controls">
           <label className="workspace-control business-switcher">
             <span>Business</span>
