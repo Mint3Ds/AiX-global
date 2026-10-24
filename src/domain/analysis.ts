@@ -44,10 +44,30 @@ export const intakeSchema = z.object({
   isSynthetic: z.literal(true),
 });
 export function verifyEvidence(text: string, inputs: ObservationInput[]) {
-  for (const input of inputs)
-    if (!text.includes(input.evidenceQuote))
-      throw new Error(
-        `Evidence quote is not an exact substring of the review: ${input.evidenceQuote}`,
-      );
-  return inputs;
+  const equivalent = (character: string) =>
+    character === "‘" || character === "’"
+      ? "'"
+      : character === "“" || character === "”"
+        ? '"'
+        : character;
+  return inputs.map((input) => {
+    const quote = input.evidenceQuote;
+    for (let start = 0; start <= text.length - quote.length; start++) {
+      let matches = true;
+      for (let index = 0; index < quote.length; index++) {
+        if (equivalent(text[start + index]) !== equivalent(quote[index])) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches)
+        return {
+          ...input,
+          evidenceQuote: text.slice(start, start + quote.length),
+        };
+    }
+    throw new Error(
+      "Evidence quote is not an exact substring of the review after supported quotation-mark normalization.",
+    );
+  });
 }
