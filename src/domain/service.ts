@@ -37,6 +37,7 @@ import {
   modelName,
 } from "@/integrations/openai/client";
 import { localHandoff } from "@/integrations/orbyte/handoff";
+import { ProviderError } from "@/integrations/provider-errors";
 import {
   assertReplyApproval,
   canBatchApproveReply,
@@ -555,7 +556,7 @@ export async function analyzeReview(reviewId: string) {
         .update(reviews)
         .set({ processingStage: "theme_matching", updatedAt: now() })
         .where(eq(reviews.id, reviewId));
-    verifyEvidence(review.originalText, inputs);
+    inputs = verifyEvidence(review.originalText, inputs);
     if (useful && inputs.length === 0)
       throw new Error(
         "Specific feedback was found but extraction returned no observations.",
@@ -740,10 +741,7 @@ export async function analyzeReview(reviewId: string) {
     };
   } catch (error) {
     const safe =
-      error instanceof Error &&
-      /OpenAI model configuration error|OPENAI_API_KEY is not configured/.test(
-        error.message,
-      )
+      error instanceof ProviderError
         ? error.message
         : error instanceof Error &&
             /Evidence quote|No observations|Theme match/.test(error.message)
@@ -785,10 +783,11 @@ export async function manualClassify(
     ["needs_review", "failed", "pending"],
     "manual review",
   );
-  const observation = input.useful
+  let observation = input.useful
     ? observationSchema.parse(input.observation)
     : null;
-  if (observation) verifyEvidence(review.originalText, [observation]);
+  if (observation)
+    observation = verifyEvidence(review.originalText, [observation])[0];
   const runId = randomUUID();
   await db.transaction(async (tx) => {
     await tx.insert(analysisRuns).values({
