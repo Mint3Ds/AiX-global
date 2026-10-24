@@ -1,4 +1,4 @@
-# Visit2Value design guide
+# Clarity design guide
 
 The visual design is kept in `src/components/design/` and `src/styles/`. The review and AI workflows stay in `src/components/Workspace.tsx` and the existing API/domain files.
 

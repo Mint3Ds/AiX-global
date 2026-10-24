@@ -44,6 +44,22 @@
   .split {
     grid-template-columns: 1fr;
   }
+  .new-review-layout {
+    grid-template-columns: 1fr;
+  }
+  .workspace-controls {
+    max-width: 100%;
+  }
+  .activity-page {
+    max-width: none !important;
+  }
+  .tasks-page .split,
+  .replies-page .reply {
+    grid-template-columns: 1fr;
+  }
+  .replies-page .reply {
+    gap: 18px;
+  }
   .review-list {
     max-height: 390px;
   }
@@ -68,6 +84,32 @@
     flex-direction: column;
     gap: 13px;
     padding: 15px 0;
+  }
+  .workspace-controls {
+    width: 100%;
+  }
+  .workspace-control:first-child {
+    flex: 1;
+  }
+  .workspace-control select,
+  .business-switcher select,
+  .role-switcher select {
+    width: 100%;
+  }
+  .activity-feed {
+    padding: 4px 15px 8px;
+  }
+  .activity-entry summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .activity-entry-meta {
+    flex-direction: column;
+    align-items: end;
+    gap: 1px;
+  }
+  .activity-expand {
+    display: none;
   }
   .badges {
     justify-content: start;
@@ -152,6 +194,9 @@
     padding: 16px;
   }
   .form {
+    grid-template-columns: 1fr;
+  }
+  .new-review-page .new-review-form {
     grid-template-columns: 1fr;
   }
   .filters {

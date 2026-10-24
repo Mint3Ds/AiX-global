@@ -7,8 +7,8 @@
   --ink: #1d1d1f;
   --muted: #6e6e73;
   --line: #d2d2d7;
-  --violet: #0071e3;
-  --violet-light: #e8f2fc;
+  --violet: #292924;
+  --violet-light: #eeede6;
   --violet-on-dark: #ffffff;
   --live: #e8f5ea;
   --warning: #fff4d6;
@@ -47,6 +47,6 @@ button {
   outline-offset: 2px;
 }
 ::selection {
-  background: #cfe5ff;
+  background: #dfd9c5;
   color: var(--ink);
 }
