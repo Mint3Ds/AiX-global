@@ -17,13 +17,13 @@ Every business, employee, guest review, source label, and outcome in this reposi
 
 ## Links
 
-| Resource          | Link                                  |
-| ----------------- | ------------------------------------- |
-| GitHub Repository | https://github.com/Mint3Ds/AiX-global |
-| Live Demo         | insert youtube link here              |
-| RunPod Endpoint   | insert runpoint endpoint here         |
-| Slide Deck        | https://canva.link/gjz6konw9zie5y9    |
-| Demo Video        | insert youtube link here              |
+| Resource           | Link                                  |
+| -----------------  | ------------------------------------- |
+| GitHub Repository  | https://github.com/Mint3Ds/AiX-global |
+| Live Demo          | https://ai-x-global.replit.app/ (password below) |
+| Live Demo Password | AixGlobal123456789                    |
+| Slide Deck         | https://canva.link/gjz6konw9zie5y9    |
+| Demo Video         | insert youtube link here              |
 
 ---
 
