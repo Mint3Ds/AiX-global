@@ -25,8 +25,11 @@ Every business, employee, guest review, source label, and outcome in this reposi
 | Demo Video         | https://youtu.be/laQ-Ig410YM          |
 
 ---
+## Run the Live Demo Here
+https://ai-x-global.replit.app/  
+Follow along the demo video for the easiest journey: https://youtu.be/laQ-Ig410YM  
 
-## Run locally with teammates
+## Run locally 
 
 Requires Node.js 22.12+ (or Node 24+) and PostgreSQL 16+. Clone the shared GitHub repository, then run:
 
