@@ -85,6 +85,15 @@
     gap: 13px;
     padding: 15px 0;
   }
+  .tasks-page .staff-work-update {
+    padding: 13px;
+  }
+  .tasks-page .staff-work-report {
+    grid-template-columns: 1fr;
+  }
+  .tasks-page .staff-work-report > button {
+    width: 100%;
+  }
   .workspace-controls {
     width: 100%;
   }

@@ -1807,58 +1807,74 @@ export function Workspace() {
                         )}
 
                       {role === "staff" && (
-                        <label>
-                          Employee
-                          <select
-                            value={employeeId}
-                            onChange={(event) =>
-                              setEmployeeId(event.target.value)
-                            }
-                          >
-                            {state.employees
-                              .filter(
-                                (employee) =>
-                                  employee.branchId ===
-                                  state.themes.find(
-                                    (item) => item.id === task.themeId,
-                                  )?.branchId,
-                              )
-                              .map((employee) => (
-                                <option key={employee.id} value={employee.id}>
-                                  {employee.name} · {employee.jobTitle}
-                                </option>
-                              ))}
-                          </select>
-                        </label>
-                      )}
-                      {["approved_open", "in_progress"].includes(task.status) &&
-                        role === "staff" &&
-                        task.assigneeId === employeeId && (
-                          <div className="form">
-                            <label>
-                              Employee work report
-                              <textarea
-                                rows={4}
-                                value={workReport}
-                                onChange={(event) =>
-                                  setWorkReport(event.target.value)
-                                }
-                                placeholder="What did you actually inspect, repair, or replace?"
-                              />
-                            </label>
-                            <button
-                              onClick={() =>
-                                void act("report_task", {
-                                  taskId: task.id,
-                                  employeeId,
-                                  note: workReport,
-                                })
+                        <section
+                          className="staff-work-update"
+                          aria-label="Employee work update"
+                        >
+                          <label className="staff-employee-picker">
+                            Your staff profile
+                            <select
+                              value={employeeId}
+                              onChange={(event) =>
+                                setEmployeeId(event.target.value)
                               }
                             >
-                              Submit work update
-                            </button>
-                          </div>
-                        )}
+                              {state.employees
+                                .filter(
+                                  (employee) =>
+                                    employee.branchId ===
+                                    state.themes.find(
+                                      (item) => item.id === task.themeId,
+                                    )?.branchId,
+                                )
+                                .map((employee) => (
+                                  <option key={employee.id} value={employee.id}>
+                                    {employee.name} · {employee.jobTitle}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                          {["approved_open", "in_progress"].includes(
+                            task.status,
+                          ) && task.assigneeId === employeeId ? (
+                            <div className="staff-work-report">
+                              <label>
+                                Work completed
+                                <textarea
+                                  rows={4}
+                                  value={workReport}
+                                  onChange={(event) =>
+                                    setWorkReport(event.target.value)
+                                  }
+                                  placeholder="Describe what you inspected, repaired, or replaced…"
+                                />
+                              </label>
+                              <button
+                                disabled={
+                                  !!busy || workReport.trim().length < 5
+                                }
+                                onClick={() =>
+                                  void act("report_task", {
+                                    taskId: task.id,
+                                    employeeId,
+                                    note: workReport,
+                                  })
+                                }
+                              >
+                                {busy === "report_task"
+                                  ? "Submitting…"
+                                  : "Submit update"}
+                              </button>
+                            </div>
+                          ) : (
+                            <p className="staff-assignment-note">
+                              {task.status === "reported"
+                                ? "Your update was submitted and is waiting for owner review."
+                                : `Assigned to ${state.employees.find((employee) => employee.id === task.assigneeId)?.name || "another employee"}. Select the assigned staff profile to submit an update.`}
+                            </p>
+                          )}
+                        </section>
+                      )}
                       {task.status === "reported" && (
                         <div className="task-report">
                           <strong>Employee report</strong>
