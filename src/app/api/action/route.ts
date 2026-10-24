@@ -12,6 +12,7 @@ import {
   decideTask,
   resolveTask,
   createReply,
+  prepareReplies,
   editReply,
   approveReply,
   analyzePendingBatch,
@@ -102,6 +103,9 @@ export async function POST(request: NextRequest) {
           String(body.taskId),
           role,
         );
+        break;
+      case "prepare_replies":
+        result = await prepareReplies(String(body.taskId), role);
         break;
       case "edit_reply":
         result = await editReply(

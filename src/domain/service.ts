@@ -940,31 +940,41 @@ export async function proposeTask(themeId: string, role: string) {
     throw new Error(
       "An operational task needs at least one supporting source review.",
     );
-  const [existing] = await db
-    .select()
-    .from(tasks)
-    .where(eq(tasks.themeId, themeId))
-    .orderBy(desc(tasks.proposedAt));
-  if (
-    existing &&
-    !["resolved", "rejected", "deferred"].includes(existing.status)
-  )
-    return existing;
-  if (existing?.status === "resolved" && theme.status !== "recurrence")
-    throw new Error(
-      "A new related review is needed before opening a recurrence task.",
-    );
-  const id = randomUUID();
-  await db.insert(tasks).values({
-    id,
-    themeId,
-    branchId: theme.branchId,
-    title: `Inspect ${theme.title.toLowerCase()}`,
-    description: `Inspect the evidence for ${theme.title.toLowerCase()} and record what was actually done.`,
-    assigneeRole: "floor manager",
-    status: "proposed",
-    recurrenceOfTaskId: existing?.status === "resolved" ? existing.id : null,
+  const { id, created } = await db.transaction(async (tx) => {
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${themeId}))`);
+    const existingRows = await tx
+      .select()
+      .from(tasks)
+      .where(eq(tasks.themeId, themeId))
+      .orderBy(desc(tasks.proposedAt));
+    const existing =
+      existingRows.find((item) =>
+        ["reported", "in_progress", "approved_open"].includes(item.status),
+      ) ||
+      existingRows.find((item) =>
+        ["proposed", "deferred"].includes(item.status),
+      ) ||
+      existingRows[0];
+    if (existing && !["resolved", "rejected"].includes(existing.status))
+      return { id: existing.id, created: false };
+    if (existing?.status === "resolved" && theme.status !== "recurrence")
+      throw new Error(
+        "A new related review is needed before opening a recurrence task.",
+      );
+    const id = randomUUID();
+    await tx.insert(tasks).values({
+      id,
+      themeId,
+      branchId: theme.branchId,
+      title: `Inspect ${theme.title.toLowerCase()}`,
+      description: `Inspect the evidence for ${theme.title.toLowerCase()} and record what was actually done.`,
+      assigneeRole: "floor manager",
+      status: "proposed",
+      recurrenceOfTaskId: existing?.status === "resolved" ? existing.id : null,
+    });
+    return { id, created: true };
   });
+  if (!created) return await oneTask(id);
   await event(
     "task_proposed",
     "task",
@@ -988,7 +998,7 @@ export async function editTask(
 ) {
   requireOwner(role);
   const task = await oneTask(taskId);
-  requireTransition(task.status, ["proposed"], "edit");
+  requireTransition(task.status, ["proposed", "deferred"], "edit");
   const title = input.title.trim(),
     description = input.description.trim(),
     assigneeRole = input.assigneeRole.trim();
@@ -1025,6 +1035,7 @@ export async function editTask(
     "demo owner",
     "owner",
   );
+  return await oneTask(taskId);
 }
 export async function decideTask(
   taskId: string,
@@ -1034,7 +1045,7 @@ export async function decideTask(
   requireOwner(role);
   const task = await oneTask(taskId);
   if (decision === "approve" && task.status === "approved_open") return task;
-  requireTransition(task.status, ["proposed"], decision);
+  requireTransition(task.status, ["proposed", "deferred"], decision);
   if (decision !== "approve") {
     const status = decision === "reject" ? "rejected" : "deferred";
     await db.update(tasks).set({ status }).where(eq(tasks.id, taskId));
@@ -1091,7 +1102,12 @@ export async function decideTask(
         approver: "demo owner",
         approvalSnapshot: payload,
       })
-      .where(and(eq(tasks.id, taskId), eq(tasks.status, "proposed")))
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          inArray(tasks.status, ["proposed", "deferred"]),
+        ),
+      )
       .returning();
     if (!updated)
       throw new Error("Task has already changed state. Refresh and try again.");
@@ -1181,20 +1197,21 @@ export async function reportTask(
     { note: note.trim() },
   );
 }
-export async function verifyTask(taskId: string, role: string, note: string) {
+export async function verifyTask(taskId: string, role: string, note = "") {
   requireOwner(role);
   const task = await oneTask(taskId);
   requireTransition(task.status, ["reported"], "resolved");
   if (!task.employeeReport) throw new Error("Employee work report is missing.");
-  if (note.trim().length < 10)
+  if (note.trim() && note.trim().length < 10)
     throw new Error(
       "Verification note must describe what the manager checked.",
     );
+  const resolutionNote = note.trim() || task.employeeReport.trim();
   await db
     .update(tasks)
     .set({
       status: "resolved",
-      resolutionNote: note.trim(),
+      resolutionNote,
       resolvedAt: now(),
       verifiedAt: now(),
       verifiedBy: "demo owner",
@@ -1204,10 +1221,13 @@ export async function verifyTask(taskId: string, role: string, note: string) {
     "task_verified",
     "task",
     taskId,
-    "Manager verified the reported work and recorded the confirmed resolution.",
+    "Owner confirmed the employee-reported work.",
     "demo owner",
     "owner",
-    { report: task.employeeReport, verification: note.trim() },
+    {
+      report: task.employeeReport,
+      verification: note.trim() || "Owner confirmation",
+    },
   );
   return await oneTask(taskId);
 }
@@ -1252,18 +1272,24 @@ export async function createReply(
   let text: string,
     provider: string,
     model: string | null = null;
+  const fallbackText = `Thank you for sharing your experience at ${business.name}. We reviewed your feedback about ${theme.title.toLowerCase()}. Our team has verified this work: ${task.resolutionNote!.trim()}${unresolved.length ? ` We are still reviewing your other concern${unresolved.length === 1 ? "" : "s"} and cannot yet claim those are resolved.` : ""} Thank you for helping us improve.`;
   if (aiMode() === "live") {
-    const draft = await draftWithOpenAI(
-      review.originalText,
-      task.resolutionNote!,
-      business.name,
-      unresolved,
-    );
-    text = draft.text;
-    provider = "openai";
-    model = modelName();
+    try {
+      const draft = await draftWithOpenAI(
+        review.originalText,
+        task.resolutionNote!,
+        business.name,
+        unresolved,
+      );
+      text = draft.text;
+      provider = "openai";
+      model = modelName();
+    } catch {
+      text = fallbackText;
+      provider = "template_fallback";
+    }
   } else {
-    text = `Thank you for sharing your experience at ${business.name}. We reviewed your feedback about ${theme.title.toLowerCase()}. Our team has verified this work: ${task.resolutionNote!.trim()}${unresolved.length ? ` We are still reviewing your other concern${unresolved.length === 1 ? "" : "s"} and cannot yet claim those are resolved.` : ""} Thank you for helping us improve.`;
+    text = fallbackText;
     provider = "fixture";
   }
   const id = randomUUID();
@@ -1291,6 +1317,24 @@ export async function createReply(
     "system",
   );
   return await oneReply(id);
+}
+export async function prepareReplies(taskId: string, role: string) {
+  requireOwner(role);
+  const task = await oneTask(taskId);
+  canDraftReply(task.status, task.resolutionNote);
+  const linked = await db
+    .selectDistinct({ reviewId: observations.reviewId })
+    .from(observations)
+    .innerJoin(memberships, eq(memberships.observationId, observations.id))
+    .where(eq(memberships.themeId, task.themeId));
+  for (let index = 0; index < linked.length; index += 4) {
+    await Promise.all(
+      linked
+        .slice(index, index + 4)
+        .map(({ reviewId }) => createReply(reviewId, taskId, role)),
+    );
+  }
+  return { count: linked.length };
 }
 async function unresolvedReviewComplaints(
   reviewId: string,
@@ -1361,6 +1405,7 @@ export async function editReply(replyId: string, role: string, text: string) {
     "demo owner",
     "owner",
   );
+  return await oneReply(replyId);
 }
 export async function approveReply(
   replyId: string,
@@ -1409,10 +1454,10 @@ export async function approveReplyBatch(replyIds: unknown, role: string) {
   if (
     !Array.isArray(replyIds) ||
     replyIds.length < 1 ||
-    replyIds.length > 10 ||
+    replyIds.length > 300 ||
     !replyIds.every((id) => typeof id === "string")
   )
-    throw new Error("Select 1–10 replies for batch review.");
+    throw new Error("Select 1–300 replies for batch review.");
   const unique = [...new Set(replyIds)];
   for (const id of unique) {
     const reply = await oneReply(id);

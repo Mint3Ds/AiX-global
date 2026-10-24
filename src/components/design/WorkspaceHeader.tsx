@@ -42,15 +42,13 @@ export function WorkspaceHeader({
             <span />
           </div>
           <div>
-            <h1>
-              Visit<span>2</span>Value
-            </h1>
+            <h1>Clarity</h1>
             <p>Review workspace</p>
           </div>
         </div>
-        <div className="badges">
-          <label className="business-switcher">
-            Business
+        <div className="workspace-controls">
+          <label className="workspace-control business-switcher">
+            <span>Business</span>
             <select
               value={businessId}
               onChange={(event) => onBusinessChange(event.target.value)}
@@ -62,8 +60,8 @@ export function WorkspaceHeader({
               ))}
             </select>
           </label>
-          <label>
-            View as{" "}
+          <label className="workspace-control role-switcher">
+            <span>View as</span>
             <select
               value={role}
               onChange={(event) => onRoleChange(event.target.value as DemoRole)}

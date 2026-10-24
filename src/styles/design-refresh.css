@@ -28,11 +28,54 @@
   font-weight: 700;
 }
 .brand-lockup h1 span {
-  color: #0071e3;
+  color: var(--ink);
 }
 .brand-lockup p {
   font-size: 11px;
   letter-spacing: 0;
+}
+.workspace-controls {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  border: 1px solid #deded8;
+  border-radius: 7px;
+  background: #eeede8;
+}
+.workspace-control {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 13px;
+}
+.workspace-control + .workspace-control {
+  border-left: 1px solid #d9d8d1;
+}
+.workspace-control span {
+  color: #777771;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.workspace-control select {
+  min-width: 0;
+  max-width: 220px;
+  height: 24px;
+  padding: 0 21px 0 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.business-switcher select {
+  width: 205px;
+}
+.role-switcher select {
+  width: 95px;
 }
 .badges {
   gap: 18px;
@@ -79,6 +122,13 @@
 }
 main {
   padding-top: 62px;
+}
+main:has(> .tasks-page),
+main:has(> .replies-page) {
+  padding-top: 34px;
+}
+main:has(> .activity-page) {
+  padding-top: 34px;
 }
 main > section:not(.dashboard) > h2 {
   margin: 0 0 4px;

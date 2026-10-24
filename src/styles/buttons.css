@@ -15,8 +15,8 @@ main button:not(.link):not(.review-row),
 }
 main button:not(.link):not(.review-row):hover,
 .notice button:hover {
-  background: #0062c3;
-  border-color: #0062c3;
+  background: #44443d;
+  border-color: #44443d;
 }
 main button:not(.link):not(.review-row):disabled,
 .notice button:disabled {
