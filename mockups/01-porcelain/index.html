@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Clarity — Porcelain concept</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="preview-note">
+      CLARITY DESIGN STUDY <span>01 / PORCELAIN · STATIC PREVIEW</span>
+    </div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#dashboard" aria-label="Clarity overview"
+          ><img src="../../public/clarity-symbol.svg" alt="" /><span
+            >Clarity</span
+          ></a
+        >
+        <nav class="topnav" aria-label="Mockup sections">
+          <a href="#dashboard">Overview</a><a href="#reviews">Reviews</a
+          ><span>Issues</span><span>Tasks</span><span>Replies</span
+          ><span>Activity</span>
+        </nav>
+        <div class="account">
+          <span class="property">Harbour House Hotel <i>⌄</i></span
+          ><span class="avatar" aria-label="Owner profile">HH</span>
+        </div>
+      </header>
+      <main>
+        <section
+          id="dashboard"
+          class="dashboard section-wrap"
+          aria-labelledby="dashboard-title"
+        >
+          <div class="section-intro">
+            <div>
+              <p class="eyebrow">THURSDAY, 29 OCTOBER · OWNER VIEW</p>
+              <h1 id="dashboard-title">Good evening, Harbour House.</h1>
+              <p class="lead">
+                A clear view of what guests are saying and what needs your
+                attention.
+              </p>
+            </div>
+            <span class="quiet-action">＋ Add review</span>
+          </div>
+          <div class="attention-card">
+            <div class="attention-icon">!</div>
+            <div>
+              <p class="eyebrow">YOUR PRIORITY TODAY</p>
+              <h2>2 issues are ready for review</h2>
+              <p>
+                Air conditioning and room cleanliness have recent guest
+                evidence.
+              </p>
+            </div>
+            <a href="#reviews"
+              >Review guest evidence <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <div class="metric-row" aria-label="Illustrative metrics">
+            <article>
+              <p>Reviews received</p>
+              <strong>244</strong><small>Across 2 properties</small>
+            </article>
+            <article>
+              <p>New today</p>
+              <strong>06</strong><small>Recent arrivals</small>
+            </article>
+            <article>
+              <p>Specific feedback</p>
+              <strong>179</strong><small>Ready to explore</small>
+            </article>
+            <article>
+              <p>Open work</p>
+              <strong>04</strong><small>Approved tasks</small>
+            </article>
+            <article>
+              <p>Replies awaiting you</p>
+              <strong>03</strong><small>Drafts to approve</small>
+            </article>
+          </div>
+          <div class="dashboard-grid">
+            <section class="surface issue-panel">
+              <div class="panel-top">
+                <div>
+                  <p class="eyebrow">PRIORITY ISSUES</p>
+                  <h2>What guests keep mentioning</h2>
+                </div>
+                <span class="link-look">View all issues →</span>
+              </div>
+              <article class="feature-issue">
+                <div class="tags">
+                  <span class="tag amber">High priority</span
+                  ><span class="tag">Central property</span>
+                </div>
+                <h3>Air conditioning in guest rooms</h3>
+                <p>24 distinct reviews mention the same problem.</p>
+                <blockquote>
+                  “The AC in room 226 blew warm air all night.”
+                </blockquote>
+                <div class="feature-bottom">
+                  <span>Last mentioned today</span
+                  ><span class="link-look">Inspect issue →</span>
+                </div>
+              </article>
+              <div class="issue-line">
+                <span class="dot amber-dot"></span>
+                <div>
+                  <strong>Insects near bathrooms</strong
+                  ><small>8 reviews · Central property</small>
+                </div>
+                <span>↗</span>
+              </div>
+              <div class="issue-line">
+                <span class="dot blue-dot"></span>
+                <div>
+                  <strong>Slow breakfast service</strong
+                  ><small>6 reviews · Garden property</small>
+                </div>
+                <span>↗</span>
+              </div>
+            </section>
+            <section class="surface activity-panel">
+              <div class="panel-top">
+                <div>
+                  <p class="eyebrow">WORKSPACE</p>
+                  <h2>Recent activity</h2>
+                </div>
+              </div>
+              <div class="activity-item">
+                <span class="activity-symbol">✓</span>
+                <div>
+                  <strong>Review analysed</strong>
+                  <p>Three points found in a new Central property review.</p>
+                  <small>Today · 10:42 AM</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <span class="activity-symbol">↗</span>
+                <div>
+                  <strong>Task approved</strong>
+                  <p>Maintenance check assigned for room cooling.</p>
+                  <small>Yesterday · 4:18 PM</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <span class="activity-symbol">○</span>
+                <div>
+                  <strong>Reply drafted</strong>
+                  <p>A guest response is ready for owner approval.</p>
+                  <small>Yesterday · 2:05 PM</small>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+        <section
+          id="reviews"
+          class="reviews section-wrap"
+          aria-labelledby="reviews-title"
+        >
+          <div class="section-intro reviews-intro">
+            <div>
+              <p class="eyebrow">GUEST VOICE</p>
+              <h1 id="reviews-title">Reviews</h1>
+              <p class="lead">
+                Every original review, with its evidence kept in context.
+              </p>
+            </div>
+            <span class="count-pill">244 total</span>
+          </div>
+          <div class="review-toolbar">
+            <div class="search-box">
+              <span aria-hidden="true">⌕</span
+              ><span>Search review text or evidence</span>
+            </div>
+            <div class="filter-pills">
+              <span class="active">All reviews</span
+              ><span>Needs attention <b>12</b></span
+              ><span>Recent</span><span>More filters ⌄</span>
+            </div>
+          </div>
+          <div class="review-layout">
+            <div class="review-list">
+              <div class="list-label">
+                <span>RECENT REVIEWS</span><span>Newest first ⌄</span>
+              </div>
+              <article class="review-card selected">
+                <div class="review-card-top">
+                  <span class="stars" aria-label="2 out of 5 stars"
+                    >★★<span>★★★</span></span
+                  ><span class="status amber">2 issues</span>
+                </div>
+                <p>
+                  The AC in room 226 blew warm air all night. We also saw a
+                  small insect near the bathroom sink...
+                </p>
+                <div class="review-card-bottom">
+                  <span>Central property</span
+                  ><time datetime="2026-10-29">29 Oct 2026</time>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card-top">
+                  <span class="stars" aria-label="4 out of 5 stars"
+                    >★★★★<span>★</span></span
+                  ><span class="status">Analysed</span>
+                </div>
+                <p>
+                  Staff at the front desk were patient and helpful, even during
+                  a busy check-in.
+                </p>
+                <div class="review-card-bottom">
+                  <span>Garden property</span
+                  ><time datetime="2026-10-28">28 Oct 2026</time>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card-top">
+                  <span class="stars" aria-label="3 out of 5 stars"
+                    >★★★<span>★★</span></span
+                  ><span class="status">Analysed</span>
+                </div>
+                <p>
+                  Breakfast was lovely, but service took longer than expected
+                  both mornings.
+                </p>
+                <div class="review-card-bottom">
+                  <span>Central property</span
+                  ><time datetime="2026-10-27">27 Oct 2026</time>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card-top">
+                  <span class="stars" aria-label="5 out of 5 stars">★★★★★</span
+                  ><span class="status">Analysed</span>
+                </div>
+                <p>
+                  Beautiful stay. The team helped us settle in and made the
+                  weekend feel easy.
+                </p>
+                <div class="review-card-bottom">
+                  <span>Garden property</span
+                  ><time datetime="2026-10-26">26 Oct 2026</time>
+                </div>
+              </article>
+            </div>
+            <article class="review-detail surface">
+              <div class="detail-head">
+                <div>
+                  <p class="eyebrow">ORIGINAL REVIEW</p>
+                  <h2>Guest feedback from Central</h2>
+                </div>
+                <span class="detail-number">01 / 244</span>
+              </div>
+              <div class="detail-meta">
+                <span class="stars">★★<span>★★★</span></span
+                ><span>Central property</span><span>29 Oct 2026</span
+                ><span>Simulated source</span>
+              </div>
+              <blockquote>
+                “The AC in room 226 blew warm air all night. We also saw a small
+                insect near the bathroom sink. The front desk was patient and
+                helpful.”
+              </blockquote>
+              <div class="findings">
+                <div class="findings-title">
+                  <h3>What we found</h3>
+                  <span>3 observations</span>
+                </div>
+                <div class="finding">
+                  <span class="finding-mark amber-mark">!</span>
+                  <div>
+                    <small>FACILITIES · LINKED TO ISSUE</small
+                    ><strong>Air conditioning did not cool room 226</strong>
+                    <p>“The AC in room 226 blew warm air all night.”</p>
+                  </div>
+                </div>
+                <div class="finding">
+                  <span class="finding-mark amber-mark">!</span>
+                  <div>
+                    <small>CLEANLINESS · NEW EVIDENCE</small
+                    ><strong>Insect near bathroom sink</strong>
+                    <p>“We also saw a small insect near the bathroom sink.”</p>
+                  </div>
+                </div>
+                <div class="finding">
+                  <span class="finding-mark green-mark">✓</span>
+                  <div>
+                    <small>POSITIVE FEEDBACK</small
+                    ><strong>Helpful front desk staff</strong>
+                    <p>“The front desk was patient and helpful.”</p>
+                  </div>
+                </div>
+              </div>
+              <div class="detail-footer">
+                <span>Original wording preserved</span
+                ><span class="link-look">View related issues →</span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
