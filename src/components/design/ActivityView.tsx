@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PageHeading } from "./PageHeading";
 
 type ActivityEvent = {
   id: string;
@@ -150,13 +151,16 @@ export function ActivityView({
 
   return (
     <section className="activity-page">
-      <div className="activity-page-heading">
-        <div>
-          <h2>Activity</h2>
-          <p>Workspace history</p>
-        </div>
-        <span>{available.length} updates</span>
-      </div>
+      <PageHeading
+        index="06"
+        eyebrow="Workspace history"
+        title="A record of every next step."
+        description="Reviews, decisions, and work updates in one traceable timeline."
+      >
+        <span className="page-count">
+          <strong>{available.length}</strong> updates
+        </span>
+      </PageHeading>
       <div
         className="activity-filters"
         role="group"

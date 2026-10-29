@@ -143,7 +143,7 @@ textarea::placeholder {
 .new-review-sample small {
   font-size: 11px;
 }
-.new-review-sample span {
+.new-review-sample > span {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -175,7 +175,7 @@ textarea::placeholder {
 .task-related-issue summary,
 .task-instructions summary {
   cursor: pointer;
-  color: var(--violet);
+  color: var(--action);
   font-weight: 600;
 }
 .task-related-issue summary {
@@ -312,7 +312,7 @@ main .issue-category-tabs button:not(.review-row) {
   font-size: 13px;
 }
 main .issue-category-tabs button.active:not(.review-row) {
-  border-color: var(--violet);
+  border-color: var(--action);
   background: var(--paper-deep);
 }
 main .issue-category-tabs button span {
@@ -405,7 +405,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .review-row:hover,
 .review-row.chosen {
   border-color: #aca99d;
-  background: var(--violet-light);
+  background: var(--action-tint);
 }
 .review-row b {
   font-weight: 600;
@@ -556,7 +556,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .detail blockquote.evidence-quote {
   margin: 12px 0;
   padding: 0 0 0 14px;
-  border-left-color: var(--violet);
+  border-left-color: var(--action);
   border-radius: 0;
   background: transparent;
   font-size: 16px;
@@ -622,7 +622,7 @@ main .page-controls button.secondary:not(:disabled):hover {
   min-height: 44px;
   align-items: center;
   cursor: pointer;
-  color: var(--violet);
+  color: var(--action);
   font-size: 13px;
   font-weight: 550;
 }
@@ -671,7 +671,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 .detail blockquote.review-original {
   margin: 0 0 30px;
   padding: 20px 22px;
-  border-left-color: var(--violet);
+  border-left-color: var(--action);
   background: var(--surface-alt);
   font-size: 17px;
   line-height: 1.65;
@@ -920,7 +920,7 @@ main .page-controls button.secondary:not(:disabled):hover {
 }
 .tasks-page .review-row.chosen {
   border-color: #a9a599;
-  background: var(--violet-light);
+  background: var(--action-tint);
 }
 .tasks-page .task-list-empty {
   margin: 0;

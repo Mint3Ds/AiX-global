@@ -1,46 +1,70 @@
-main button:not(.link):not(.review-row),
+main button:where(:not(.link):not(.review-row):not(.register-review-button)),
 .notice button {
-  border: 1px solid var(--violet);
-  border-radius: 5px;
-  background: var(--violet);
-  color: #fff;
-  padding: 9px 14px;
-  font-size: 13px;
-  font-weight: 550;
+  min-height: 40px;
+  padding: 10px 16px;
+  border: 1px solid var(--action);
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1.35;
   box-shadow: none;
+}
+button,
+input,
+select,
+textarea,
+summary {
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast),
+    box-shadow var(--motion-fast),
+    transform var(--motion-fast) var(--ease-out);
 }
-main button:not(.link):not(.review-row):hover,
+main
+  button:where(:not(.link):not(.review-row):not(.register-review-button)):hover,
 .notice button:hover {
-  background: #44443d;
-  border-color: #44443d;
+  background: #213d2c;
+  border-color: #213d2c;
 }
-main button:not(.link):not(.review-row):disabled,
-.notice button:disabled {
-  opacity: 0.5;
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+button:disabled,
+select:disabled,
+input:disabled,
+textarea:disabled {
+  opacity: 0.48;
   cursor: not-allowed;
 }
-button.secondary:not(.link) {
-  border-color: var(--line);
+main button.secondary:not(.link) {
+  border-color: var(--line-strong);
   background: var(--paper-light);
   color: var(--ink);
 }
-button.secondary:not(.link):hover {
-  background: var(--paper-deep);
-  border-color: var(--line);
-  color: var(--ink);
+main button.secondary:not(.link):hover {
+  border-color: var(--accent);
+  background: var(--surface-alt);
+  color: var(--action);
 }
 button.link {
+  min-height: 32px;
+  padding: 3px 0;
   border: 0;
+  border-radius: 0;
   background: none;
-  color: var(--violet);
+  color: var(--action);
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
   text-decoration: none;
-  padding: 0;
-  font-weight: 500;
+  text-underline-offset: 4px;
 }
 button.link:hover {
   text-decoration: underline;
+}
+button.link span {
+  margin-left: 5px;
 }
