@@ -93,7 +93,7 @@ npm run build
 - `src/data/schema.ts`, `migrations/`: PostgreSQL/Drizzle schema and additive migrations.
 - `scripts/seed-impl.ts`, `scripts/generate-hotel-fixtures.py`, `data/fixtures/visit2value/`: repeatable synthetic data.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the data flow and [dataset documentation](data/fixtures/visit2value/DATASET_README.md) for fixture provenance. Production use would need authorized review-source access, real identity and permissions, operational verification controls, and a documented Orbyte integration. This demo makes no claim of real posting or measured business improvement.
+See the [technical pipeline guide](docs/TECHNICAL_PIPELINE.md) for the complete UI-to-database walkthrough, diagrams, action contract, state transitions, and debugging steps. [ARCHITECTURE.md](ARCHITECTURE.md) gives the short overview, and the [dataset documentation](data/fixtures/visit2value/DATASET_README.md) explains fixture provenance. Production use would need authorized review-source access, real identity and permissions, operational verification controls, and a documented Orbyte integration. This demo makes no claim of real posting or measured business improvement.
 
 ## Overall Project Structure
 
