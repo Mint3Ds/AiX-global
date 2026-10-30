@@ -649,6 +649,22 @@ main .issue-category-tabs button:hover:not(.review-row) {
 .issue-row-bottom small {
   font-size: 10px;
 }
+.issue-row-work-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--action);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+.issue-row-work-status > span {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
 .issues-page .issue-list-paginated .review-row {
   margin-bottom: 0;
   padding: 20px 14px;
@@ -691,6 +707,41 @@ main .page-controls button {
 .issue-detail-heading h3 {
   font-size: 27px;
   font-weight: 590;
+}
+.issue-work-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.issue-work-strip > div {
+  min-width: 0;
+}
+.issue-work-strip .eyebrow {
+  display: block;
+  margin-bottom: 6px;
+}
+.issue-work-strip strong {
+  font-size: 16px;
+  font-weight: 620;
+}
+.issue-work-strip p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.issue-work-strip button {
+  flex: none;
+}
+@media (max-width: 540px) {
+  .issue-work-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 .issue-decision {
   padding: 20px;

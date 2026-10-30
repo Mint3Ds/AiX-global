@@ -168,6 +168,17 @@ const label = (value: string) =>
   value === "simulated_published" || value === "reply_simulated_published"
     ? "posted"
     : value.replaceAll("_", " ");
+const issueWorkLabels: Record<string, string> = {
+  proposed: "Task awaiting approval",
+  deferred: "Task saved for later",
+  approved_open: "Assigned work",
+  in_progress: "In progress",
+  reported: "Awaiting verification",
+  needs_rework: "Needs rework",
+  resolved: "Work verified",
+};
+const issueWorkLabel = (status: string) =>
+  issueWorkLabels[status] || "Work task";
 function revealDetailOnMobile(id: string, maxWidth = 640) {
   if (!window.matchMedia(`(max-width: ${maxWidth}px)`).matches) return;
   requestAnimationFrame(() => {
@@ -567,6 +578,22 @@ export function Workspace() {
     }
     return [...byIssue.values()];
   }, [state]);
+  const issueTaskByTheme = useMemo(() => {
+    const byTheme = new Map<string, Task>();
+    for (const item of state?.tasks || []) {
+      if (item.status !== "resolved") continue;
+      const previous = byTheme.get(item.themeId);
+      if (
+        !previous ||
+        new Date(item.resolvedAt || 0).getTime() >
+          new Date(previous.resolvedAt || 0).getTime()
+      )
+        byTheme.set(item.themeId, item);
+    }
+    for (const item of openTasks) byTheme.set(item.themeId, item);
+    return byTheme;
+  }, [state, openTasks]);
+  const issueTask = theme ? issueTaskByTheme.get(theme.id) : undefined;
   const selectedTaskRow = state?.tasks.find((item) => item.id === selectedTask);
   const task =
     openTasks.find((item) => item.id === selectedTask) ||
@@ -1883,7 +1910,16 @@ export function Workspace() {
                               <span>
                                 {state.themeSupport[item.id] || 0} reviews
                               </span>
-                              <small>Severity {item.severity}/3</small>
+                              {issueTaskByTheme.has(item.id) ? (
+                                <span className="issue-row-work-status">
+                                  <span aria-hidden="true" />
+                                  {issueWorkLabel(
+                                    issueTaskByTheme.get(item.id)!.status,
+                                  )}
+                                </span>
+                              ) : (
+                                <small>Severity {item.severity}/3</small>
+                              )}
                             </span>
                           </button>
                         ))
@@ -1926,6 +1962,32 @@ export function Workspace() {
                             </span>
                           </div>
                         </div>
+                        {issueTask && (
+                          <div className="issue-work-strip">
+                            <div>
+                              <span className="eyebrow">Work task</span>
+                              <strong>
+                                {issueWorkLabel(issueTask.status)}
+                              </strong>
+                              <p>
+                                {issueTask.title}
+                                {issueTask.status === "resolved" &&
+                                issueTask.verifiedAt
+                                  ? ` · Verified ${date(issueTask.verifiedAt)}`
+                                  : issueTask.dueAt
+                                    ? ` · Due ${date(issueTask.dueAt)}`
+                                    : ""}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              className="secondary"
+                              onClick={() => openTask(issueTask.id)}
+                            >
+                              View task
+                            </button>
+                          </div>
+                        )}
                         {owner && (
                           <div className="issue-decision">
                             <div className="issue-decision-header">
@@ -2071,7 +2133,10 @@ export function Workspace() {
                           owner &&
                           ["owner_confirmed", "recurrence"].includes(
                             theme.status,
-                          ) && (
+                          ) &&
+                          (!issueTask ||
+                            (issueTask.status === "resolved" &&
+                              theme.status === "recurrence")) && (
                             <button
                               className="create-task-button"
                               onClick={async () => {
