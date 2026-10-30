@@ -171,6 +171,15 @@
   .tasks-page .staff-work-report {
     grid-template-columns: 1fr;
   }
+  .task-report-attempt {
+    grid-template-columns: minmax(120px, 155px) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .staff-queue-meta {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
   .task-source-review {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -458,6 +467,42 @@
   }
   .task-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .staff-dashboard .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .staff-dashboard-profile {
+    width: 100%;
+  }
+  .staff-dashboard-summary {
+    margin: 22px 0 31px;
+  }
+  .staff-dashboard-summary > div {
+    padding: 15px 12px;
+  }
+  .staff-dashboard-summary strong {
+    font-size: 25px;
+  }
+  .staff-dashboard-summary span {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .staff-dashboard-queue li > button {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .staff-queue-meta {
+    justify-content: flex-start;
+  }
+  .task-report-attempt {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .task-report-history-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .new-review-page .new-review-form {
     grid-template-columns: 1fr;

@@ -77,6 +77,23 @@ describe("review and workflow rules", () => {
         (x) => x.id,
       ),
     ).toEqual(["sunway-praise"]);
+    expect(
+      candidateThemes(
+        [
+          ...items,
+          {
+            id: "sunway-insects",
+            title: "Bathroom insect sightings",
+            branchId: "sunway",
+            type: "operational_issue",
+            activeTask: "in_progress: inspect bathroom",
+          },
+        ],
+        "sunway",
+        "operational_complaint",
+        "flickering bedside lamp",
+      ).map((x) => x.id),
+    ).toEqual([]);
   });
   it("counts reviews once and recalculates after an owner correction", () => {
     const points = [

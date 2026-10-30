@@ -13,6 +13,7 @@ import {
   tasks,
   handoffs,
   taskReportAttempts,
+  taskReportAttachments,
   replies,
   replyDraftVersions,
   events,
@@ -40,7 +41,7 @@ import { screenWithJev } from "@/integrations/jev/screen";
 import {
   screenWithOpenAI,
   extractWithOpenAI,
-  matchWithOpenAI,
+  matchObservationsWithOpenAI,
   draftWithOpenAI,
   modelName,
 } from "@/integrations/openai/client";
@@ -248,6 +249,7 @@ export async function getState(businessId: string = defaultBusinessId) {
     allThemes,
     allMemberships,
     allTasks,
+    allReportAttempts,
     allHandoffs,
     allReplies,
     allEvents,
@@ -280,6 +282,11 @@ export async function getState(businessId: string = defaultBusinessId) {
       .select()
       .from(tasks)
       .where(themeIds.length ? inArray(tasks.themeId, themeIds) : sql`false`),
+    db
+      .select()
+      .from(taskReportAttempts)
+      .where(inArray(taskReportAttempts.taskId, taskIds))
+      .orderBy(desc(taskReportAttempts.reportedAt)),
     db.select().from(handoffs).where(taskWhere),
     db
       .select()
@@ -294,6 +301,25 @@ export async function getState(businessId: string = defaultBusinessId) {
       .orderBy(desc(events.createdAt)),
     db.select().from(employees).where(eq(employees.businessId, businessId)),
   ]);
+  const attemptIds = allReportAttempts.map((attempt) => attempt.id);
+  const allReportAttachments = attemptIds.length
+    ? await db
+        .select({
+          id: taskReportAttachments.id,
+          reportAttemptId: taskReportAttachments.reportAttemptId,
+          name: taskReportAttachments.name,
+          mediaType: taskReportAttachments.mediaType,
+          createdAt: taskReportAttachments.createdAt,
+        })
+        .from(taskReportAttachments)
+        .where(inArray(taskReportAttachments.reportAttemptId, attemptIds))
+    : [];
+  const attachmentsByAttempt = new Map<string, typeof allReportAttachments>();
+  for (const attachment of allReportAttachments) {
+    const group = attachmentsByAttempt.get(attachment.reportAttemptId) || [];
+    group.push(attachment);
+    attachmentsByAttempt.set(attachment.reportAttemptId, group);
+  }
   const themeSupport = Object.fromEntries(
     allThemes.map((theme) => [
       theme.id,
@@ -313,6 +339,18 @@ export async function getState(businessId: string = defaultBusinessId) {
     themes: allThemes,
     memberships: allMemberships,
     tasks: allTasks,
+    taskReportAttempts: allReportAttempts.map((attempt) => ({
+      ...attempt,
+      attachments: (attachmentsByAttempt.get(attempt.id) || []).map(
+        (attachment) => ({
+          id: attachment.id,
+          name: attachment.name,
+          mediaType: attachment.mediaType,
+          createdAt: attachment.createdAt,
+          url: "/api/task-attachments/" + attachment.id,
+        }),
+      ),
+    })),
     handoffs: allHandoffs,
     replies: allReplies,
     events: allEvents,
@@ -468,6 +506,16 @@ export async function assertActionScope(
 }
 
 export async function analyzeReview(reviewId: string) {
+  const pipelineStarted = performance.now();
+  const stageTimings: Record<string, number> = {};
+  const measure = async <T>(stage: string, operation: () => Promise<T>) => {
+    const started = performance.now();
+    try {
+      return await operation();
+    } finally {
+      stageTimings[stage] = Math.round(performance.now() - started);
+    }
+  };
   const review = await oneReview(reviewId);
   if (["complete", "generic"].includes(review.processingStatus))
     return {
@@ -536,12 +584,17 @@ export async function analyzeReview(reviewId: string) {
       extractionProvider = useful ? "fixture" : null;
       matchingProvider = useful ? "fixture" : null;
     } else {
-      const screening = await screenWithFallback(
-        review.originalText,
-        screenWithJev,
-        screenWithOpenAI,
-        modelName(),
+      const screening = await measure("screeningMs", () =>
+        screenWithFallback(
+          review.originalText,
+          screenWithJev,
+          screenWithOpenAI,
+          modelName(),
+        ),
       );
+      stageTimings.jevScreeningMs = screening.timings.jevMs;
+      stageTimings.openAIFallbackScreeningMs =
+        screening.timings.openaiFallbackMs;
       provider = screening.provider;
       model = screening.model;
       if (screening.jevError)
@@ -554,7 +607,9 @@ export async function analyzeReview(reviewId: string) {
           .set({ processingStage: "extraction", updatedAt: now() })
           .where(eq(reviews.id, reviewId));
         extractionProvider = "openai";
-        const extracted = await extractWithOpenAI(review.originalText);
+        const extracted = await measure("extractionMs", () =>
+          extractWithOpenAI(review.originalText),
+        );
         inputs = extracted.observations;
       }
     }
@@ -585,54 +640,92 @@ export async function analyzeReview(reviewId: string) {
               ),
             )
         : [];
-    const matches: (string | null)[] = [];
-    let modelMatched = false;
-    for (let index = 0; index < inputs.length; index += 3) {
-      const group = await Promise.all(
-        inputs.slice(index, index + 3).map(async (input) => {
-          if (aiMode() === "fixture")
-            return {
-              themeId:
-                (input as ObservationInput & { expectedThemeId?: string })
-                  .expectedThemeId ?? null,
-              usedModel: false,
-            };
-          const candidates = candidateThemes(
-            branchThemes,
-            review.branchId,
-            input.kind,
-            `${input.aspect} ${input.normalizedDescription}`,
-          );
-          const normalizedAspect = input.aspect
-            .replaceAll("_", " ")
-            .trim()
-            .toLowerCase();
-          const exactCandidate = normalizedAspect.includes(" ")
-            ? candidates.find(
-                (candidate) =>
-                  candidate.title.trim().toLowerCase() === normalizedAspect,
-              )
-            : undefined;
-          if (exactCandidate)
-            return { themeId: exactCandidate.id, usedModel: false };
-          if (!candidates.length) return { themeId: null, usedModel: false };
-          const match = await matchWithOpenAI(input, candidates);
-          if (
-            match.themeId &&
-            !candidates.some((candidate) => candidate.id === match.themeId)
+    const activeThemeTasks = branchThemes.length
+      ? await db
+          .select({
+            themeId: tasks.themeId,
+            title: tasks.title,
+            status: tasks.status,
+          })
+          .from(tasks)
+          .where(
+            and(
+              inArray(
+                tasks.themeId,
+                branchThemes.map((theme) => theme.id),
+              ),
+              inArray(tasks.status, [
+                "proposed",
+                "deferred",
+                "approved_open",
+                "in_progress",
+                "reported",
+                "needs_rework",
+              ]),
+            ),
           )
-            throw new Error(
-              "Theme match returned an invalid or cross-branch ID.",
-            );
-          return { themeId: match.themeId || null, usedModel: true };
-        }),
+      : [];
+    const themesForMatching = branchThemes.map((theme) => ({
+      ...theme,
+      activeTask:
+        activeThemeTasks
+          .filter((task) => task.themeId === theme.id)
+          .map((task) => task.status + ": " + task.title)
+          .slice(0, 4)
+          .join("; ") || null,
+    }));
+    const candidatesByObservation = inputs.map((input) =>
+      candidateThemes(
+        themesForMatching,
+        review.branchId,
+        input.kind,
+        input.aspect + " " + input.normalizedDescription,
+      ).slice(0, 20),
+    );
+    const matches = await measure("issueMatchingMs", async () => {
+      if (aiMode() === "fixture")
+        return inputs.map(
+          (input) =>
+            (input as ObservationInput & { expectedThemeId?: string })
+              .expectedThemeId ?? null,
+        );
+      const exact = inputs.map((input, index) => {
+        const aspect = input.aspect.replaceAll("_", " ").trim().toLowerCase();
+        return aspect.includes(" ")
+          ? candidatesByObservation[index].find(
+              (candidate) => candidate.title.trim().toLowerCase() === aspect,
+            )?.id || null
+          : null;
+      });
+      if (
+        exact.every(Boolean) ||
+        candidatesByObservation.every((items) => !items.length)
+      )
+        return exact;
+      const result = [...exact];
+      const matched = await matchObservationsWithOpenAI(
+        inputs,
+        candidatesByObservation,
       );
-      matches.push(...group.map((item) => item.themeId));
-      modelMatched ||= group.some((item) => item.usedModel);
-    }
-    if (aiMode() === "live" && modelMatched) matchingProvider = "openai";
+      for (const item of matched.matches) {
+        if (item.observationIndex >= inputs.length)
+          throw new Error("Theme match returned an invalid observation index.");
+        const candidates = candidatesByObservation[item.observationIndex];
+        if (
+          item.themeId &&
+          !candidates.some((candidate) => candidate.id === item.themeId)
+        )
+          throw new Error(
+            "Theme match returned an invalid or cross-branch ID.",
+          );
+        result[item.observationIndex] ||= item.themeId || null;
+      }
+      if (matched.matches.length) matchingProvider = "openai";
+      return result;
+    });
     const runId = randomUUID();
     const changedThemes = new Set<string>();
+    const persistStarted = performance.now();
     await db.transaction(async (tx) => {
       await tx.insert(analysisRuns).values({
         id: runId,
@@ -647,6 +740,7 @@ export async function analyzeReview(reviewId: string) {
         promptVersion: "v1",
         mode: aiMode(),
         safeError: errorNote,
+        stageTimings,
       });
       for (const [index, input] of inputs.entries()) {
         const id = randomUUID(),
@@ -714,6 +808,9 @@ export async function analyzeReview(reviewId: string) {
         })
         .where(eq(reviews.id, reviewId));
     });
+    stageTimings.databasePersistMs = Math.round(
+      performance.now() - persistStarted,
+    );
     for (const themeId of changedThemes) await recalculatePriority(themeId);
     for (const themeId of changedThemes) {
       const [previous] = await db
@@ -753,13 +850,28 @@ export async function analyzeReview(reviewId: string) {
         changedThemes: [...changedThemes],
       },
     );
+    stageTimings.pipelineMs = Math.round(performance.now() - pipelineStarted);
+    await db
+      .update(analysisRuns)
+      .set({ stageTimings })
+      .where(eq(analysisRuns.id, runId));
+    console.info("Review analysis timing", {
+      reviewId,
+      mode: aiMode(),
+      screeningProvider: provider,
+      extractionProvider,
+      matchingProvider,
+      ...stageTimings,
+    });
     return {
       reviewId,
       status: useful ? "complete" : "generic",
       provider,
+      timings: stageTimings,
       changedThemes: [...changedThemes],
     };
   } catch (error) {
+    stageTimings.pipelineMs = Math.round(performance.now() - pipelineStarted);
     const safe =
       error instanceof ProviderError
         ? error.message
@@ -778,6 +890,7 @@ export async function analyzeReview(reviewId: string) {
       promptVersion: "v1",
       mode: aiMode(),
       safeError: safe,
+      stageTimings,
     });
     await db
       .update(reviews)
@@ -788,6 +901,15 @@ export async function analyzeReview(reviewId: string) {
       })
       .where(eq(reviews.id, reviewId));
     await event("analysis_failed", "review", reviewId, safe);
+    console.info("Review analysis timing", {
+      reviewId,
+      mode: aiMode(),
+      screeningProvider: provider,
+      extractionProvider,
+      matchingProvider,
+      failed: true,
+      ...stageTimings,
+    });
     return { reviewId, status: "failed", error: safe };
   }
 }
@@ -1208,6 +1330,7 @@ export async function reportTask(
   role: string,
   employeeId: string,
   note: string,
+  attachmentsInput: unknown = [],
 ) {
   const task = await oneTask(taskId);
   if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
@@ -1219,6 +1342,42 @@ export async function reportTask(
   );
   if (note.trim().length < 10)
     throw new Error("A work report of at least 10 characters is required.");
+  if (!Array.isArray(attachmentsInput) || attachmentsInput.length > 5)
+    throw new WorkflowError("Attach up to five image files per work report.");
+  const attachments = attachmentsInput.map((item) => {
+    if (!item || typeof item !== "object")
+      throw new WorkflowError("Each work attachment must be an image.");
+    const value = item as {
+      name?: unknown;
+      mediaType?: unknown;
+      dataUrl?: unknown;
+    };
+    const name =
+      typeof value.name === "string"
+        ? value.name.replace(/[\\/\u0000-\u001f]/g, "").slice(0, 160)
+        : "work-evidence";
+    const mediaType =
+      typeof value.mediaType === "string" ? value.mediaType : "";
+    const dataUrl = typeof value.dataUrl === "string" ? value.dataUrl : "";
+    if (!["image/jpeg", "image/png", "image/webp"].includes(mediaType))
+      throw new WorkflowError(
+        "Work evidence must be a JPEG, PNG, or WebP image.",
+      );
+    const prefix = "data:" + mediaType + ";base64,";
+    const dataBase64 = dataUrl.startsWith(prefix)
+      ? dataUrl.slice(prefix.length)
+      : "";
+    if (!dataBase64 || !/^[A-Za-z0-9+/]+={0,2}$/.test(dataBase64))
+      throw new WorkflowError(
+        "A work image could not be read. Choose it again.",
+      );
+    const size = Buffer.from(dataBase64, "base64").byteLength;
+    if (!size || size > 2 * 1024 * 1024)
+      throw new WorkflowError("Each work image must be 2 MB or smaller.");
+    return { name: name || "work-evidence", mediaType, dataBase64, size };
+  });
+  if (attachments.reduce((sum, item) => sum + item.size, 0) > 6 * 1024 * 1024)
+    throw new WorkflowError("Keep the total image evidence under 6 MB.");
   const actor = role === "owner" ? "demo owner" : employeeId;
   const businessId = (await oneTheme(task.themeId)).businessId;
   return db.transaction(async (tx) => {
@@ -1247,8 +1406,9 @@ export async function reportTask(
       throw new WorkflowError(
         "This task has changed. Refresh before submitting the report again.",
       );
+    const reportAttemptId = randomUUID();
     await tx.insert(taskReportAttempts).values({
-      id: randomUUID(),
+      id: reportAttemptId,
       taskId,
       version: updated.reportVersion,
       note: note.trim(),
@@ -1256,6 +1416,16 @@ export async function reportTask(
       reportedBy: actor,
       decision: "pending",
     });
+    if (attachments.length)
+      await tx.insert(taskReportAttachments).values(
+        attachments.map((attachment) => ({
+          id: randomUUID(),
+          reportAttemptId,
+          name: attachment.name,
+          mediaType: attachment.mediaType,
+          dataBase64: attachment.dataBase64,
+        })),
+      );
     await tx.insert(events).values({
       id: randomUUID(),
       actor,

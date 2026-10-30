@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DashboardView } from "@/components/design/DashboardView";
 import { ActivityView } from "@/components/design/ActivityView";
 import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
+import { TaskReportHistory } from "@/components/design/TaskReportHistory";
+import { StaffDashboardView } from "@/components/design/StaffDashboardView";
 import { PageHeading, StatusBadge } from "@/components/design/PageHeading";
 import {
   WorkspaceHeader,
@@ -81,6 +83,17 @@ type Task = {
   approvedAt: string | null;
   resolvedAt: string | null;
 };
+type TaskReportAttempt = {
+  id: string;
+  taskId: string;
+  version: number;
+  note: string;
+  reportedAt: string;
+  decision: string;
+  decisionReason: string | null;
+  decidedAt: string | null;
+  attachments: { id: string; name: string; url: string }[];
+};
 type Reply = {
   id: string;
   reviewId: string;
@@ -107,6 +120,7 @@ type Run = {
   matchingProvider: string | null;
   mode: string;
   safeError: string | null;
+  stageTimings: Record<string, number> | null;
   createdAt: string;
 };
 type Event = {
@@ -138,6 +152,7 @@ type State = {
   themes: Theme[];
   memberships: Membership[];
   tasks: Task[];
+  taskReportAttempts: TaskReportAttempt[];
   replies: Reply[];
   runs: Run[];
   events: Event[];
@@ -169,6 +184,17 @@ const label = (value: string) =>
   value === "simulated_published" || value === "reply_simulated_published"
     ? "posted"
     : value.replaceAll("_", " ");
+const imageAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () =>
+      typeof reader.result === "string"
+        ? resolve(reader.result)
+        : reject(new Error("Could not read the selected image."));
+    reader.onerror = () =>
+      reject(new Error("Could not read the selected image."));
+    reader.readAsDataURL(file);
+  });
 const issueWorkLabels: Record<string, string> = {
   proposed: "Task awaiting approval",
   deferred: "Task saved for later",
@@ -357,12 +383,19 @@ export function Workspace() {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
   const [role, setRole] = useState<"owner" | "staff">("owner");
+  const owner = role === "owner";
   const [businessId, setBusinessId] = useState("harbour-house");
   const activeBusinessId = useRef("harbour-house");
   const [cachedBusinesses, setCachedBusinesses] = useState<State["businesses"]>(
     [],
   );
   const [employeeId, setEmployeeId] = useState("hotel-employee-1");
+  const [employeeManuallySelected, setEmployeeManuallySelected] =
+    useState(false);
+  const changeEmployee = useCallback((id: string) => {
+    setEmployeeManuallySelected(true);
+    setEmployeeId(id);
+  }, []);
   const [selectedReview, setSelectedReview] = useState<string | null>(null);
   const [selectedTheme, setSelectedTheme] =
     useState<string>("hotel-central-ac");
@@ -400,6 +433,8 @@ export function Workspace() {
   >([]);
   const [newRating, setNewRating] = useState(2);
   const [workReport, setWorkReport] = useState("");
+  const [workImages, setWorkImages] = useState<File[]>([]);
+  const [workImageError, setWorkImageError] = useState("");
   const [decision, setDecision] = useState<{
     kind: "task" | "reply";
     id: string;
@@ -462,6 +497,10 @@ export function Workspace() {
       setMessage("");
       setError("");
       setErrorSource(null);
+      const progressPoll =
+        type === "analyze"
+          ? window.setInterval(() => void refresh(), 900)
+          : null;
       try {
         const response = await fetch("/api/action", {
           method: "POST",
@@ -491,6 +530,7 @@ export function Workspace() {
         setErrorSource("action");
         return null;
       } finally {
+        if (progressPoll) window.clearInterval(progressPoll);
         setBusy("");
       }
     },
@@ -540,10 +580,9 @@ export function Workspace() {
     }
     openReview(result.reviewId);
     setMessage("Review saved. Screening is starting…");
-    const poll = setInterval(() => void refresh(), 1000);
     const outcome = (await act("analyze", {
       reviewId: result.reviewId,
-    }).finally(() => clearInterval(poll))) as {
+    })) as {
       status?: string;
       provider?: string;
       changedThemes?: string[];
@@ -567,6 +606,32 @@ export function Workspace() {
     }
   };
   const theme = state?.themes.find((item) => item.id === selectedTheme);
+  // Default staff view to the highest-priority active assignment while honoring manual picks.
+  const effectiveEmployeeId = useMemo(() => {
+    if (!state) return employeeId;
+    const isCurrentEmployee = state.employees.some(
+      (employee) => employee.id === employeeId,
+    );
+    if (employeeManuallySelected && isCurrentEmployee) return employeeId;
+    const rank: Record<string, number> = {
+      needs_rework: 4,
+      reported: 3,
+      in_progress: 2,
+      approved_open: 1,
+    };
+    const activeTask = state.tasks
+      .filter(
+        (task) =>
+          task.assigneeId &&
+          task.status in rank &&
+          state.employees.some((employee) => employee.id === task.assigneeId),
+      )
+      .sort((a, b) => rank[b.status] - rank[a.status])[0];
+    return (
+      activeTask?.assigneeId ||
+      (isCurrentEmployee ? employeeId : state.employees[0]?.id || employeeId)
+    );
+  }, [state, employeeId, employeeManuallySelected]);
   // Derived collections used by Dashboard, Issues, Tasks, and Replies.
   const openTasks = useMemo(() => {
     const rank: Record<string, number> = {
@@ -586,6 +651,19 @@ export function Workspace() {
     }
     return [...byIssue.values()];
   }, [state]);
+  const visibleTaskList = owner
+    ? openTasks
+    : (state?.tasks || []).filter(
+        (item) =>
+          item.assigneeId === effectiveEmployeeId &&
+          [
+            "approved_open",
+            "in_progress",
+            "reported",
+            "needs_rework",
+            "resolved",
+          ].includes(item.status),
+      );
   const issueTaskByTheme = useMemo(() => {
     const byTheme = new Map<string, Task>();
     for (const item of state?.tasks || []) {
@@ -604,12 +682,14 @@ export function Workspace() {
   const issueTask = theme ? issueTaskByTheme.get(theme.id) : undefined;
   const selectedTaskRow = state?.tasks.find((item) => item.id === selectedTask);
   const task =
-    openTasks.find((item) => item.id === selectedTask) ||
-    (selectedTaskRow?.status === "resolved"
+    visibleTaskList.find((item) => item.id === selectedTask) ||
+    (selectedTaskRow?.status === "resolved" &&
+    (owner || selectedTaskRow.assigneeId === effectiveEmployeeId)
       ? selectedTaskRow
-      : openTasks.find((item) => item.themeId === selectedTaskRow?.themeId)) ||
-    openTasks[0] ||
-    state?.tasks.find((item) => item.status === "resolved");
+      : visibleTaskList.find(
+          (item) => item.themeId === selectedTaskRow?.themeId,
+        )) ||
+    visibleTaskList[0];
   const replyTask = state?.tasks.find((item) => item.id === replyTaskId);
   const scopedReplyReviewIds = new Set(
     replyTask && state
@@ -886,11 +966,12 @@ export function Workspace() {
   };
   const openTask = (id: string) => {
     setWorkReport("");
+    setWorkImages([]);
+    setWorkImageError("");
     setSelectedTask(id);
     setTab("tasks");
     revealDetailOnMobile("task-detail-title");
   };
-  const owner = role === "owner";
   const branchName = (id: string) =>
     state?.branches.find((item) => item.id === id)?.name || id;
   const priorityIssues =
@@ -932,6 +1013,9 @@ export function Workspace() {
     recentActivity.push(item);
     if (recentActivity.length === 3) break;
   }
+  const activeAnalysisStage = state?.reviews.find(
+    (review) => review.processingStatus === "processing",
+  )?.processingStage;
 
   return (
     <div className="shell">
@@ -944,6 +1028,7 @@ export function Workspace() {
         }
         businessId={businessId}
         onBusinessChange={(id) => {
+          setEmployeeManuallySelected(false);
           activeBusinessId.current = id;
           setBusinessId(id);
           setState(null);
@@ -1004,7 +1089,14 @@ export function Workspace() {
             setSelectedTheme(issueThemes[0]?.id || "");
           setTab(nextTab);
         }}
-        onRoleChange={setRole}
+        onRoleChange={(nextRole) => {
+          setRole(nextRole);
+          if (
+            nextRole === "staff" &&
+            ["reviews", "issues", "new", "replies"].includes(tab)
+          )
+            setTab("dashboard");
+        }}
       />
       {error && (
         <div role="alert" className="notice error">
@@ -1030,7 +1122,11 @@ export function Workspace() {
       {busy && (
         <div className="action-progress" role="status">
           {busy === "analyze"
-            ? "Analysing review…"
+            ? activeAnalysisStage === "extraction"
+              ? "Extracting specific guest observations…"
+              : activeAnalysisStage === "theme_matching"
+                ? "Linking feedback to existing issues…"
+                : "Screening review…"
             : busy === "prepare_replies"
               ? "Preparing guest replies…"
               : "Saving your changes…"}
@@ -1064,151 +1160,191 @@ export function Workspace() {
             aria-label="Workspace"
           >
             {/* 01 Dashboard: summary metrics and links to each workflow. */}
-            {tab === "dashboard" && (
-              <DashboardView
-                metrics={[
-                  {
-                    title: "Total reviews",
-                    value: state.reviews.length,
-                    hint: "All saved reviews",
-                    destination: "reviews",
-                  },
-                  {
-                    title: "New today",
-                    value: state.reviews.filter(
-                      (review) =>
-                        !review.isHistoricalImport &&
-                        localDay(review.createdAt) ===
-                          localDay(new Date().toISOString()),
-                    ).length,
-                    hint: "Received today",
-                    destination: "reviews",
-                  },
-                  {
-                    title: "Specific feedback",
-                    value: state.reviews.filter(
-                      (review) => review.processingStatus === "complete",
-                    ).length,
-                    hint: "Analysis complete",
-                    destination: "reviews",
-                  },
-                  {
-                    title: "Issues needing attention",
-                    value: state.themes.filter(
-                      (theme) =>
-                        theme.type === "operational_issue" &&
-                        isOwnerVisibleTheme(
-                          theme,
-                          state.themeSupport[theme.id] || 0,
-                        ) &&
-                        ["suggested", "recurrence"].includes(theme.status),
-                    ).length,
-                    hint: "Ready for your review",
-                    destination: "issues",
-                  },
-                  {
-                    title: "Open approved tasks",
-                    value: state.tasks.filter((task) =>
-                      [
-                        "approved_open",
-                        "in_progress",
-                        "reported",
-                        "needs_rework",
-                      ].includes(task.status),
-                    ).length,
-                    hint: "Work in progress",
-                    destination: "tasks",
-                  },
-                  {
-                    title: "Replies to approve",
-                    value: state.replies.filter(
-                      (reply) => reply.status === "draft",
-                    ).length,
-                    hint: "Awaiting sign-off",
-                    destination: "replies",
-                  },
-                ]}
-                issues={priorityIssues.map((item) => ({
-                  id: item.id,
-                  title: item.title,
-                  priority: item.priority,
-                  branchName: branchName(item.branchId),
-                  support: state.themeSupport[item.id] || 0,
-                  evidenceQuote:
-                    item.id === spotlight?.id
-                      ? spotlightEvidence?.evidenceQuote
-                      : undefined,
-                }))}
-                work={[...openTasks]
-                  .sort(
-                    (a, b) =>
-                      Number(b.status === "reported") -
-                        Number(a.status === "reported") ||
-                      (a.dueAt || "9999").localeCompare(b.dueAt || "9999"),
-                  )
-                  .slice(0, 3)
-                  .map((item) => ({
+            {tab === "dashboard" &&
+              (role === "staff" ? (
+                <StaffDashboardView
+                  employeeId={effectiveEmployeeId}
+                  employees={state.employees}
+                  tasks={state.tasks
+                    .filter(
+                      (item) =>
+                        item.assigneeId === effectiveEmployeeId &&
+                        [
+                          "approved_open",
+                          "in_progress",
+                          "reported",
+                          "needs_rework",
+                        ].includes(item.status),
+                    )
+                    .sort(
+                      (a, b) =>
+                        Number(b.status === "needs_rework") -
+                          Number(a.status === "needs_rework") ||
+                        Number(b.status === "reported") -
+                          Number(a.status === "reported") ||
+                        (a.dueAt || "9999").localeCompare(b.dueAt || "9999"),
+                    )
+                    .map((item) => ({
+                      id: item.id,
+                      title: item.title,
+                      status: item.status,
+                      dueAt: item.dueAt,
+                      rejectionReason: item.rejectionReason,
+                      rejections: state.taskReportAttempts.filter(
+                        (attempt) =>
+                          attempt.taskId === item.id &&
+                          attempt.decision === "rejected",
+                      ).length,
+                    }))}
+                  onEmployeeChange={changeEmployee}
+                  onOpenTask={openTask}
+                  onOpenTasks={() => setTab("tasks")}
+                />
+              ) : (
+                <DashboardView
+                  metrics={[
+                    {
+                      title: "Total reviews",
+                      value: state.reviews.length,
+                      hint: "All saved reviews",
+                      destination: "reviews",
+                    },
+                    {
+                      title: "New today",
+                      value: state.reviews.filter(
+                        (review) =>
+                          !review.isHistoricalImport &&
+                          localDay(review.createdAt) ===
+                            localDay(new Date().toISOString()),
+                      ).length,
+                      hint: "Received today",
+                      destination: "reviews",
+                    },
+                    {
+                      title: "Specific feedback",
+                      value: state.reviews.filter(
+                        (review) => review.processingStatus === "complete",
+                      ).length,
+                      hint: "Analysis complete",
+                      destination: "reviews",
+                    },
+                    {
+                      title: "Issues needing attention",
+                      value: state.themes.filter(
+                        (theme) =>
+                          theme.type === "operational_issue" &&
+                          isOwnerVisibleTheme(
+                            theme,
+                            state.themeSupport[theme.id] || 0,
+                          ) &&
+                          ["suggested", "recurrence"].includes(theme.status),
+                      ).length,
+                      hint: "Ready for your review",
+                      destination: "issues",
+                    },
+                    {
+                      title: "Open approved tasks",
+                      value: state.tasks.filter((task) =>
+                        [
+                          "approved_open",
+                          "in_progress",
+                          "reported",
+                          "needs_rework",
+                        ].includes(task.status),
+                      ).length,
+                      hint: "Work in progress",
+                      destination: "tasks",
+                    },
+                    {
+                      title: "Replies to approve",
+                      value: state.replies.filter(
+                        (reply) => reply.status === "draft",
+                      ).length,
+                      hint: "Awaiting sign-off",
+                      destination: "replies",
+                    },
+                  ]}
+                  issues={priorityIssues.map((item) => ({
                     id: item.id,
                     title: item.title,
-                    status: item.status,
-                    assignee:
-                      state.employees.find(
-                        (employee) => employee.id === item.assigneeId,
-                      )?.name || "Not yet assigned",
-                    due: item.dueAt
-                      ? `Due ${date(item.dueAt)}`
-                      : "Due date not set",
+                    priority: item.priority,
+                    branchName: branchName(item.branchId),
+                    support: state.themeSupport[item.id] || 0,
+                    evidenceQuote:
+                      item.id === spotlight?.id
+                        ? spotlightEvidence?.evidenceQuote
+                        : undefined,
                   }))}
-                onOpenTask={openTask}
-                activity={recentActivity.map((item) => ({
-                  id: item.id,
-                  title: label(item.type),
-                  description: item.description,
-                  date: date(item.createdAt),
-                }))}
-                onNewReview={() => setTab("new")}
-                onInspect={openTheme}
-                onNavigate={(destination, metricTitle) => {
-                  if (destination === "reviews") {
-                    resetReviewFilters();
-                    setReviewSort("newest");
-                    if (metricTitle === "New today") setReceived("today");
-                    if (metricTitle === "Specific feedback")
-                      setStatus("complete");
-                  }
-                  if (destination === "issues")
-                    changeIssueType("operational_issue");
-                  if (destination === "tasks") {
-                    const nextTask =
-                      metricTitle === "Open approved tasks"
-                        ? openTasks.find((item) =>
-                            [
-                              "approved_open",
-                              "in_progress",
-                              "reported",
-                              "needs_rework",
-                            ].includes(item.status),
-                          )
-                        : openTasks[0];
-                    setSelectedTask(nextTask?.id || "");
-                  }
-                  if (destination === "replies") {
-                    setReplyTaskId(null);
-                    setReplyIndex(
-                      metricTitle === "Replies to approve"
-                        ? Math.max(
-                            0,
-                            allReplies.findIndex(
-                              (reply) => reply.status === "draft",
-                            ),
-                          )
-                        : 0,
-                    );
-                  }
-                  setTab(destination);
-                }}
-              />
-            )}
+                  work={[...openTasks]
+                    .sort(
+                      (a, b) =>
+                        Number(b.status === "reported") -
+                          Number(a.status === "reported") ||
+                        (a.dueAt || "9999").localeCompare(b.dueAt || "9999"),
+                    )
+                    .slice(0, 3)
+                    .map((item) => ({
+                      id: item.id,
+                      title: item.title,
+                      status: item.status,
+                      assignee:
+                        state.employees.find(
+                          (employee) => employee.id === item.assigneeId,
+                        )?.name || "Not yet assigned",
+                      due: item.dueAt
+                        ? `Due ${date(item.dueAt)}`
+                        : "Due date not set",
+                    }))}
+                  onOpenTask={openTask}
+                  activity={recentActivity.map((item) => ({
+                    id: item.id,
+                    title: label(item.type),
+                    description: item.description,
+                    date: date(item.createdAt),
+                  }))}
+                  onNewReview={() => setTab("new")}
+                  onInspect={openTheme}
+                  onNavigate={(destination, metricTitle) => {
+                    if (destination === "reviews") {
+                      resetReviewFilters();
+                      setReviewSort("newest");
+                      if (metricTitle === "New today") setReceived("today");
+                      if (metricTitle === "Specific feedback")
+                        setStatus("complete");
+                    }
+                    if (destination === "issues")
+                      changeIssueType("operational_issue");
+                    if (destination === "tasks") {
+                      const nextTask =
+                        metricTitle === "Open approved tasks"
+                          ? openTasks.find((item) =>
+                              [
+                                "approved_open",
+                                "in_progress",
+                                "reported",
+                                "needs_rework",
+                              ].includes(item.status),
+                            )
+                          : openTasks[0];
+                      setSelectedTask(nextTask?.id || "");
+                    }
+                    if (destination === "replies") {
+                      setReplyTaskId(null);
+                      setReplyIndex(
+                        metricTitle === "Replies to approve"
+                          ? Math.max(
+                              0,
+                              allReplies.findIndex(
+                                (reply) => reply.status === "draft",
+                              ),
+                            )
+                          : 0,
+                      );
+                    }
+                    setTab(destination);
+                  }}
+                />
+              ))}
             {/* 02 New review: intake form and analysis provenance. */}
             {tab === "new" && (
               <section className="new-review-page">
@@ -2176,38 +2312,46 @@ export function Workspace() {
                   index="04"
                   eyebrow="Follow through"
                   title="Work tasks"
-                  description="Assign work, review staff reports, and verify what has been resolved."
+                  description={
+                    owner
+                      ? "Assign work, review staff reports, and verify what has been resolved."
+                      : "Review your assignments, submit completion reports, and respond to owner feedback."
+                  }
                 />
                 <div className="split">
                   <div className="task-lists">
-                    <h3>Draft work tasks</h3>
-                    {openTasks
-                      .filter((item) =>
-                        ["proposed", "deferred"].includes(item.status),
-                      )
-                      .map((item) => (
-                        <button
-                          key={item.id}
-                          className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
-                          onClick={() => openTask(item.id)}
-                        >
-                          <b>{item.title}</b>
-                          <span>
-                            {item.status === "deferred"
-                              ? "Saved for later"
-                              : "Needs approval"}
-                          </span>
-                        </button>
-                      ))}
-                    {!openTasks.some((item) =>
-                      ["proposed", "deferred"].includes(item.status),
-                    ) && (
-                      <p className="task-list-empty">
-                        No drafts awaiting approval
-                      </p>
+                    {owner && (
+                      <>
+                        <h3>Draft work tasks</h3>
+                        {openTasks
+                          .filter((item) =>
+                            ["proposed", "deferred"].includes(item.status),
+                          )
+                          .map((item) => (
+                            <button
+                              key={item.id}
+                              className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
+                              onClick={() => openTask(item.id)}
+                            >
+                              <b>{item.title}</b>
+                              <span>
+                                {item.status === "deferred"
+                                  ? "Saved for later"
+                                  : "Needs approval"}
+                              </span>
+                            </button>
+                          ))}
+                        {!openTasks.some((item) =>
+                          ["proposed", "deferred"].includes(item.status),
+                        ) && (
+                          <p className="task-list-empty">
+                            No drafts awaiting approval
+                          </p>
+                        )}
+                      </>
                     )}
-                    <h3>Assigned work</h3>
-                    {openTasks
+                    <h3>{owner ? "Assigned work" : "Your work"}</h3>
+                    {visibleTaskList
                       .filter((item) =>
                         [
                           "approved_open",
@@ -2236,7 +2380,7 @@ export function Workspace() {
                           </span>
                         </button>
                       ))}
-                    {!openTasks.some((item) =>
+                    {!visibleTaskList.some((item) =>
                       [
                         "approved_open",
                         "in_progress",
@@ -2244,11 +2388,15 @@ export function Workspace() {
                         "needs_rework",
                       ].includes(item.status),
                     ) && (
-                      <p className="task-list-empty">No assigned work yet</p>
+                      <p className="task-list-empty">
+                        {owner
+                          ? "No assigned work yet"
+                          : "No active work assigned to this staff profile"}
+                      </p>
                     )}
                     <div className="completed-tasks">
                       <h3>Completed work tasks</h3>
-                      {state.tasks
+                      {visibleTaskList
                         .filter((item) => item.status === "resolved")
                         .map((item) => (
                           <button
@@ -2267,7 +2415,7 @@ export function Workspace() {
                             </span>
                           </button>
                         ))}
-                      {!state.tasks.some(
+                      {!visibleTaskList.some(
                         (item) => item.status === "resolved",
                       ) && (
                         <p className="task-list-empty">No completed work yet</p>
@@ -2360,6 +2508,11 @@ export function Workspace() {
                           onOpenTheme={openTheme}
                           onOpenReview={openReview}
                         />
+                        <TaskReportHistory
+                          attempts={state.taskReportAttempts
+                            .filter((attempt) => attempt.taskId === task.id)
+                            .sort((a, b) => a.version - b.version)}
+                        />
                         {["proposed", "deferred"].includes(task.status) &&
                           owner && (
                             <>
@@ -2428,9 +2581,9 @@ export function Workspace() {
                             <label className="staff-employee-picker">
                               Your staff profile
                               <select
-                                value={employeeId}
+                                value={effectiveEmployeeId}
                                 onChange={(event) =>
-                                  setEmployeeId(event.target.value)
+                                  changeEmployee(event.target.value)
                                 }
                               >
                                 {state.employees
@@ -2456,30 +2609,122 @@ export function Workspace() {
                               "in_progress",
                               "needs_rework",
                             ].includes(task.status) &&
-                            task.assigneeId === employeeId ? (
+                            task.assigneeId === effectiveEmployeeId ? (
                               <div className="staff-work-report">
                                 <label>
-                                  Work completed
+                                  {task.status === "needs_rework"
+                                    ? "Additional fixes completed"
+                                    : "Work completed"}
                                   <textarea
                                     rows={4}
                                     value={workReport}
                                     onChange={(event) =>
                                       setWorkReport(event.target.value)
                                     }
-                                    placeholder="Describe what you inspected, repaired, or replaced…"
+                                    placeholder={
+                                      task.status === "needs_rework"
+                                        ? "Describe how you addressed the owner's feedback…"
+                                        : "Describe what you inspected, repaired, or replaced…"
+                                    }
                                   />
                                 </label>
+                                <label className="staff-evidence-upload">
+                                  Add photo evidence
+                                  <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    multiple
+                                    onChange={(event) => {
+                                      const files = Array.from(
+                                        event.currentTarget.files || [],
+                                      );
+                                      const total = files.reduce(
+                                        (size, file) => size + file.size,
+                                        0,
+                                      );
+                                      if (
+                                        files.length > 5 ||
+                                        total > 6 * 1024 * 1024 ||
+                                        files.some(
+                                          (file) =>
+                                            ![
+                                              "image/jpeg",
+                                              "image/png",
+                                              "image/webp",
+                                            ].includes(file.type) ||
+                                            file.size > 2 * 1024 * 1024,
+                                        )
+                                      ) {
+                                        setWorkImageError(
+                                          "Choose up to five JPEG, PNG, or WebP images, 2 MB each and 6 MB total.",
+                                        );
+                                        setWorkImages([]);
+                                        event.currentTarget.value = "";
+                                        return;
+                                      }
+                                      setWorkImageError("");
+                                      setWorkImages(files);
+                                    }}
+                                  />
+                                </label>
+                                {workImages.length > 0 && (
+                                  <ul className="staff-selected-images">
+                                    {workImages.map((file, index) => (
+                                      <li key={file.name + file.lastModified}>
+                                        {file.name}
+                                        <button
+                                          type="button"
+                                          className="link"
+                                          onClick={() =>
+                                            setWorkImages((current) =>
+                                              current.filter(
+                                                (_, itemIndex) =>
+                                                  itemIndex !== index,
+                                              ),
+                                            )
+                                          }
+                                        >
+                                          Remove
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                                {workImageError && (
+                                  <p className="field-error" role="alert">
+                                    {workImageError}
+                                  </p>
+                                )}
                                 <button
                                   disabled={
-                                    !!busy || workReport.trim().length < 5
+                                    !!busy || workReport.trim().length < 10
                                   }
-                                  onClick={() =>
-                                    void act("report_task", {
-                                      taskId: task.id,
-                                      employeeId,
-                                      note: workReport,
-                                    })
-                                  }
+                                  onClick={async () => {
+                                    try {
+                                      const attachments = await Promise.all(
+                                        workImages.map(async (file) => ({
+                                          name: file.name,
+                                          mediaType: file.type,
+                                          dataUrl: await imageAsDataUrl(file),
+                                        })),
+                                      );
+                                      const result = await act("report_task", {
+                                        taskId: task.id,
+                                        effectiveEmployeeId,
+                                        note: workReport,
+                                        attachments,
+                                      });
+                                      if (result) {
+                                        setWorkReport("");
+                                        setWorkImages([]);
+                                        setWorkImageError("");
+                                      }
+                                    } catch {
+                                      setWorkImageError(
+                                        "Could not read the selected image. Choose it again.",
+                                      );
+                                    }
+                                  }}
                                 >
                                   {busy === "report_task"
                                     ? "Submitting…"
@@ -2492,19 +2737,6 @@ export function Workspace() {
                                   ? "Your update was submitted and is waiting for owner review."
                                   : `Assigned to ${state.employees.find((employee) => employee.id === task.assigneeId)?.name || "another employee"}. Select the assigned staff profile to submit an update.`}
                               </p>
-                            )}
-                          </section>
-                        )}
-                        {["reported", "resolved"].includes(task.status) && (
-                          <section
-                            className="task-report"
-                            aria-label="Employee report"
-                          >
-                            <p className="eyebrow">03 / Work reported</p>
-                            <h3>Employee report</h3>
-                            <p>{task.employeeReport}</p>
-                            {task.reportedAt && (
-                              <small>Submitted {date(task.reportedAt)}</small>
                             )}
                           </section>
                         )}

@@ -47,17 +47,23 @@ export function WorkspaceHeader({
           <BrandIdentity />
         </button>
         <nav className="main-nav" aria-label="Main navigation">
-          {tabs.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              className={tab === id ? "active" : ""}
-              aria-current={tab === id ? "page" : undefined}
-              onClick={() => onTabChange(id)}
-            >
-              {label}
-            </button>
-          ))}
+          {tabs
+            .filter(({ id }) =>
+              role === "owner"
+                ? true
+                : ["dashboard", "tasks", "activity"].includes(id),
+            )
+            .map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                className={tab === id ? "active" : ""}
+                aria-current={tab === id ? "page" : undefined}
+                onClick={() => onTabChange(id)}
+              >
+                {label}
+              </button>
+            ))}
         </nav>
         <div className="workspace-controls">
           <label className="workspace-control business-switcher">

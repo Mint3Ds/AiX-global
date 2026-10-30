@@ -24,6 +24,15 @@ export const matchingSchema = z.object({
   themeId: z.string(),
   reason: z.string(),
 });
+export const batchMatchingSchema = z.object({
+  matches: z.array(
+    z.object({
+      observationIndex: z.number().int().min(0),
+      themeId: z.string(),
+      reason: z.string(),
+    }),
+  ),
+});
 export const replySchema = z.object({ text: z.string().min(1).max(1200) });
 export type ObservationInput = z.infer<typeof observationSchema>;
 export type Screening = z.infer<typeof screeningSchema>;

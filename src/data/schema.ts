@@ -89,6 +89,7 @@ export const analysisRuns = pgTable("analysis_runs", {
   promptVersion: text("prompt_version").notNull(),
   mode: text("mode").notNull(),
   safeError: text("safe_error"),
+  stageTimings: jsonb("stage_timings").$type<Record<string, number>>(),
   createdAt: time("created_at"),
 });
 export const observations = pgTable(
@@ -218,6 +219,20 @@ export const taskReportAttempts = pgTable(
     decidedBy: text("decided_by"),
   },
   (t) => [uniqueIndex("task_report_attempt_unique").on(t.taskId, t.version)],
+);
+export const taskReportAttachments = pgTable(
+  "task_report_attachments",
+  {
+    id: text("id").primaryKey(),
+    reportAttemptId: text("report_attempt_id")
+      .notNull()
+      .references(() => taskReportAttempts.id),
+    name: text("name").notNull(),
+    mediaType: text("media_type").notNull(),
+    dataBase64: text("data_base64").notNull(),
+    createdAt: time("created_at"),
+  },
+  (t) => [index("task_report_attachments_attempt_idx").on(t.reportAttemptId)],
 );
 export const replies = pgTable("replies", {
   id: text("id").primaryKey(),

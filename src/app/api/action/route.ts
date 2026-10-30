@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
           role,
           String(body.employeeId || ""),
           String(body.note || ""),
+          body.attachments || [],
         );
         break;
       case "verify_task":
