@@ -122,7 +122,7 @@ npm run dev
 | `SEED_LEGACY_REVIEWS` | `yes` adds checked-in historical review/analysis fixtures during seed.               |
 | `CONFIRM_DEMO_RESET`  | Must be `yes` for destructive `npm run db:reset`.                                    |
 
-`db:migrate` runs SQL files `0001`, `0002`, `0003` in order. The scripts use repeatable `IF NOT EXISTS`/`ADD COLUMN IF NOT EXISTS` patterns. `db:seed` uses `onConflictDoNothing` for core records; historical review runs are skipped if already present, so a seed does not overwrite owner corrections. Generated fixture JSON is checked in; Python is only needed if intentionally regenerating it. The local `DB` is not part of Git.
+`db:migrate` runs SQL files `0001` through `0004` in order. The scripts use repeatable `IF NOT EXISTS`/`ADD COLUMN IF NOT EXISTS` patterns. `db:seed` uses `onConflictDoNothing` for core records; historical review runs are skipped if already present, so a seed does not overwrite owner corrections. Generated fixture JSON is checked in; Python is only needed if intentionally regenerating it. The local `DB` is not part of Git.
 
 **Fixture mode:** labelled reviews produce deterministic screening and observations without external keys. The lookup first finds a source fixture with the same business and exact text. There is also a narrow fallback for text that contains a checked-in fixture's full wording and its matching evidence quotes. Unknown wording becomes `needs_review`; it is still saved and searchable. The prepared-review endpoint is currently empty, so the sample picker in the UI may show no samples. Fixture output must not be reported as AI model performance.
 
@@ -138,7 +138,7 @@ npm run dev
 
 ### Mutate state
 
-`POST /api/action` accepts JSON with `type`, `businessId`, a demo `role`, and fields for that action. The route calls `assertActionScope` **before** dispatching: it checks the selected business and any supplied review, observation, theme, task, reply, or reply IDs against that business. Intake also checks that `data.businessId` matches the selected workspace. Successful responses are `{ "ok": true, "result": ... }`; errors return HTTP 400 with `{ "ok": false, "error": "..." }`. Analysis provider failure is special: it can return HTTP 200 with `result.status = "failed"`, because the failure was recorded on the saved review.
+`POST /api/action` accepts JSON with `type`, `businessId`, a demo `role`, and fields for that action. The route calls `assertActionScope` **before** dispatching: it checks the selected business and any supplied review, observation, theme, task, reply, or reply IDs against that business. Intake also checks that `data.businessId` matches the selected workspace. Successful responses are `{ "ok": true, "result": ... }`; errors return HTTP 400 with `{ "ok": false, "error": "..." }` and workflow errors also include `code: "INVALID_WORKFLOW_STATE"`. Analysis provider failure is special: it can return HTTP 200 with `result.status = "failed"`, because the failure was recorded on the saved review.
 
 Example (synthetic, fixture-compatible wording):
 
@@ -178,13 +178,15 @@ The returned `reviewId` is the database UUID, distinct from `sourceReviewId`. A 
 | `decide_task`                  | `taskId`, `decision`                                   | Owner approves, rejects or defers; approval saves a handoff snapshot.                                                                                |
 | `start_task`                   | `taskId`, `employeeId`                                 | Assigned staff or owner moves approved work to in progress. API supported; main UI primarily uses report flow.                                       |
 | `report_task`                  | `taskId`, `employeeId`, `note`                         | Assigned staff or owner submits work report (at least 10 characters).                                                                                |
-| `verify_task` / `resolve_task` | `taskId`, optional `note`                              | Owner verifies reported work; `resolve_task` delegates to the same verification.                                                                     |
+| `verify_task` / `resolve_task` | `taskId`, `reportVersion`, optional `note`             | Owner verifies reported work; `resolve_task` delegates to the same verification.                                                                     |
 | `draft_reply`                  | `reviewId`, `taskId`                                   | Owner drafts one reply for a review linked to resolved task.                                                                                         |
 | `prepare_replies`              | `taskId`                                               | Owner drafts replies for all distinct reviews linked to the resolved theme, four concurrent drafts per batch.                                        |
-| `edit_reply`                   | `replyId`, `text`                                      | Owner edits draft/approved-ready reply; approval resets to draft.                                                                                    |
-| `approve_reply`                | `replyId`, `partialApproved`                           | Owner approves one draft, explicitly acknowledging unresolved complaints if necessary.                                                               |
+| `edit_reply`                   | `replyId`, `text`, `draftVersion`                      | Owner edits draft/approved-ready reply; approval resets to draft.                                                                                    |
+| `approve_reply`                | `replyId`, `draftVersion`, `partialApproved`           | Owner approves one draft, explicitly acknowledging unresolved complaints if necessary.                                                               |
 | `approve_reply_batch`          | `replyIds` (1–300)                                     | Owner approves lower-severity, warning-free drafts.                                                                                                  |
 | `simulate_publish`             | `replyId`                                              | Owner marks approved reply as posted locally.                                                                                                        |
+
+Rejection actions are `reject_task_report` (`taskId`, `reportVersion`, `reason`) and `reject_reply` (`replyId`, `draftVersion`, `reason`). Both require the owner demo role, a current pending decision, and a meaningful reason. Their state change and activity event commit together.
 
 The browser's `act()` helper posts an action, refreshes the state snapshot, and displays a status/error notice. A busy fieldset disables form controls during the action; the header's business/role selectors are also disabled. Switching businesses clears the old snapshot and selections, then loads the new one. A reference guards against a slower previous fetch overwriting the newly selected business. Tabs, filters, selections, and pagination are client state, so they reset on reload.
 
@@ -198,7 +200,7 @@ The browser's `act()` helper posts an action, refreshes the state snapshot, and 
 | New review | Synthetic intake form, then analysis. It does not connect to a platform feed.                                                                                                                                                                                                  |
 | Tasks      | Propose/edit/assign, staff report, owner verification, prepare linked replies; historical resolved tasks remain visible.                                                                                                                                                       |
 | Replies    | One review beside each draft, partial warning, editing, individual or safe batch approval, simulated posting.                                                                                                                                                                  |
-| Activity   | Business-scoped event history with UI filtering/grouping. Events are append-only records of consequential actions.                                                                                                                                                             |
+| Activity   | Business-scoped event history with UI filtering. Events are append-only records of consequential actions.                                                                                                                                                                      |
 
 ## 5. Intake and source-evidence invariants
 
@@ -284,12 +286,15 @@ stateDiagram-v2
     approved_open --> in_progress: assigned staff starts
     approved_open --> reported: assigned staff reports
     in_progress --> reported: assigned staff reports
-    reported --> resolved: owner verifies
+    reported --> resolved: owner verifies current report
+    reported --> needs_rework: owner rejects with reason
+    needs_rework --> in_progress: assigned staff restarts
+    needs_rework --> reported: assigned staff resubmits
 ```
 
 Approval gathers linked `{reviewId, quote}` evidence and creates a payload with business, branch, approved task text, assignee, due date, approver and approval time. `localHandoff.simulate()` returns `simulated_queued` and the payload. A database transaction stores the task's `approvalSnapshot`, an associated `handoffs` row, and approval/handoff events. **No Orbyte endpoint is called.** Clarity's task row remains the source of truth.
 
-The assigned staff demo role may start or report on its own task; an owner may do so for a very small business. A report needs at least ten characters. Only the owner role can verify a `reported` task. Verification uses an optional meaningful verification note or the employee report as the recorded `resolutionNote`; it sets `resolvedAt`, `verifiedAt`, `verifiedBy`, and appends an event. The role switcher and employee selector are **demo controls**, not identity proof. A real deployment must add authentication, server-derived actor identity, and authorization.
+The assigned staff demo role may start or report on its own task; an owner may do so for a very small business. A report needs at least ten characters. Each submission increments `report_version` and adds a `task_report_attempts` row. Only the owner role can decide a `reported` task, and its request must name the current report version. Verification uses an optional meaningful verification note or the employee report as the recorded `resolutionNote`; it sets `resolvedAt`, `verifiedAt`, `verifiedBy`, and appends an event. Rejection requires a 10–500 character reason, records the actor/time and decision on that attempt, changes status to `needs_rework`, and appends an event in the same transaction. The employee can read the feedback, restart or submit a corrected report; previous reports and decisions remain stored. Concurrent decisions on the same report are rejected by conditional updates. Reply drafting requires `resolved`, so a rejected or unverified task cannot be used to generate a dependent reply. The role switcher and employee selector are **demo controls**, not identity proof. A real deployment must add authentication, server-derived actor identity, and authorization.
 
 ## 8. Reply controls and publication boundary
 
@@ -300,13 +305,15 @@ Before drafting, the service reads **other operational complaints in the same re
 ```mermaid
 stateDiagram-v2
     [*] --> draft: verified work + linked evidence
-    draft --> approved_ready: owner approval
-    approved_ready --> draft: owner edits
+    draft --> approved_ready: owner approves current version
+    draft --> needs_revision: owner rejects with reason
+    needs_revision --> draft: owner submits revised draft
+    approved_ready --> draft: owner edits; approval revoked
     approved_ready --> simulated_published: owner simulates posting
     simulated_published --> [*]
 ```
 
-If another complaint remains unresolved, `partialWarning` explains it. Individual approval then requires `partialApproved: true` and rejects broad claims that all concerns were resolved. This rule is a conservative text-pattern guard, not a full semantic fact checker; owners must read the original review. Editing an approved reply returns it to draft and clears prior approval. Published demo replies cannot be edited. Batch approval accepts 1–300 IDs but only drafts with no warning and theme severity below 3. `approved_ready` still means **nothing was published**. `simulate_publish` records `simulated_published` and a local timestamp/event; there is no review-platform API call.
+If another complaint remains unresolved, `partialWarning` explains it. Individual approval then requires `partialApproved: true` and rejects broad claims that all concerns were resolved. This rule is a conservative text-pattern guard, not a full semantic fact checker; owners must read the original review. Every edit increments `draft_version`, stores a `reply_draft_versions` row and clears prior approval. Rejection of a pending draft requires a 10–500 character reason, records actor/time and an event, and moves it to `needs_revision`. Editing that draft resubmits it for approval. Approval must name the current version and stores `approved_version`; publishing requires `approved_ready` and the exact version match. Conditional updates prevent stale and duplicate decisions; denied publishing attempts are recorded separately. Published demo replies cannot be edited. Batch approval accepts 1–300 IDs but only drafts with no warning and theme severity below 3. `approved_ready` still means **nothing was published**. `simulate_publish` records `simulated_published` and a local timestamp/event; there is no review-platform API call.
 
 ## 9. Persistence and relationships
 
@@ -327,8 +334,10 @@ erDiagram
     themes ||--o{ theme_memberships : collects
     themes ||--o{ tasks : leads_to
     tasks ||--o| handoffs : approved_as
+    tasks ||--o{ task_report_attempts : receives
     tasks ||--o{ replies : supports
     reviews ||--o| replies : receives
+    replies ||--o{ reply_draft_versions : records
 ```
 
 | Table                                 | Important stored facts                                                                                          |
@@ -340,17 +349,19 @@ erDiagram
 | `themes`                              | Branch-specific grouped topic, type, status, severity, calculated priority/reason.                              |
 | `theme_memberships`                   | Observation-to-theme association, suggested/owner-confirmed provenance; observation ID is unique.               |
 | `tasks`                               | Work proposal, assignee, due date, status, report, approval snapshot, verification/resolution, recurrence link. |
+| `task_report_attempts`                | Immutable report submissions with version, note, submitter and subsequent decision/reason.                      |
 | `handoffs`                            | One local simulated handoff payload/status per approved task.                                                   |
 | `replies`                             | One reply per review, verified task link, draft/source, warning, approval, simulated publication.               |
+| `reply_draft_versions`                | Text and source for each submitted draft version.                                                               |
 | `activity_events`                     | Append-only business-scoped descriptions and metadata for consequential actions.                                |
 
-`0001_initial.sql` creates the original schema. `0002_hotel_workflow.sql` adds employees, task report/verification/recurrence fields, reply warning/publication fields, and business scope on events. `0003_historical_imports.sql` marks known fixture reviews as historical so “New today” does not count them. The SQL schema is the database authority; `src/data/schema.ts` is its Drizzle mapping. Most relations use foreign keys, but some cross-business and cross-branch consistency rules are enforced in the service rather than by composite database constraints.
+`0001_initial.sql` creates the original schema. `0002_hotel_workflow.sql` adds employees, task report/verification/recurrence fields, reply warning/publication fields, and business scope on events. `0003_historical_imports.sql` marks known fixture reviews as historical so “New today” does not count them. `0004_rejection_workflow.sql` adds report and draft version tracking, rejection fields, and attempt history; it backfills existing reports and drafts. The SQL schema is the database authority; `src/data/schema.ts` is its Drizzle mapping. Most relations use foreign keys, but some cross-business and cross-branch consistency rules are enforced in the service rather than by composite database constraints.
 
 ## 10. Error handling, audit trail, and practical limits
 
 - **Intake validation:** Zod errors become short field-specific public messages. Duplicate source identity with changed evidence is rejected and preserved. Database connection errors become “workspace unavailable.”
 - **Provider failures:** Jev has OpenAI screening fallback. Failed extraction, matching, or invalid quotes leave the review in `failed`, with a failed run and safe message. A stored review can be retried. A reply-draft provider failure produces a template fallback for owner review.
-- **Activity:** Intake, analysis start/result/failure, membership correction, theme decisions, task transitions, handoff, reply transitions, and recurrence append events. Dashboard previews suppress duplicate descriptions and handoff noise; the Activity tab is the fuller view. Events are descriptive audit history within a demo, not tamper-proof compliance logs.
+- **Activity:** Intake, analysis start/result/failure, membership correction, theme decisions, task transitions, handoff, reply transitions, and recurrence append events. Dashboard previews suppress duplicate descriptions and handoff noise; the Activity tab shows individual decision, denial, and handoff records. Events are descriptive audit history within a demo, not tamper-proof compliance logs.
 - **Scope:** State and actions check business IDs. However, the role and employee IDs are client-supplied demo values; there is no login, session, or real tenant authorization. Do not treat this as a secure multi-tenant production service.
 - **External systems:** Review sources, people, and results are synthetic. No source scraping, real Orbyte delivery, or real posting occurs. The incoming JSON script is a local validation/import utility, not a continuously connected feed.
 - **Scale/concurrency:** State returns all records for a business, with UI-side filtering. Analysis is request-driven, not queued. The task proposal uses a lock and approval uses a conditional status update, but analysis does not implement a distributed worker lock; concurrent requests for the same pending review require care in a production implementation. Batch reply approval validates first, then approves sequentially; it is not one all-or-nothing transaction.

@@ -1,4 +1,80 @@
 /* The Ledger composition layer. Shared tokens live in tokens.css; responsive rules in responsive.css. */
+.decision-callout {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-left: 3px solid var(--warning-ink);
+  background: var(--warning);
+  color: var(--ink);
+  line-height: 1.5;
+}
+.decision-callout p {
+  margin: 5px 0;
+}
+.decision-callout small {
+  color: var(--muted);
+}
+.reject-action {
+  color: var(--error);
+}
+.decision-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #1b261f82;
+}
+.decision-dialog {
+  width: min(100%, 480px);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--paper-light);
+  box-shadow: 0 22px 70px #18231b28;
+}
+.decision-dialog h2 {
+  margin: 8px 0;
+  font-size: 25px;
+  letter-spacing: -0.035em;
+}
+.decision-dialog > p {
+  line-height: 1.55;
+  color: var(--muted);
+}
+.decision-dialog label {
+  display: block;
+  margin: 18px 0 8px;
+  font-weight: 600;
+}
+.decision-dialog textarea {
+  display: block;
+  width: 100%;
+}
+.decision-dialog .controls {
+  justify-content: flex-end;
+}
+.decision-dialog button {
+  min-height: 40px;
+  padding: 10px 16px;
+  border: 1px solid var(--action);
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  font-size: 12px;
+  font-weight: 600;
+}
+.decision-dialog button.secondary {
+  border-color: var(--line-strong);
+  background: var(--paper-light);
+  color: var(--ink);
+}
+.activity-decision-reason,
+.activity-outcome {
+  overflow-wrap: anywhere;
+}
 input,
 textarea,
 select {

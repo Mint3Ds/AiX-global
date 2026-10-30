@@ -68,6 +68,9 @@ type Task = {
   assigneeId: string | null;
   dueAt: string | null;
   employeeReport: string | null;
+  reportVersion: number;
+  rejectionReason: string | null;
+  rejectedAt: string | null;
   reportedAt: string | null;
   reportedBy: string | null;
   verifiedAt: string | null;
@@ -83,6 +86,9 @@ type Reply = {
   taskId: string;
   text: string;
   status: string;
+  draftVersion: number;
+  approvedVersion: number | null;
+  rejectionReason: string | null;
   provider: string;
   mode: string;
   partialWarning: string | null;
@@ -333,6 +339,24 @@ export function Workspace() {
   >([]);
   const [newRating, setNewRating] = useState(2);
   const [workReport, setWorkReport] = useState("");
+  const [decision, setDecision] = useState<{
+    kind: "task" | "reply";
+    id: string;
+    version: number;
+  } | null>(null);
+  const [decisionNote, setDecisionNote] = useState("");
+  const [decisionError, setDecisionError] = useState("");
+  const decisionInput = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!decision) return;
+    const previous = document.activeElement;
+    decisionInput.current?.focus();
+    return () => {
+      if (previous instanceof HTMLElement && previous.isConnected)
+        previous.focus();
+    };
+  }, [decision]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -424,18 +448,23 @@ export function Workspace() {
                           ? "Work update submitted."
                           : type === "verify_task"
                             ? "Work verified."
-                            : type === "prepare_replies"
-                              ? `${result?.count ?? 0} linked replies ready for review.`
-                              : type === "approve_reply_batch"
-                                ? "Eligible replies approved."
-                                : type === "simulate_publish"
-                                  ? "Reply marked as posted in this demo."
-                                  : {
-                                      propose_task: "Work task created.",
-                                      edit_reply: "Reply saved.",
-                                      approve_reply: "Reply approved.",
-                                      correct_membership: "Evidence updated.",
-                                    }[type] || "Changes saved.",
+                            : type === "reject_task_report"
+                              ? "Report returned for rework. The employee can see your reason."
+                              : type === "reject_reply"
+                                ? "Draft rejected. Revise it before approval or posting."
+                                : type === "prepare_replies"
+                                  ? `${result?.count ?? 0} linked replies ready for review.`
+                                  : type === "approve_reply_batch"
+                                    ? "Eligible replies approved."
+                                    : type === "simulate_publish"
+                                      ? "Reply marked as posted in this demo."
+                                      : {
+                                          propose_task: "Work task created.",
+                                          edit_reply: "Reply saved.",
+                                          approve_reply: "Reply approved.",
+                                          correct_membership:
+                                            "Evidence updated.",
+                                        }[type] || "Changes saved.",
           );
         }
         return body.result;
@@ -522,6 +551,7 @@ export function Workspace() {
   const theme = state?.themes.find((item) => item.id === selectedTheme);
   const openTasks = useMemo(() => {
     const rank: Record<string, number> = {
+      needs_rework: 5,
       reported: 4,
       in_progress: 3,
       approved_open: 2,
@@ -1043,9 +1073,12 @@ export function Workspace() {
                   {
                     title: "Open approved tasks",
                     value: state.tasks.filter((task) =>
-                      ["approved_open", "in_progress", "reported"].includes(
-                        task.status,
-                      ),
+                      [
+                        "approved_open",
+                        "in_progress",
+                        "reported",
+                        "needs_rework",
+                      ].includes(task.status),
                     ).length,
                     hint: "Work in progress",
                     destination: "tasks",
@@ -1117,6 +1150,7 @@ export function Workspace() {
                               "approved_open",
                               "in_progress",
                               "reported",
+                              "needs_rework",
                             ].includes(item.status),
                           )
                         : openTasks[0];
@@ -2097,9 +2131,12 @@ export function Workspace() {
                     <h3>Assigned work</h3>
                     {openTasks
                       .filter((item) =>
-                        ["approved_open", "in_progress", "reported"].includes(
-                          item.status,
-                        ),
+                        [
+                          "approved_open",
+                          "in_progress",
+                          "reported",
+                          "needs_rework",
+                        ].includes(item.status),
                       )
                       .map((item) => (
                         <button
@@ -2115,14 +2152,19 @@ export function Workspace() {
                             ·{" "}
                             {item.status === "reported"
                               ? "Awaiting owner verification"
-                              : "Awaiting employee confirmation"}
+                              : item.status === "needs_rework"
+                                ? "Returned for rework"
+                                : "Awaiting employee confirmation"}
                           </span>
                         </button>
                       ))}
                     {!openTasks.some((item) =>
-                      ["approved_open", "in_progress", "reported"].includes(
-                        item.status,
-                      ),
+                      [
+                        "approved_open",
+                        "in_progress",
+                        "reported",
+                        "needs_rework",
+                      ].includes(item.status),
                     ) && (
                       <p className="task-list-empty">No assigned work yet</p>
                     )}
@@ -2175,6 +2217,22 @@ export function Workspace() {
                         <h3 id="task-detail-title" tabIndex={-1}>
                           {task.title}
                         </h3>
+                        {task.rejectionReason &&
+                          ["needs_rework", "in_progress", "reported"].includes(
+                            task.status,
+                          ) && (
+                            <div className="decision-callout" role="note">
+                              <strong>
+                                {task.status === "needs_rework"
+                                  ? "Needs rework"
+                                  : "Previous manager feedback"}
+                              </strong>
+                              <p>{task.rejectionReason}</p>
+                              {task.rejectedAt && (
+                                <small>Returned {date(task.rejectedAt)}</small>
+                              )}
+                            </div>
+                          )}
                         <details className="task-instructions">
                           <summary>Task instructions</summary>
                           <p>{task.description}</p>
@@ -2276,9 +2334,11 @@ export function Workspace() {
                               />
                             </>
                           )}
-                        {["approved_open", "in_progress"].includes(
-                          task.status,
-                        ) &&
+                        {[
+                          "approved_open",
+                          "in_progress",
+                          "needs_rework",
+                        ].includes(task.status) &&
                           owner && (
                             <div className="task-status-note">
                               Waiting for employee report
@@ -2316,9 +2376,12 @@ export function Workspace() {
                                   ))}
                               </select>
                             </label>
-                            {["approved_open", "in_progress"].includes(
-                              task.status,
-                            ) && task.assigneeId === employeeId ? (
+                            {[
+                              "approved_open",
+                              "in_progress",
+                              "needs_rework",
+                            ].includes(task.status) &&
+                            task.assigneeId === employeeId ? (
                               <div className="staff-work-report">
                                 <label>
                                   Work completed
@@ -2364,14 +2427,34 @@ export function Workspace() {
                           </div>
                         )}
                         {task.status === "reported" && owner && (
-                          <button
-                            disabled={!!busy}
-                            onClick={() =>
-                              void act("verify_task", { taskId: task.id })
-                            }
-                          >
-                            Verify completed work
-                          </button>
+                          <div className="controls verification-actions">
+                            <button
+                              disabled={!!busy}
+                              onClick={() =>
+                                void act("verify_task", {
+                                  taskId: task.id,
+                                  reportVersion: task.reportVersion,
+                                })
+                              }
+                            >
+                              Verify completed work
+                            </button>
+                            <button
+                              className="secondary"
+                              disabled={!!busy}
+                              onClick={() => {
+                                setDecision({
+                                  kind: "task",
+                                  id: task.id,
+                                  version: task.reportVersion,
+                                });
+                                setDecisionNote("");
+                                setDecisionError("");
+                              }}
+                            >
+                              Reject / return for rework
+                            </button>
+                          </div>
                         )}
                         {task.status === "resolved" && (
                           <>
@@ -2497,24 +2580,37 @@ export function Workspace() {
                           )}
                           owner={owner}
                           save={(text) =>
-                            void act("edit_reply", { replyId: reply.id, text })
+                            void act("edit_reply", {
+                              replyId: reply.id,
+                              text,
+                              draftVersion: reply.draftVersion,
+                            })
                           }
                           approve={async (text, partialApproved) => {
+                            let version = reply.draftVersion;
                             if (text !== reply.text) {
                               const saved = await act("edit_reply", {
                                 replyId: reply.id,
                                 text,
+                                draftVersion: version,
                               });
                               if (!saved) return;
+                              version = (saved as Reply).draftVersion;
                             }
-                            const approved = await act("approve_reply", {
+                            await act("approve_reply", {
                               replyId: reply.id,
                               partialApproved,
+                              draftVersion: version,
                             });
-                            if (approved)
-                              await act("simulate_publish", {
-                                replyId: reply.id,
-                              });
+                          }}
+                          reject={() => {
+                            setDecision({
+                              kind: "reply",
+                              id: reply.id,
+                              version: reply.draftVersion,
+                            });
+                            setDecisionNote("");
+                            setDecisionError("");
                           }}
                           publish={() =>
                             void act("simulate_publish", { replyId: reply.id })
@@ -2568,6 +2664,128 @@ export function Workspace() {
         <span>Clarity / Review to resolution</span>
         <span>Demo workspace · Simulated sources and posting</span>
       </footer>
+      {decision && (
+        <div
+          className="decision-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !busy)
+              setDecision(null);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="decision-title"
+            aria-describedby="decision-description"
+            className="decision-dialog"
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && !busy) setDecision(null);
+              if (event.key !== "Tab") return;
+              const controls = [
+                ...event.currentTarget.querySelectorAll<HTMLElement>(
+                  "textarea, button:not(:disabled)",
+                ),
+              ];
+              const first = controls[0],
+                last = controls.at(-1);
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+              }
+            }}
+          >
+            <p className="eyebrow">Owner decision</p>
+            <h2 id="decision-title">
+              {decision.kind === "task"
+                ? "Return this work for rework?"
+                : "Reject this reply draft?"}
+            </h2>
+            <p id="decision-description">
+              {decision.kind === "task"
+                ? "The employee will see your reason and can submit a corrected report. Replies stay blocked until you verify the work."
+                : "Publishing will be blocked. Revise the draft before it can be approved again."}
+            </p>
+            <label htmlFor="decision-reason">Reason for rejection</label>
+            <textarea
+              id="decision-reason"
+              ref={decisionInput}
+              rows={4}
+              maxLength={500}
+              value={decisionNote}
+              aria-invalid={!!decisionError}
+              aria-describedby={decisionError ? "decision-error" : undefined}
+              onChange={(event) => {
+                setDecisionNote(event.target.value);
+                setDecisionError("");
+              }}
+              onBlur={() => {
+                if (decisionNote.length && decisionNote.trim().length < 10)
+                  setDecisionError(
+                    "Write at least 10 characters so the next person knows what to change.",
+                  );
+              }}
+              placeholder={
+                decision.kind === "task"
+                  ? "What still needs to be fixed?"
+                  : "What should the revised reply change?"
+              }
+            />
+            {decisionError && (
+              <p id="decision-error" role="alert" className="field-error">
+                {decisionError}
+              </p>
+            )}
+            <p className="form-hint">
+              10–500 characters. This reason is saved in the activity log.
+            </p>
+            <div className="controls">
+              <button
+                className="secondary"
+                type="button"
+                disabled={!!busy}
+                onClick={() => setDecision(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!!busy || decisionNote.trim().length < 10}
+                onClick={async () => {
+                  if (decisionNote.trim().length < 10) {
+                    setDecisionError(
+                      "Write at least 10 characters so the next person knows what to change.",
+                    );
+                    return;
+                  }
+                  const result = await act(
+                    decision.kind === "task"
+                      ? "reject_task_report"
+                      : "reject_reply",
+                    {
+                      [decision.kind === "task" ? "taskId" : "replyId"]:
+                        decision.id,
+                      [decision.kind === "task"
+                        ? "reportVersion"
+                        : "draftVersion"]: decision.version,
+                      reason: decisionNote.trim(),
+                    },
+                  );
+                  if (result) setDecision(null);
+                }}
+              >
+                {busy
+                  ? "Saving decision…"
+                  : decision.kind === "task"
+                    ? "Return for rework"
+                    : "Reject draft"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
@@ -2696,6 +2914,7 @@ function ReplyCard({
   owner,
   save,
   approve,
+  reject,
   publish,
 }: {
   reply: Reply;
@@ -2703,6 +2922,7 @@ function ReplyCard({
   owner: boolean;
   save: (text: string) => void;
   approve: (text: string, partialApproved: boolean) => void;
+  reject: () => void;
   publish: () => void;
 }) {
   const [text, setText] = useState(reply.text);
@@ -2747,6 +2967,12 @@ function ReplyCard({
         )}
       </div>
       <div className="reply-compose">
+        {reply.status === "needs_revision" && reply.rejectionReason && (
+          <div className="decision-callout" role="note">
+            <strong>Needs revision</strong>
+            <p>{reply.rejectionReason}</p>
+          </div>
+        )}
         <label>
           {reply.status === "simulated_published"
             ? "Posted reply"
@@ -2762,7 +2988,9 @@ function ReplyCard({
           <div className="controls">
             {reply.status !== "simulated_published" && (
               <button className="secondary" onClick={() => save(text)}>
-                Save edits
+                {reply.status === "needs_revision"
+                  ? "Submit revised draft"
+                  : "Save edits"}
               </button>
             )}
             {reply.status === "draft" && (
@@ -2770,8 +2998,13 @@ function ReplyCard({
                 onClick={() => approve(text, Boolean(reply.partialWarning))}
               >
                 {reply.partialWarning
-                  ? "Approve partial & post (demo)"
-                  : "Approve & post (demo)"}
+                  ? "Approve partial reply"
+                  : "Approve reply"}
+              </button>
+            )}
+            {reply.status === "draft" && (
+              <button className="secondary reject-action" onClick={reject}>
+                Reject draft
               </button>
             )}
             {reply.status === "approved_ready" && (

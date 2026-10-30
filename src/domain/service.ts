@@ -12,7 +12,9 @@ import {
   memberships,
   tasks,
   handoffs,
+  taskReportAttempts,
   replies,
+  replyDraftVersions,
   events,
 } from "@/data/schema";
 import {
@@ -21,7 +23,13 @@ import {
   verifyEvidence,
   type ObservationInput,
 } from "./analysis";
-import { requireOwner, requireTransition, canDraftReply } from "./workflow";
+import {
+  requireOwner,
+  requireTransition,
+  canDraftReply,
+  decisionReason,
+  WorkflowError,
+} from "./workflow";
 import { fixtureForExactText, type FixtureAnalysis } from "@/data/fixtures";
 import { defaultBusinessId } from "@/config/business";
 import { priorityFor, priorityRules } from "@/config/priority";
@@ -1165,7 +1173,11 @@ export async function startTask(
   const task = await oneTask(taskId);
   if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
     throw new Error("Only the assigned employee can start this task.");
-  requireTransition(task.status, ["approved_open"], "in_progress");
+  requireTransition(
+    task.status,
+    ["approved_open", "needs_rework"],
+    "in_progress",
+  );
   await db
     .update(tasks)
     .set({ status: "in_progress" })
@@ -1188,64 +1200,224 @@ export async function reportTask(
   const task = await oneTask(taskId);
   if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
     throw new Error("Only the assigned employee can report on this task.");
-  requireTransition(task.status, ["approved_open", "in_progress"], "reported");
+  requireTransition(
+    task.status,
+    ["approved_open", "in_progress", "needs_rework"],
+    "reported",
+  );
   if (note.trim().length < 10)
     throw new Error("A work report of at least 10 characters is required.");
-  await db
-    .update(tasks)
-    .set({
-      status: "reported",
-      employeeReport: note.trim(),
-      reportedAt: now(),
-      reportedBy: role === "owner" ? "demo owner" : employeeId,
-    })
-    .where(eq(tasks.id, taskId));
-  await event(
-    "task_reported",
-    "task",
-    taskId,
-    "Work reported; waiting for managerial verification.",
-    role === "owner" ? "demo owner" : employeeId,
-    role,
-    { note: note.trim() },
-  );
+  const actor = role === "owner" ? "demo owner" : employeeId;
+  const businessId = (await oneTheme(task.themeId)).businessId;
+  return db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(tasks)
+      .set({
+        status: "reported",
+        employeeReport: note.trim(),
+        reportedAt: timestamp,
+        reportedBy: actor,
+        reportVersion: sql`${tasks.reportVersion} + 1`,
+      })
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          inArray(tasks.status, [
+            "approved_open",
+            "in_progress",
+            "needs_rework",
+          ]),
+        ),
+      )
+      .returning();
+    if (!updated)
+      throw new WorkflowError(
+        "This task has changed. Refresh before submitting the report again.",
+      );
+    await tx.insert(taskReportAttempts).values({
+      id: randomUUID(),
+      taskId,
+      version: updated.reportVersion,
+      note: note.trim(),
+      reportedAt: timestamp,
+      reportedBy: actor,
+      decision: "pending",
+    });
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor,
+      role,
+      type: "task_reported",
+      entityType: "task",
+      entityId: taskId,
+      businessId,
+      description:
+        updated.reportVersion > 1
+          ? "Corrected work report submitted for owner verification."
+          : "Work reported; waiting for managerial verification.",
+      metadata: {
+        reportVersion: updated.reportVersion,
+        note: note.trim(),
+        outcome: "reported",
+      },
+    });
+    return updated;
+  });
 }
-export async function verifyTask(taskId: string, role: string, note = "") {
+export async function verifyTask(
+  taskId: string,
+  role: string,
+  note = "",
+  reportVersion: number,
+) {
   requireOwner(role);
   const task = await oneTask(taskId);
   requireTransition(task.status, ["reported"], "resolved");
+  if (!Number.isInteger(reportVersion) || reportVersion !== task.reportVersion)
+    throw new WorkflowError(
+      "The completion report has changed. Review the latest report before deciding.",
+    );
   if (!task.employeeReport) throw new Error("Employee work report is missing.");
   if (note.trim() && note.trim().length < 10)
     throw new Error(
       "Verification note must describe what the manager checked.",
     );
   const resolutionNote = note.trim() || task.employeeReport.trim();
-  await db
-    .update(tasks)
-    .set({
-      status: "resolved",
-      resolutionNote,
-      resolvedAt: now(),
-      verifiedAt: now(),
-      verifiedBy: "demo owner",
-    })
-    .where(eq(tasks.id, taskId));
-  await event(
-    "task_verified",
-    "task",
-    taskId,
-    "Owner confirmed the employee-reported work.",
-    "demo owner",
-    "owner",
-    {
-      report: task.employeeReport,
-      verification: note.trim() || "Owner confirmation",
-    },
-  );
+  const businessId = (await oneTheme(task.themeId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(tasks)
+      .set({
+        status: "resolved",
+        resolutionNote,
+        resolvedAt: timestamp,
+        verifiedAt: timestamp,
+        verifiedBy: "demo owner",
+      })
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          eq(tasks.status, "reported"),
+          eq(tasks.reportVersion, reportVersion),
+        ),
+      )
+      .returning({ id: tasks.id });
+    if (!updated)
+      throw new WorkflowError(
+        "This completion report has already been decided. Refresh and try again.",
+      );
+    await tx
+      .update(taskReportAttempts)
+      .set({
+        decision: "approved",
+        decidedAt: timestamp,
+        decidedBy: "demo owner",
+        decisionReason: note.trim() || null,
+      })
+      .where(
+        and(
+          eq(taskReportAttempts.taskId, taskId),
+          eq(taskReportAttempts.version, reportVersion),
+          eq(taskReportAttempts.decision, "pending"),
+        ),
+      );
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "task_verified",
+      entityType: "task",
+      entityId: taskId,
+      businessId,
+      description: "Owner confirmed the employee-reported work.",
+      metadata: {
+        reportVersion,
+        verification: note.trim() || "Owner confirmation",
+        outcome: "resolved",
+      },
+    });
+  });
   return await oneTask(taskId);
 }
-export async function resolveTask(taskId: string, role: string, note: string) {
-  return verifyTask(taskId, role, note);
+export async function rejectTaskReport(
+  taskId: string,
+  role: string,
+  reasonInput: string,
+  reportVersion: number,
+) {
+  requireOwner(role);
+  const reason = decisionReason(reasonInput);
+  const task = await oneTask(taskId);
+  requireTransition(task.status, ["reported"], "needs_rework");
+  if (!Number.isInteger(reportVersion) || reportVersion !== task.reportVersion)
+    throw new WorkflowError(
+      "The completion report has changed. Review the latest report before deciding.",
+    );
+  const businessId = (await oneTheme(task.themeId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(tasks)
+      .set({
+        status: "needs_rework",
+        rejectionReason: reason,
+        rejectedAt: timestamp,
+        rejectedBy: "demo owner",
+        resolutionNote: null,
+        resolvedAt: null,
+        verifiedAt: null,
+        verifiedBy: null,
+      })
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          eq(tasks.status, "reported"),
+          eq(tasks.reportVersion, reportVersion),
+        ),
+      )
+      .returning({ id: tasks.id });
+    if (!updated)
+      throw new WorkflowError(
+        "This completion report has already been decided. Refresh and try again.",
+      );
+    await tx
+      .update(taskReportAttempts)
+      .set({
+        decision: "rejected",
+        decisionReason: reason,
+        decidedAt: timestamp,
+        decidedBy: "demo owner",
+      })
+      .where(
+        and(
+          eq(taskReportAttempts.taskId, taskId),
+          eq(taskReportAttempts.version, reportVersion),
+          eq(taskReportAttempts.decision, "pending"),
+        ),
+      );
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "task_report_rejected",
+      entityType: "task",
+      entityId: taskId,
+      businessId,
+      description: "Owner returned the completion report for rework.",
+      metadata: { reason, reportVersion, outcome: "needs_rework" },
+    });
+  });
+  return await oneTask(taskId);
+}
+export async function resolveTask(
+  taskId: string,
+  role: string,
+  note: string,
+  reportVersion: number,
+) {
+  return verifyTask(taskId, role, note, reportVersion);
 }
 export async function createReply(
   reviewId: string,
@@ -1306,30 +1478,50 @@ export async function createReply(
     provider = "fixture";
   }
   const id = randomUUID();
-  await db
-    .insert(replies)
-    .values({
-      id,
-      reviewId,
-      taskId,
-      themeId: task.themeId,
+  const created = await db.transaction(async (tx) => {
+    const [inserted] = await tx
+      .insert(replies)
+      .values({
+        id,
+        reviewId,
+        taskId,
+        themeId: task.themeId,
+        text,
+        provider,
+        mode: aiMode(),
+        model,
+        status: "draft",
+        draftVersion: 1,
+        partialWarning: partialReplyWarning(unresolved),
+      })
+      .onConflictDoNothing()
+      .returning({ id: replies.id });
+    if (!inserted) return false;
+    await tx.insert(replyDraftVersions).values({
+      id: randomUUID(),
+      replyId: id,
+      version: 1,
       text,
-      provider,
-      mode: aiMode(),
-      model,
-      status: "draft",
-      partialWarning: partialReplyWarning(unresolved),
-    })
-    .onConflictDoNothing();
-  await event(
-    "reply_drafted",
-    "reply",
-    id,
-    `Draft created by ${provider}; owner approval required.`,
-    "system",
-    "system",
-  );
-  return await oneReply(id);
+      source: provider,
+    });
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "system",
+      role: "system",
+      type: "reply_drafted",
+      entityType: "reply",
+      entityId: id,
+      businessId: review.businessId,
+      description: `Draft created by ${provider}; owner approval required.`,
+      metadata: { draftVersion: 1, outcome: "draft" },
+    });
+    return true;
+  });
+  return created
+    ? await oneReply(id)
+    : (
+        await db.select().from(replies).where(eq(replies.reviewId, reviewId))
+      )[0];
 }
 export async function prepareReplies(taskId: string, role: string) {
   requireOwner(role);
@@ -1385,49 +1577,112 @@ async function unresolvedReviewComplaints(
   }
   return unresolved;
 }
-export async function editReply(replyId: string, role: string, text: string) {
+export async function editReply(
+  replyId: string,
+  role: string,
+  text: string,
+  expectedVersion: number,
+) {
   requireOwner(role);
   const reply = await oneReply(replyId);
   if (reply.status === "simulated_published")
     throw new Error("A posted reply cannot be edited.");
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion !== reply.draftVersion
+  )
+    throw new WorkflowError(
+      "This reply changed. Review the current draft before editing it.",
+    );
   if (text.trim().length < 10 || text.length > 1200)
     throw new Error("Reply must be 10–1200 characters.");
   const unresolved = await unresolvedReviewComplaints(
     reply.reviewId,
     reply.themeId,
   );
-  await db
-    .update(replies)
-    .set({
+  const businessId = (await oneReview(reply.reviewId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(replies)
+      .set({
+        text: text.trim(),
+        status: "draft",
+        draftVersion: sql`${replies.draftVersion} + 1`,
+        approvedVersion: null,
+        editedAt: timestamp,
+        approvedAt: null,
+        approver: null,
+        partialApproved: false,
+        partialWarning: partialReplyWarning(unresolved),
+      })
+      .where(
+        and(
+          eq(replies.id, replyId),
+          eq(replies.draftVersion, expectedVersion),
+          inArray(replies.status, [
+            "draft",
+            "needs_revision",
+            "approved_ready",
+          ]),
+        ),
+      )
+      .returning({ draftVersion: replies.draftVersion });
+    if (!updated)
+      throw new WorkflowError(
+        "This reply changed. Review the current draft before editing it.",
+      );
+    await tx.insert(replyDraftVersions).values({
+      id: randomUUID(),
+      replyId,
+      version: updated.draftVersion,
       text: text.trim(),
-      status: "draft",
-      editedAt: now(),
-      approvedAt: null,
-      approver: null,
-      partialApproved: false,
-      partialWarning: partialReplyWarning(unresolved),
-    })
-    .where(eq(replies.id, replyId));
-  await event(
-    "reply_edited",
-    "reply",
-    replyId,
-    reply.status === "approved_ready"
-      ? "Edited approved reply returned to draft."
-      : "Owner edited the reply draft.",
-    "demo owner",
-    "owner",
-  );
+      source: "owner_revision",
+      createdAt: timestamp,
+    });
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "reply_edited",
+      entityType: "reply",
+      entityId: replyId,
+      businessId,
+      description:
+        reply.status === "approved_ready"
+          ? "Edited approved reply returned to draft."
+          : reply.status === "needs_revision"
+            ? "Rejected reply revised and returned for approval."
+            : "Owner edited the reply draft.",
+      metadata: {
+        previousVersion: expectedVersion,
+        draftVersion: updated.draftVersion,
+        outcome: "draft",
+      },
+    });
+  });
   return await oneReply(replyId);
 }
 export async function approveReply(
   replyId: string,
   role: string,
-  partialApproved = false,
+  partialApproved: boolean,
+  expectedVersion: number,
 ) {
   requireOwner(role);
   const reply = await oneReply(replyId);
-  if (reply.status === "approved_ready") return reply;
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion !== reply.draftVersion
+  )
+    throw new WorkflowError(
+      "This reply changed. Review the current draft before approving it.",
+    );
+  if (
+    reply.status === "approved_ready" &&
+    reply.approvedVersion === expectedVersion
+  )
+    return reply;
   requireTransition(reply.status, ["draft"], "approved_ready");
   const task = await oneTask(reply.taskId);
   canDraftReply(task.status, task.resolutionNote);
@@ -1442,24 +1697,111 @@ export async function approveReply(
       .where(eq(replies.id, replyId));
   }
   assertReplyApproval(reply.text, unresolved, partialApproved);
-  await db
-    .update(replies)
-    .set({
-      status: "approved_ready",
-      approvedAt: now(),
-      approver: "demo owner",
-      partialApproved: unresolved.length > 0,
-      partialWarning: partialReplyWarning(unresolved),
-    })
-    .where(eq(replies.id, replyId));
-  await event(
-    "reply_approved",
-    "reply",
-    replyId,
-    "Owner approved the reply; ready to post manually. Nothing was published.",
-    "demo owner",
-    "owner",
-  );
+  const businessId = (await oneReview(reply.reviewId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(replies)
+      .set({
+        status: "approved_ready",
+        approvedVersion: expectedVersion,
+        approvedAt: timestamp,
+        approver: "demo owner",
+        partialApproved: unresolved.length > 0,
+        partialWarning: partialReplyWarning(unresolved),
+      })
+      .where(
+        and(
+          eq(replies.id, replyId),
+          eq(replies.status, "draft"),
+          eq(replies.draftVersion, expectedVersion),
+        ),
+      )
+      .returning({ id: replies.id });
+    if (!updated)
+      throw new WorkflowError(
+        "This reply changed before approval. Review the current draft.",
+      );
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "reply_approved",
+      entityType: "reply",
+      entityId: replyId,
+      businessId,
+      description:
+        "Owner approved the current reply draft; ready to post manually.",
+      metadata: {
+        draftVersion: expectedVersion,
+        outcome: "approved_ready",
+        partialApproved: unresolved.length > 0,
+      },
+    });
+  });
+  return await oneReply(replyId);
+}
+export async function rejectReply(
+  replyId: string,
+  role: string,
+  reasonInput: string,
+  expectedVersion: number,
+) {
+  requireOwner(role);
+  const reason = decisionReason(reasonInput);
+  const reply = await oneReply(replyId);
+  requireTransition(reply.status, ["draft"], "needs_revision");
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion !== reply.draftVersion
+  )
+    throw new WorkflowError(
+      "This reply changed. Review the current draft before rejecting it.",
+    );
+  const businessId = (await oneReview(reply.reviewId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(replies)
+      .set({
+        status: "needs_revision",
+        rejectionReason: reason,
+        rejectedAt: timestamp,
+        rejectedBy: "demo owner",
+        approvedVersion: null,
+        approvedAt: null,
+        approver: null,
+        partialApproved: false,
+      })
+      .where(
+        and(
+          eq(replies.id, replyId),
+          eq(replies.status, "draft"),
+          eq(replies.draftVersion, expectedVersion),
+        ),
+      )
+      .returning({ id: replies.id });
+    if (!updated)
+      throw new WorkflowError(
+        "This reply has already been decided. Refresh and try again.",
+      );
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "reply_rejected",
+      entityType: "reply",
+      entityId: replyId,
+      businessId,
+      description: "Owner rejected the reply draft and requested revision.",
+      metadata: {
+        reason,
+        draftVersion: expectedVersion,
+        outcome: "needs_revision",
+        previousStatus: reply.status,
+      },
+    });
+  });
   return await oneReply(replyId);
 }
 export async function approveReplyBatch(replyIds: unknown, role: string) {
@@ -1472,6 +1814,7 @@ export async function approveReplyBatch(replyIds: unknown, role: string) {
   )
     throw new Error("Select 1–300 replies for batch review.");
   const unique = [...new Set(replyIds)];
+  const versions = new Map<string, number>();
   for (const id of unique) {
     const reply = await oneReply(id);
     const theme = await oneTheme(reply.themeId);
@@ -1481,26 +1824,75 @@ export async function approveReplyBatch(replyIds: unknown, role: string) {
       throw new Error(
         "Only unambiguous lower-severity drafts can be batch approved. Review this reply individually.",
       );
+    versions.set(id, reply.draftVersion);
   }
-  for (const id of unique) await approveReply(id, role);
+  for (const id of unique)
+    await approveReply(id, role, false, versions.get(id)!);
   return { approved: unique.length };
 }
 export async function simulatePublish(replyId: string, role: string) {
   requireOwner(role);
   const reply = await oneReply(replyId);
-  requireTransition(reply.status, ["approved_ready"], "simulated_published");
-  await db
-    .update(replies)
-    .set({ status: "simulated_published", publishedAt: now() })
-    .where(eq(replies.id, replyId));
-  await event(
-    "reply_simulated_published",
-    "reply",
-    replyId,
-    "Reply marked as posted.",
-    "demo owner",
-    "owner",
-  );
+  if (reply.status === "simulated_published") return reply;
+  if (
+    reply.status !== "approved_ready" ||
+    reply.approvedVersion !== reply.draftVersion
+  ) {
+    await event(
+      "reply_publish_denied",
+      "reply",
+      replyId,
+      "Simulated publishing blocked: the current draft has no valid owner approval.",
+      "demo owner",
+      "owner",
+      {
+        draftVersion: reply.draftVersion,
+        status: reply.status,
+        outcome: "denied",
+      },
+    );
+    throw new WorkflowError(
+      "The current reply draft is not approved. Revise and approve it before posting.",
+    );
+  }
+  const businessId = (await oneReview(reply.reviewId)).businessId;
+  await db.transaction(async (tx) => {
+    const timestamp = now();
+    const [updated] = await tx
+      .update(replies)
+      .set({
+        status: "simulated_published",
+        publishedAt: timestamp,
+      })
+      .where(
+        and(
+          eq(replies.id, replyId),
+          eq(replies.status, "approved_ready"),
+          eq(replies.draftVersion, reply.draftVersion),
+          eq(replies.approvedVersion, reply.draftVersion),
+        ),
+      )
+      .returning({ id: replies.id });
+    if (!updated)
+      throw new WorkflowError(
+        "This reply changed before publishing. Refresh and check its approval.",
+      );
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "reply_simulated_published",
+      entityType: "reply",
+      entityId: replyId,
+      businessId,
+      description:
+        "Reply marked as posted in this demo; no external platform was called.",
+      metadata: {
+        draftVersion: reply.draftVersion,
+        outcome: "simulated_published",
+      },
+    });
+  });
   return await oneReply(replyId);
 }
 export async function analyzePendingBatch(businessId: string, limit = 5) {

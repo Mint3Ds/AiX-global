@@ -5,6 +5,7 @@ import {
   requireOwner,
   requireTransition,
   canDraftReply,
+  decisionReason,
 } from "../src/domain/workflow";
 import { candidateThemes, distinctReviewCount } from "../src/domain/themes";
 import { detectReviewLanguage } from "../src/domain/language";
@@ -104,6 +105,13 @@ describe("review and workflow rules", () => {
     expect(() =>
       canDraftReply("resolved", "Inspected and removed damaged chair"),
     ).not.toThrow();
+  });
+  it("requires an actionable rejection reason", () => {
+    expect(() => decisionReason("   ")).toThrow(/10–500/);
+    expect(() => decisionReason("Too short")).toThrow(/10–500/);
+    expect(decisionReason("  Repair and retest the chair.  ")).toBe(
+      "Repair and retest the chair.",
+    );
   });
   it("labels Malay and mixed language without excluding either", () => {
     expect(detectReviewLanguage("Kerusi saya senget dan asyik bergerak.")).toBe(

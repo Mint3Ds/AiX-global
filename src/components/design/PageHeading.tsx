@@ -39,6 +39,8 @@ const statusLabels: Record<string, string> = {
   draft: "Draft",
   approved_ready: "Approved",
   simulated_published: "Posted in demo",
+  needs_revision: "Needs revision",
+  needs_rework: "Needs rework",
 };
 
 export function StatusBadge({ status }: { status: string }) {

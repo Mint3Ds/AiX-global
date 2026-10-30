@@ -11,6 +11,7 @@ type ActivityEvent = {
   entityId: string;
   description: string;
   createdAt: string;
+  metadata?: unknown;
 };
 
 type ActivityKind = "all" | "reviews" | "issues" | "tasks" | "replies";
@@ -43,9 +44,13 @@ const titles: Record<string, string> = {
   task_started: "Work started",
   task_reported: "Work update submitted",
   task_verified: "Work verified",
+  task_report_rejected: "Work returned for rework",
   reply_drafted: "Reply drafted",
   reply_edited: "Reply edited",
   reply_approved: "Reply approved",
+  reply_rejected: "Reply rejected",
+  reply_publish_denied: "Posting blocked",
+  handoff_simulated: "Orbyte handoff simulated",
   reply_simulated_published: "Reply posted",
 };
 
@@ -88,9 +93,9 @@ export function ActivityView({
 }) {
   const [selectedKind, setSelectedKind] = useState<ActivityKind>("all");
   const [visibleCount, setVisibleCount] = useState(30);
-  const available = [...events]
-    .filter((event) => event.type !== "handoff_simulated")
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const available = [...events].sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt),
+  );
   const counts = Object.fromEntries(
     kinds.map(({ id }) => [
       id,
@@ -102,24 +107,7 @@ export function ActivityView({
   const filtered = available.filter(
     (event) => selectedKind === "all" || category(event) === selectedKind,
   );
-  const grouped: { event: ActivityEvent; count: number }[] = [];
-  for (const event of filtered) {
-    const previous = grouped.at(-1);
-    if (
-      previous &&
-      previous.event.type === event.type &&
-      previous.event.description === event.description &&
-      previous.event.actor === event.actor &&
-      (previous.event.entityId === event.entityId ||
-        ["reply_drafted", "reply_approved"].includes(event.type)) &&
-      previous.event.createdAt.slice(0, 16) === event.createdAt.slice(0, 16)
-    ) {
-      previous.count += 1;
-    } else {
-      grouped.push({ event, count: 1 });
-    }
-  }
-  const visible = grouped.slice(0, visibleCount);
+  const visible = filtered.slice(0, visibleCount);
   const taskNames = new Map(tasks.map((item) => [item.id, item.title]));
   const issueNames = new Map(themes.map((item) => [item.id, item.title]));
   const reviewNames = new Map(
@@ -182,15 +170,16 @@ export function ActivityView({
         ))}
       </div>
       <div className="activity-feed">
-        {visible.map(({ event, count }, index) => {
+        {visible.map((event, index) => {
           const showDay =
             index === 0 ||
-            day(visible[index - 1].event.createdAt) !== day(event.createdAt);
+            day(visible[index - 1].createdAt) !== day(event.createdAt);
           const title = titles[event.type] || event.type.replaceAll("_", " ");
-          const groupedReplies =
-            count > 1 &&
-            ["reply_drafted", "reply_approved"].includes(event.type);
-          const subject = groupedReplies ? `${count} replies` : context(event);
+          const subject = context(event);
+          const metadata =
+            event.metadata && typeof event.metadata === "object"
+              ? (event.metadata as Record<string, unknown>)
+              : {};
           return (
             <div key={event.id}>
               {showDay && (
@@ -200,13 +189,7 @@ export function ActivityView({
                 <summary>
                   <span className="activity-marker" aria-hidden="true" />
                   <span className="activity-entry-main">
-                    <strong>
-                      {count > 1 && event.type === "reply_drafted"
-                        ? "Replies drafted"
-                        : count > 1 && !groupedReplies
-                          ? `${title} (${count} updates)`
-                          : title}
-                    </strong>
+                    <strong>{title}</strong>
                     {subject && (
                       <span className="activity-subject">{subject}</span>
                     )}
@@ -222,6 +205,23 @@ export function ActivityView({
                   </span>
                 </summary>
                 <p>{event.description}</p>
+                {typeof metadata.reason === "string" && (
+                  <p className="activity-decision-reason">
+                    <strong>Reason:</strong> {metadata.reason}
+                  </p>
+                )}
+                {typeof metadata.note === "string" &&
+                  event.type === "task_reported" && (
+                    <p className="activity-decision-reason">
+                      <strong>Report:</strong> {metadata.note}
+                    </p>
+                  )}
+                {typeof metadata.outcome === "string" && (
+                  <p className="activity-outcome">
+                    <strong>Result:</strong>{" "}
+                    {metadata.outcome.replaceAll("_", " ")}
+                  </p>
+                )}
               </details>
             </div>
           );
@@ -230,7 +230,7 @@ export function ActivityView({
           <p className="activity-empty">No activity in this category yet.</p>
         )}
       </div>
-      {visibleCount < grouped.length && (
+      {visibleCount < filtered.length && (
         <button
           className="secondary activity-more"
           onClick={() => setVisibleCount((count) => count + 30)}
