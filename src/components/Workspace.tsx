@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DashboardView } from "@/components/design/DashboardView";
 import { ActivityView } from "@/components/design/ActivityView";
+import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
 import { PageHeading, StatusBadge } from "@/components/design/PageHeading";
 import {
   WorkspaceHeader,
@@ -2276,24 +2277,32 @@ export function Workspace() {
                   <div className="card detail task-detail">
                     {task ? (
                       <>
-                        <p className="eyebrow">
-                          {task.status === "resolved"
-                            ? "Completed"
-                            : ["approved_open", "in_progress"].includes(
-                                  task.status,
-                                )
-                              ? "Assigned"
-                              : label(task.status)}{" "}
-                          ·{" "}
-                          {branchName(
-                            state.themes.find(
-                              (theme) => theme.id === task.themeId,
-                            )?.branchId || "",
-                          )}
-                        </p>
-                        <h3 id="task-detail-title" tabIndex={-1}>
-                          {task.title}
-                        </h3>
+                        <header className="task-detail-header">
+                          <p className="eyebrow">
+                            Work task /{" "}
+                            {branchName(
+                              state.themes.find(
+                                (item) => item.id === task.themeId,
+                              )?.branchId || "",
+                            )}
+                          </p>
+                          <div className="task-detail-title-row">
+                            <h2 id="task-detail-title" tabIndex={-1}>
+                              {task.title}
+                            </h2>
+                            <span
+                              className={`task-detail-state task-detail-state-${task.status}`}
+                            >
+                              {task.status === "resolved"
+                                ? "Verified"
+                                : task.status === "approved_open"
+                                  ? "Assigned"
+                                  : task.status === "reported"
+                                    ? "Awaiting verification"
+                                    : label(task.status)}
+                            </span>
+                          </div>
+                        </header>
                         {task.rejectionReason &&
                           ["needs_rework", "in_progress", "reported"].includes(
                             task.status,
@@ -2310,58 +2319,47 @@ export function Workspace() {
                               )}
                             </div>
                           )}
-                        <details className="task-instructions">
-                          <summary>Task instructions</summary>
+                        <section className="task-brief" aria-label="Task brief">
+                          <p className="eyebrow">01 / Task brief</p>
                           <p>{task.description}</p>
-                        </details>
+                        </section>
                         {!["proposed", "deferred"].includes(task.status) && (
-                          <div className="task-meta">
-                            <span>
-                              <b>Assigned to</b>{" "}
-                              {state.employees.find(
-                                (employee) => employee.id === task.assigneeId,
-                              )?.name || task.assigneeRole}
-                            </span>
-                            <span>
-                              <b>Due</b> {date(task.dueAt)}
-                            </span>
+                          <dl className="task-facts">
+                            <div>
+                              <dt>Assigned to</dt>
+                              <dd>
+                                {state.employees.find(
+                                  (employee) => employee.id === task.assigneeId,
+                                )?.name || task.assigneeRole}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>Due</dt>
+                              <dd>{date(task.dueAt)}</dd>
+                            </div>
                             {task.verifiedAt && (
-                              <span>
-                                <b>Verified</b> {date(task.verifiedAt)}
-                              </span>
+                              <div>
+                                <dt>Verified</dt>
+                                <dd>{date(task.verifiedAt)}</dd>
+                              </div>
                             )}
-                          </div>
+                          </dl>
                         )}
-                        <details className="task-related-issue">
-                          <summary>
-                            Related issue{" "}
-                            <span>
-                              {state.themeSupport[task.themeId] || 0}{" "}
-                              {state.themeSupport[task.themeId] === 1
-                                ? "review"
-                                : "reviews"}
-                            </span>
-                          </summary>
-                          <div
-                            className="task-evidence-list"
-                            tabIndex={0}
-                            aria-label="Supporting review quotes"
-                          >
-                            {state.observations
-                              .filter((point) =>
-                                state.memberships.some(
-                                  (membership) =>
-                                    membership.themeId === task.themeId &&
-                                    membership.observationId === point.id,
-                                ),
-                              )
-                              .map((point) => (
-                                <blockquote key={point.id}>
-                                  {point.evidenceQuote}
-                                </blockquote>
-                              ))}
-                          </div>
-                        </details>
+                        <TaskEvidencePanel
+                          key={task.id}
+                          taskId={task.id}
+                          themeId={task.themeId}
+                          themeTitle={
+                            state.themes.find(
+                              (item) => item.id === task.themeId,
+                            )?.title || "Related issue"
+                          }
+                          reviews={state.reviews}
+                          observations={state.observations}
+                          memberships={state.memberships}
+                          onOpenTheme={openTheme}
+                          onOpenReview={openReview}
+                        />
                         {["proposed", "deferred"].includes(task.status) &&
                           owner && (
                             <>
@@ -2497,11 +2495,18 @@ export function Workspace() {
                             )}
                           </section>
                         )}
-                        {task.status === "reported" && (
-                          <div className="task-report">
-                            <strong>Employee report</strong>
+                        {["reported", "resolved"].includes(task.status) && (
+                          <section
+                            className="task-report"
+                            aria-label="Employee report"
+                          >
+                            <p className="eyebrow">03 / Work reported</p>
+                            <h3>Employee report</h3>
                             <p>{task.employeeReport}</p>
-                          </div>
+                            {task.reportedAt && (
+                              <small>Submitted {date(task.reportedAt)}</small>
+                            )}
+                          </section>
                         )}
                         {task.status === "reported" && owner && (
                           <div className="controls verification-actions">
@@ -2534,48 +2539,39 @@ export function Workspace() {
                           </div>
                         )}
                         {task.status === "resolved" && (
-                          <>
-                            <div className="task-report">
-                              <strong>Employee report</strong>
-                              <p>{task.employeeReport}</p>
-                            </div>
-                            <div className="task-actions">
-                              {owner && (
-                                <button
-                                  disabled={!!busy}
-                                  onClick={async () => {
-                                    const result = await act(
-                                      "prepare_replies",
-                                      {
-                                        taskId: task.id,
-                                      },
-                                    );
-                                    if (result) {
-                                      setMessage(
-                                        `${(result as { count: number }).count} linked replies available.`,
-                                      );
-                                      setReplyTaskId(task.id);
-                                      setReplyIndex(0);
-                                      setTab("replies");
-                                    }
-                                  }}
-                                >
-                                  Prepare replies for {affectedReviews.length}{" "}
-                                  reviews
-                                </button>
-                              )}
+                          <div className="task-actions">
+                            {owner && (
                               <button
-                                className="secondary"
-                                onClick={() => {
-                                  setReplyTaskId(task.id);
-                                  setReplyIndex(0);
-                                  setTab("replies");
+                                disabled={!!busy}
+                                onClick={async () => {
+                                  const result = await act("prepare_replies", {
+                                    taskId: task.id,
+                                  });
+                                  if (result) {
+                                    setMessage(
+                                      `${(result as { count: number }).count} linked replies available.`,
+                                    );
+                                    setReplyTaskId(task.id);
+                                    setReplyIndex(0);
+                                    setTab("replies");
+                                  }
                                 }}
                               >
-                                Manage replies
+                                Prepare replies for {affectedReviews.length}{" "}
+                                reviews
                               </button>
-                            </div>
-                          </>
+                            )}
+                            <button
+                              className="secondary"
+                              onClick={() => {
+                                setReplyTaskId(task.id);
+                                setReplyIndex(0);
+                                setTab("replies");
+                              }}
+                            >
+                              Manage replies
+                            </button>
+                          </div>
                         )}
                       </>
                     ) : (

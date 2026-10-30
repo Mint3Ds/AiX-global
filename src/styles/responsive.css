@@ -171,6 +171,16 @@
   .tasks-page .staff-work-report {
     grid-template-columns: 1fr;
   }
+  .task-source-review {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .task-source-heading {
+    grid-row: auto;
+  }
+  .task-source-review > .link {
+    grid-column: 1;
+  }
 }
 @media (max-width: 640px) {
   .shell {
@@ -437,6 +447,17 @@
   .card,
   .tasks-page .task-detail {
     padding: 21px 18px;
+  }
+  .task-detail-title-row,
+  .task-evidence-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .task-detail-title-row {
+    gap: 12px;
+  }
+  .task-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .new-review-page .new-review-form {
     grid-template-columns: 1fr;

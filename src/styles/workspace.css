@@ -167,71 +167,6 @@ textarea::placeholder {
 .task-lists h3:not(:first-child) {
   margin-top: 28px;
 }
-.task-related-issue {
-  margin: 12px 0 18px;
-  padding: 11px 14px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-}
-.task-related-issue summary,
-.task-instructions summary {
-  cursor: pointer;
-  color: var(--action);
-  font-weight: 600;
-}
-.task-related-issue summary {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-.task-related-issue summary span {
-  color: var(--muted);
-  font-weight: 400;
-}
-.task-instructions {
-  margin: 8px 0 14px;
-  font-size: 13px;
-}
-.task-instructions p {
-  margin: 8px 0;
-  color: var(--muted);
-}
-.task-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 13px;
-}
-.task-meta b {
-  color: var(--ink);
-  margin-right: 5px;
-}
-.task-evidence-list {
-  max-height: 178px;
-  overflow-y: auto;
-  margin-top: 10px;
-  padding-right: 6px;
-}
-.detail .task-related-issue blockquote {
-  margin: 7px 0;
-  padding: 7px 10px;
-  border-left: 2px solid var(--line);
-  font-size: 13px;
-}
-.task-report {
-  margin: 14px 0;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface-alt);
-  overflow-wrap: anywhere;
-}
-.task-report p {
-  margin: 6px 0 0;
-}
 .task-actions,
 .reply-batch-actions {
   display: flex;
@@ -940,14 +875,6 @@ main .page-controls button.secondary:not(:disabled):hover {
 .tasks-page .task-detail {
   min-height: 0;
   padding: 22px 24px;
-}
-.tasks-page .task-detail > h3 {
-  margin: 4px 0 12px;
-  font-size: clamp(20px, 2vw, 25px);
-  line-height: 1.25;
-}
-.tasks-page .task-detail .eyebrow {
-  margin: 0;
 }
 .tasks-page .task-detail .form {
   max-width: none;
