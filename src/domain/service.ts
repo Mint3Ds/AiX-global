@@ -556,7 +556,6 @@ export async function analyzeReview(reviewId: string) {
         extractionProvider = "openai";
         const extracted = await extractWithOpenAI(review.originalText);
         inputs = extracted.observations;
-        matchingProvider = "openai";
       }
     }
     if (useful)
@@ -569,56 +568,69 @@ export async function analyzeReview(reviewId: string) {
       throw new Error(
         "Specific feedback was found but extraction returned no observations.",
       );
+    const branchThemes =
+      aiMode() === "live" && inputs.length
+        ? await db
+            .select({
+              id: themes.id,
+              title: themes.title,
+              type: themes.type,
+              branchId: themes.branchId,
+            })
+            .from(themes)
+            .where(
+              and(
+                eq(themes.businessId, review.businessId),
+                eq(themes.branchId, review.branchId),
+              ),
+            )
+        : [];
     const matches: (string | null)[] = [];
-    for (const input of inputs) {
-      if (aiMode() === "fixture") {
-        matches.push(
-          (input as ObservationInput & { expectedThemeId?: string })
-            .expectedThemeId ?? null,
-        );
-        continue;
-      }
-      const branchThemes = await db
-        .select({
-          id: themes.id,
-          title: themes.title,
-          type: themes.type,
-          branchId: themes.branchId,
-        })
-        .from(themes)
-        .where(
-          and(
-            eq(themes.businessId, review.businessId),
-            eq(themes.branchId, review.branchId),
-            eq(themes.type, typeForKind(input.kind)),
-          ),
-        );
-      const candidates = candidateThemes(
-        branchThemes,
-        review.branchId,
-        input.kind,
-        `${input.aspect} ${input.normalizedDescription}`,
-      );
-      const normalizedAspect = input.aspect
-        .replaceAll("_", " ")
-        .trim()
-        .toLowerCase();
-      const exactCandidate = normalizedAspect.includes(" ")
-        ? candidates.find(
-            (candidate) =>
-              candidate.title.trim().toLowerCase() === normalizedAspect,
+    let modelMatched = false;
+    for (let index = 0; index < inputs.length; index += 3) {
+      const group = await Promise.all(
+        inputs.slice(index, index + 3).map(async (input) => {
+          if (aiMode() === "fixture")
+            return {
+              themeId:
+                (input as ObservationInput & { expectedThemeId?: string })
+                  .expectedThemeId ?? null,
+              usedModel: false,
+            };
+          const candidates = candidateThemes(
+            branchThemes,
+            review.branchId,
+            input.kind,
+            `${input.aspect} ${input.normalizedDescription}`,
+          );
+          const normalizedAspect = input.aspect
+            .replaceAll("_", " ")
+            .trim()
+            .toLowerCase();
+          const exactCandidate = normalizedAspect.includes(" ")
+            ? candidates.find(
+                (candidate) =>
+                  candidate.title.trim().toLowerCase() === normalizedAspect,
+              )
+            : undefined;
+          if (exactCandidate)
+            return { themeId: exactCandidate.id, usedModel: false };
+          if (!candidates.length) return { themeId: null, usedModel: false };
+          const match = await matchWithOpenAI(input, candidates);
+          if (
+            match.themeId &&
+            !candidates.some((candidate) => candidate.id === match.themeId)
           )
-        : undefined;
-      const match = exactCandidate
-        ? { themeId: exactCandidate.id }
-        : await matchWithOpenAI(input, candidates);
-      if (
-        match.themeId &&
-        !candidates.some((candidate) => candidate.id === match.themeId)
-      )
-        throw new Error("Theme match returned an invalid or cross-branch ID.");
-      matches.push(match.themeId || null);
+            throw new Error(
+              "Theme match returned an invalid or cross-branch ID.",
+            );
+          return { themeId: match.themeId || null, usedModel: true };
+        }),
+      );
+      matches.push(...group.map((item) => item.themeId));
+      modelMatched ||= group.some((item) => item.usedModel);
     }
+    if (aiMode() === "live" && modelMatched) matchingProvider = "openai";
     const runId = randomUUID();
     const changedThemes = new Set<string>();
     await db.transaction(async (tx) => {
@@ -1532,10 +1544,11 @@ export async function prepareReplies(taskId: string, role: string) {
     .from(observations)
     .innerJoin(memberships, eq(memberships.observationId, observations.id))
     .where(eq(memberships.themeId, task.themeId));
-  for (let index = 0; index < linked.length; index += 4) {
+  // Bound provider requests while drafting several independent reviews at once.
+  for (let index = 0; index < linked.length; index += 6) {
     await Promise.all(
       linked
-        .slice(index, index + 4)
+        .slice(index, index + 6)
         .map(({ reviewId }) => createReply(reviewId, taskId, role)),
     );
   }
