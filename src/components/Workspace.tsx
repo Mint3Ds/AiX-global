@@ -180,10 +180,122 @@ const localDay = (value: string) =>
     month: "2-digit",
     day: "2-digit",
   }).format(new Date(value));
-const label = (value: string) =>
-  value === "simulated_published" || value === "reply_simulated_published"
-    ? "posted"
-    : value.replaceAll("_", " ");
+const labelDictionary: Record<string, string> = {
+  // Outcomes & statuses
+  simulated_published: "Simulated published",
+  reply_simulated_published: "Simulated published",
+  posted: "Simulated published",
+  complete: "Analysed",
+  pending: "Pending analysis",
+  processing: "Analysing",
+  needs_review: "Needs review",
+  generic: "General feedback",
+  failed: "Analysis failed",
+  suggested: "Suggested",
+  owner_confirmed: "Owner confirmed",
+  confirmed: "Owner confirmed",
+  dismissed: "Dismissed",
+  recurrence: "Possible recurrence",
+  proposed: "Awaiting approval",
+  deferred: "Saved for later",
+  approved_open: "Assigned",
+  in_progress: "In progress",
+  reported: "Awaiting verification",
+  needs_rework: "Needs rework",
+  resolved: "Verified",
+  rejected: "Rejected",
+  draft: "Draft",
+  approved_ready: "Approved",
+  approved: "Approved",
+  needs_revision: "Needs revision",
+
+  // Observation kinds
+  operational_complaint: "Operational complaint",
+  suggestion: "Suggestion",
+  specific_praise: "Specific praise",
+  other_specific_feedback: "Specific feedback",
+  praise: "Praise",
+
+  // Categories
+  guest_experience: "Guest experience",
+  food_quality: "Food quality",
+  cleanliness: "Cleanliness",
+  amenities: "Amenities",
+  service: "Service",
+  noise: "Noise",
+  billing: "Billing",
+  maintenance: "Maintenance",
+  facility: "Facility",
+  staff: "Staff",
+  operational_issue: "Operational issue",
+
+  // Activity & event types
+  review_intake: "Review added",
+  analysis_started: "Analysis started",
+  analysis_completed: "Review analysed",
+  analysis_needs_review: "Review needs attention",
+  analysis_failed: "Analysis failed",
+  manual_classification: "Review classified",
+  membership_corrected: "Evidence updated",
+  possible_recurrence: "Possible recurrence",
+  theme_confirmed: "Issue confirmed",
+  theme_dismissed: "Issue dismissed",
+  theme_reopened: "Issue reopened",
+  priority_adjusted: "Priority changed",
+  task_proposed: "Work task created",
+  task_edited: "Work task edited",
+  task_deferred: "Task saved for later",
+  task_approved: "Task assigned",
+  task_started: "Work started",
+  task_reported: "Work update submitted",
+  task_verified: "Work verified",
+  task_report_rejected: "Work returned for rework",
+  reply_drafted: "Reply drafted",
+  reply_edited: "Reply edited",
+  reply_approved: "Reply approved",
+  reply_rejected: "Reply rejected",
+  reply_publish_denied: "Posting blocked",
+  handoff_simulated: "Simulated handoff recorded",
+
+  // Providers & modes
+  fixture: "Simulated",
+  "fixture:jev": "Simulated screening",
+  jev: "Jev",
+  openai: "OpenAI",
+  live: "Live",
+};
+
+const formatSentenceCase = (text: string) => {
+  if (!text) return "";
+  const cleaned = text.replaceAll("_", " ").toLowerCase();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+};
+
+const label = (value: string) => {
+  if (!value) return "";
+  const lower = value.toLowerCase();
+  if (labelDictionary[lower]) return labelDictionary[lower];
+  if (labelDictionary[value]) return labelDictionary[value];
+  return formatSentenceCase(value);
+};
+
+function formatEventDescription(desc: string): string {
+  if (!desc) return "";
+  if (
+    desc.includes("No exact analysis fixture exists") ||
+    desc.includes("No fixture exists")
+  ) {
+    return "Review requires owner assessment.";
+  }
+  if (desc.includes("Analysis started in fixture mode")) {
+    return "Automated review analysis started.";
+  }
+  if (desc.includes("Simulated Orbyte integration handoff saved locally")) {
+    return "Simulated handoff recorded.";
+  }
+  return desc;
+}
+
 const imageAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -215,7 +327,7 @@ function actionSuccessMessage(
 ) {
   if (type === "analyze") {
     if (result?.status === "needs_review")
-      return "No exact fixture matches this review. It remains searchable and needs review.";
+      return "Review saved. New wording requires owner review before analysis.";
     if (result?.status === "generic")
       return "Analysis complete. No specific feedback found.";
     return "Analysis complete.";
@@ -242,7 +354,7 @@ function actionSuccessMessage(
       "Report returned for rework. The employee can see your reason.",
     reject_reply: "Draft rejected. Revise it before approval or posting.",
     approve_reply_batch: "Eligible replies approved.",
-    simulate_publish: "Reply marked as posted in this demo.",
+    simulate_publish: "Reply marked as simulated published.",
     propose_task: "Work task created.",
     edit_reply: "Reply saved.",
     approve_reply: "Reply approved.",
@@ -342,9 +454,22 @@ function PageControls({
       >
         Previous
       </button>
-      <span>
-        Page {page + 1} of {pageCount}
-      </span>
+      <label className="page-selector" aria-label="Select page">
+        <span className="page-selector-label">Page</span>
+        <select
+          value={page}
+          aria-label="Select page number"
+          disabled={pageCount <= 1}
+          onChange={(event) => onPageChange(Number(event.target.value))}
+        >
+          {Array.from({ length: Math.max(1, pageCount) }, (_, i) => (
+            <option key={i} value={i}>
+              {i + 1}
+            </option>
+          ))}
+        </select>
+        <span className="page-selector-total">of {pageCount}</span>
+      </label>
       <button
         className="secondary"
         type="button"
@@ -597,7 +722,7 @@ export function Workspace() {
         setErrorSource("action");
       } else if (outcome.status === "needs_review")
         setMessage(
-          "Review saved. No exact fixture matched; this review needs attention.",
+          "Review saved. New wording requires owner review before analysis.",
         );
       else if (outcome.status === "generic")
         setMessage("Review saved. No specific feedback was found.");
@@ -1299,7 +1424,7 @@ export function Workspace() {
                   activity={recentActivity.map((item) => ({
                     id: item.id,
                     title: label(item.type),
-                    description: item.description,
+                    description: formatEventDescription(item.description),
                     date: date(item.createdAt),
                   }))}
                   onNewReview={() => setTab("new")}
@@ -2066,7 +2191,7 @@ export function Workspace() {
                                   )}
                                 </span>
                               ) : (
-                                <small>Severity {item.severity}/3</small>
+                                <small>{item.priority} priority</small>
                               )}
                             </span>
                           </button>
@@ -2226,8 +2351,8 @@ export function Workspace() {
                                   <strong>
                                     {group.reviews.length}{" "}
                                     {group.reviews.length === 1
-                                      ? "review"
-                                      : "reviews"}
+                                      ? "guest mention"
+                                      : "guest mentions"}
                                   </strong>
                                   {group.reviews.length > 1 && (
                                     <span>Same feedback</span>
@@ -2946,9 +3071,11 @@ export function Workspace() {
                     </nav>
                   </>
                 ) : (
-                  <div className="card">
-                    No drafts yet. Open a completed work task and prepare
-                    replies.
+                  <div className="card empty-state-card">
+                    <p className="empty-state-title">No response drafts yet</p>
+                    <p className="empty-state-copy">
+                      Drafts appear here once a verified work task has replies prepared for linked guest feedback.
+                    </p>
                   </div>
                 )}
               </section>
@@ -2970,7 +3097,6 @@ export function Workspace() {
       )}
       <footer className="workspace-footer">
         <span>Clarity / Review to resolution</span>
-        <span>Demo workspace · Simulated sources and posting</span>
       </footer>
       {decision && (
         <div

@@ -172,40 +172,54 @@ textarea {
 .status-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  max-width: 140px;
-  padding: 4px 7px;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: var(--surface-alt);
-  color: #526456;
-  font-size: 10px;
-  font-weight: 600;
+  gap: 6px;
+  min-height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #3b6348;
+  font-size: 11px;
+  font-weight: 550;
   line-height: 1.4;
+  white-space: nowrap;
 }
-.status-failed {
-  border-color: #e2bbad;
-  background: var(--error-bg);
-  color: var(--error);
+.status-badge::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.status-failed,
+.status-rejected {
+  color: #be123c;
 }
 .status-needs_review,
-.status-pending {
-  border-color: #dbc5a1;
-  background: var(--warning);
-  color: var(--warning-ink);
+.status-pending,
+.status-needs_attention,
+.status-attention {
+  color: #926227;
 }
 .status-processing {
-  border-color: #c2d2dc;
-  background: #eaf0f4;
   color: #3b6176;
 }
-.status-generic {
+.status-generic,
+.status-draft {
   color: var(--muted);
-  background: transparent;
 }
-.status-simulated_published {
-  background: #e8eee2;
-  color: var(--action);
+.status-simulated_published,
+.status-approved_ready,
+.status-approved,
+.status-resolved,
+.status-analysed {
+  color: #2d5a3b;
+}
+.status-needs_revision,
+.status-needs_rework {
+  color: #b45309;
 }
 /* REVIEWS: filters, table/list rows, evidence, and analysis provenance. */
 .review-filters {
@@ -347,7 +361,7 @@ main .review-quick-filters button:hover {
   width: 54px;
 }
 .review-register th:nth-child(3) {
-  width: 100px;
+  width: 125px;
 }
 .review-register td {
   padding: 0 9px;
@@ -535,12 +549,11 @@ main .review-quick-filters button:hover {
   min-width: 0;
 }
 .finding-category {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: var(--muted);
-  font-size: 9px;
-  font-weight: 750;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.01em;
 }
 .review-finding h4 {
   margin: 0;
@@ -667,6 +680,9 @@ main .issue-category-tabs button:hover:not(.review-row) {
   border-radius: 50%;
   background: currentColor;
 }
+.issues-page .issue-list-paginated {
+  gap: 0;
+}
 .issues-page .issue-list-paginated .review-row {
   margin-bottom: 0;
   padding: 20px 14px;
@@ -705,6 +721,52 @@ main .page-controls button {
   min-height: 34px;
   padding: 6px 10px;
   font-size: 11px;
+}
+.page-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.page-selector span {
+  flex: initial !important;
+  white-space: nowrap;
+}
+.page-selector select {
+  min-height: 28px;
+  height: 28px;
+  padding: 0 20px 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-light);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23606e63' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 8px 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--motion-fast), background-color var(--motion-fast);
+}
+.page-selector select:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  background-color: var(--surface);
+}
+.page-selector select:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.page-selector select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .issue-detail-heading h3 {
   font-size: 27px;
@@ -908,12 +970,12 @@ main .page-controls button {
 .task-detail-state {
   flex: none;
   margin-top: 3px;
-  padding: 5px 8px;
+  padding: 4px 10px;
   border: 1px solid var(--line-strong);
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--action);
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 550;
   white-space: nowrap;
 }
 .task-detail-state-needs_rework {
@@ -1012,10 +1074,9 @@ main .page-controls button {
 }
 .task-source-heading span:first-child {
   color: var(--accent);
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 .task-source-heading span:last-child {
   color: var(--muted);
@@ -1267,10 +1328,9 @@ main .page-controls button {
 }
 .task-report-attempt-meta strong {
   color: var(--accent);
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.075em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 .task-report-attempt-meta time {
   color: var(--muted);
@@ -1279,12 +1339,12 @@ main .page-controls button {
 }
 .report-decision {
   width: fit-content;
-  padding: 3px 6px;
+  padding: 3px 8px;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--muted);
-  font-size: 10px;
-  font-weight: 650;
+  font-size: 11px;
+  font-weight: 550;
 }
 .report-decision-rejected {
   border-color: #ddc8a3;
@@ -1524,12 +1584,12 @@ main .activity-filters button:not(.link):hover {
 }
 .activity-thread-status {
   display: inline-block;
-  padding: 3px 7px;
+  padding: 3px 9px;
   border: 1px solid var(--line-strong);
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--action);
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 550;
 }
 .activity-thread-count {
   margin-left: 10px;
@@ -1696,7 +1756,27 @@ main .activity-more.secondary:not(.link) {
   background: var(--paper-light);
 }
 .reply-card-heading .status-badge {
-  padding: 4px 7px;
-  border-radius: 3px;
-  font-size: 10px;
+  font-size: 11px;
 }
+
+.empty-state-card {
+  padding: 40px 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  text-align: left;
+}
+.empty-state-title {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+}
+.empty-state-copy {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+

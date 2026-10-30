@@ -60,13 +60,10 @@ export function DashboardView({
         title="Your workspace, at a glance."
         description="Guest feedback, the evidence behind it, and the work that follows."
       >
-        <button onClick={onNewReview}>
-          <span aria-hidden="true">＋</span> Add a review
-        </button>
+        <button onClick={onNewReview}>Add a review</button>
       </PageHeading>
       <div className="dashboard-context">
         <span>Across all properties</span>
-        <span>Review → Evidence → Action</span>
       </div>
       <div className="metrics">
         {primary.map((metric, index) => (

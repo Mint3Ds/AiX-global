@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   gap: 38px;
-  min-height: 96px;
+  min-height: 60px;
 }
 .brand-lockup {
   display: flex;
@@ -59,14 +59,16 @@
 }
 .main-nav button {
   position: relative;
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
   min-height: 44px;
-  padding: 1px 0 0;
+  padding: 0;
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 550;
   white-space: nowrap;
   transition: color var(--motion-fast);
@@ -100,7 +102,7 @@
 }
 .workspace-control {
   display: grid;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 .workspace-control > span {
@@ -111,16 +113,29 @@
   text-transform: uppercase;
 }
 .workspace-control select {
-  min-height: 32px;
+  min-height: 28px;
   max-width: 180px;
-  padding: 0 20px 0 0;
-  border: 0;
-  border-radius: 0;
+  padding: 2px 20px 2px 4px;
+  margin-left: -4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
   background: transparent;
   color: var(--ink);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: border-color var(--motion-fast), background-color var(--motion-fast);
+}
+.workspace-control select:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+.workspace-control select:focus,
+.workspace-control select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 4px;
+  background-color: var(--paper-light);
+  box-shadow: none;
 }
 .role-switcher {
   padding-left: 16px;
@@ -143,7 +158,7 @@
 }
 .workspace-main {
   min-height: 70vh;
-  padding: 40px 0 64px;
+  padding: 24px 0 64px;
   animation: page-enter 260ms var(--ease-out) both;
 }
 .workspace-content {

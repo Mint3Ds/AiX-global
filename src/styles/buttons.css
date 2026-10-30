@@ -1,17 +1,24 @@
-/* Shared controls. Change the primary and secondary states here. */
+/* Shared controls: Standardized button hierarchy across all views */
+
+/* 1. Primary Action: Crisp solid near-black pill button */
 main button:where(:not(.link):not(.review-row):not(.register-review-button)),
-.notice button {
-  min-height: 40px;
-  padding: 10px 16px;
-  border: 1px solid var(--action);
+.notice button,
+.create-task-button,
+.issue-confirm-button,
+.new-review-form-footer button,
+.decision-dialog button:not(.secondary) {
+  min-height: 38px;
+  padding: 8px 18px;
+  border: 1px solid #1a1f1c;
   border-radius: var(--radius);
-  background: var(--action);
-  color: var(--white);
-  font-size: 12px;
-  font-weight: 600;
+  background: #1a1f1c;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.35;
-  box-shadow: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 button,
 input,
 select,
@@ -24,32 +31,93 @@ summary {
     box-shadow var(--motion-fast),
     transform var(--motion-fast) var(--ease-out);
 }
-main
-  button:where(:not(.link):not(.review-row):not(.register-review-button)):hover,
-.notice button:hover {
-  background: var(--action-hover);
-  border-color: var(--action-hover);
+
+main button:where(:not(.link):not(.review-row):not(.register-review-button)):hover,
+.notice button:hover,
+.create-task-button:hover,
+.issue-confirm-button:hover,
+.new-review-form-footer button:hover,
+.decision-dialog button:not(.secondary):hover {
+  background: #2b332e;
+  border-color: #2b332e;
+  color: #ffffff;
 }
+
 button:active:not(:disabled) {
   transform: translateY(1px);
 }
+
 button:disabled,
 select:disabled,
 input:disabled,
 textarea:disabled {
-  opacity: 0.48;
+  opacity: 0.45;
   cursor: not-allowed;
 }
-main button.secondary:not(.link) {
-  border-color: var(--line-strong);
-  background: var(--paper-light);
-  color: var(--ink);
+
+/* 2. Secondary Action: Clean bordered white pill button */
+main button.secondary:not(.link),
+button.secondary,
+.filter-toggle,
+main .page-controls button.secondary:not(.link),
+main .featured-issue button.secondary,
+main .task-actions button.secondary,
+main .reply .controls button.secondary,
+main .reply-batch-actions button.secondary,
+main .reply-navigation button.secondary,
+.decision-dialog button.secondary {
+  border: 1px solid #d4dcd0 !important;
+  border-radius: var(--radius) !important;
+  background: #ffffff !important;
+  color: #222b24 !important;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
-main button.secondary:not(.link):hover {
-  border-color: var(--accent);
-  background: var(--surface-alt);
-  color: var(--action);
+
+main button.secondary:not(.link):hover,
+button.secondary:hover,
+.filter-toggle:hover,
+main .page-controls button.secondary:not(:disabled):hover,
+main .featured-issue button.secondary:hover,
+main .task-actions button.secondary:hover,
+main .reply .controls button.secondary:hover,
+main .reply-batch-actions button.secondary:hover,
+main .reply-navigation button.secondary:hover,
+.decision-dialog button.secondary:hover {
+  border-color: #a9b8a7 !important;
+  background: #f7f9f6 !important;
+  color: #1a1f1c !important;
 }
+
+/* 3. Destructive / Reject Action: Subtle, intentional styling */
+main button.reject-action,
+main button.reject,
+button.reject-action,
+button.reject,
+button.danger,
+button.button-destructive {
+  border: 1px solid #fecdd3 !important;
+  border-radius: var(--radius) !important;
+  background: #ffffff !important;
+  color: #be123c !important;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+main button.reject-action:hover,
+main button.reject:hover,
+button.reject-action:hover,
+button.reject:hover,
+button.danger:hover,
+button.button-destructive:hover {
+  border-color: #fda4af !important;
+  background: #fff1f2 !important;
+  color: #9f1239 !important;
+}
+
+/* 4. Link buttons */
 button.link {
   min-height: 32px;
   padding: 3px 0;
@@ -58,14 +126,16 @@ button.link {
   background: none;
   color: var(--action);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
   text-align: left;
   text-decoration: none;
   text-underline-offset: 4px;
 }
+
 button.link:hover {
   text-decoration: underline;
 }
+
 button.link span {
   margin-left: 5px;
 }

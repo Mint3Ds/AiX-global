@@ -19,6 +19,29 @@ const kinds: { id: ActivityKind; label: string }[] = [
   { id: "replies", label: "Replies" },
 ];
 
+const toSentenceCase = (text: string) => {
+  if (!text) return "";
+  const cleaned = text.replaceAll("_", " ").toLowerCase();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+};
+
+function formatEventDescription(desc: string): string {
+  if (!desc) return "";
+  if (
+    desc.includes("No exact analysis fixture exists") ||
+    desc.includes("No fixture exists")
+  ) {
+    return "Review requires owner assessment.";
+  }
+  if (desc.includes("Analysis started in fixture mode")) {
+    return "Automated review analysis started.";
+  }
+  if (desc.includes("Simulated Orbyte integration handoff saved locally")) {
+    return "Simulated handoff recorded.";
+  }
+  return desc;
+}
+
 // Edit these labels to change how stored event types read in the Activity tab.
 const titles: Record<string, string> = {
   review_intake: "Review added",
@@ -46,8 +69,8 @@ const titles: Record<string, string> = {
   reply_approved: "Reply approved",
   reply_rejected: "Reply rejected",
   reply_publish_denied: "Posting blocked",
-  handoff_simulated: "Orbyte handoff simulated",
-  reply_simulated_published: "Reply posted",
+  handoff_simulated: "Simulated handoff recorded",
+  reply_simulated_published: "Simulated published",
 };
 
 const taskStatuses: Record<string, string> = {
@@ -92,14 +115,16 @@ function EventRow({ event, actor, subject }: EventRowProps) {
       <div className="activity-event-content">
         <div className="activity-event-topline">
           <strong>
-            {titles[event.type] || event.type.replaceAll("_", " ")}
+            {titles[event.type] || toSentenceCase(event.type)}
           </strong>
           <time dateTime={event.createdAt}>
             {date(event.createdAt)} · {time(event.createdAt)}
           </time>
         </div>
         {subject && <p className="activity-event-subject">{subject}</p>}
-        <p className="activity-event-description">{event.description}</p>
+        <p className="activity-event-description">
+          {formatEventDescription(event.description)}
+        </p>
         <p className="activity-event-actor">By {actor}</p>
         {typeof metadata.reason === "string" && (
           <p className="activity-event-decision">
@@ -114,7 +139,7 @@ function EventRow({ event, actor, subject }: EventRowProps) {
           )}
         {typeof metadata.outcome === "string" && (
           <p className="activity-event-outcome">
-            Result: {metadata.outcome.replaceAll("_", " ")}
+            Result: {toSentenceCase(metadata.outcome)}
           </p>
         )}
       </div>

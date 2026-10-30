@@ -38,7 +38,7 @@
     gap: 22px;
   }
   .review-register th:nth-child(3) {
-    width: 88px;
+    width: 120px;
   }
   .review-register th:nth-child(2) {
     width: 47px;
@@ -379,8 +379,7 @@
     width: 79px;
   }
   .review-register .status-badge {
-    font-size: 9px;
-    padding: 3px 5px;
+    font-size: 10px;
   }
   .register-review-button {
     min-height: 133px;

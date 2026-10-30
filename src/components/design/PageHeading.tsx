@@ -40,15 +40,30 @@ const statusLabels: Record<string, string> = {
   failed: "Analysis failed",
   draft: "Draft",
   approved_ready: "Approved",
-  simulated_published: "Posted in demo",
+  simulated_published: "Simulated published",
   needs_revision: "Needs revision",
   needs_rework: "Needs rework",
+  proposed: "Awaiting approval",
+  deferred: "Saved for later",
+  approved_open: "Assigned",
+  in_progress: "In progress",
+  reported: "Awaiting verification",
+  resolved: "Verified",
+  rejected: "Rejected",
+  owner_confirmed: "Owner confirmed",
+  suggested: "Needs review",
+};
+
+const toSentenceCase = (text: string) => {
+  if (!text) return "";
+  const cleaned = text.replaceAll("_", " ").toLowerCase();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
 };
 
 export function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`status-badge status-${status}`}>
-      {statusLabels[status] || status.replaceAll("_", " ")}
+      {statusLabels[status] || toSentenceCase(status)}
     </span>
   );
 }
