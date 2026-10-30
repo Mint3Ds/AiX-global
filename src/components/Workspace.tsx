@@ -2734,6 +2734,7 @@ export function Workspace() {
                 themes={state.themes}
                 reviews={state.reviews}
                 replies={state.replies}
+                onOpenTask={openTask}
               />
             )}
           </fieldset>

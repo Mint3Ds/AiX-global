@@ -10,7 +10,7 @@ The live product uses one Ledger-inspired visual language across Dashboard, Revi
 - **Page heading and status badges:** `src/components/design/PageHeading.tsx`. Edit `statusLabels` for visible badge text.
 - **Dashboard:** `src/components/design/DashboardView.tsx` for composition/copy and `src/styles/dashboard.css` for presentation. Metric numbers come from live state in `Workspace.tsx`.
 - **Reviews, Issues, New review, Tasks, Replies:** the named screen sections in `src/components/Workspace.tsx`. Their base layout is in `src/styles/workspace.css`, and the matching named CSS sections are in `src/styles/ledger.css`.
-- **Activity:** `src/components/design/ActivityView.tsx` for event labels/rows and the `ACTIVITY` section in `ledger.css` for styling.
+- **Activity:** `src/components/design/ActivityView.tsx` for labels and timeline rows, `activity-model.ts` for task/reply grouping, and the `ACTIVITY` section in `ledger.css` for styling.
 - **Launch film page:** `src/app/launch/page.tsx` for content and `src/styles/launch-film.css` for layout. It shares tokens and the brand component with the workspace.
 - **Small screens:** `src/styles/responsive.css`; the launch page's phone rule is in `launch-film.css`.
 - **Action success messages:** `actionSuccessMessage()` near the top of `src/components/Workspace.tsx`.

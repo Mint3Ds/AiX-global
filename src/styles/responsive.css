@@ -491,21 +491,23 @@
     flex-shrink: 0;
     min-height: 40px;
   }
-  .activity-entry summary {
-    grid-template-columns: 8px minmax(0, 1fr) auto;
-    padding: 17px 12px;
-    gap: 10px;
-  }
-  .activity-entry-meta {
+  .activity-thread-heading {
     flex-direction: column;
-    align-items: flex-end;
-    font-size: 10px;
+    padding: 18px;
   }
-  .activity-entry > p {
-    padding: 0 30px 18px;
+  .activity-thread-events {
+    padding: 0 16px 8px 28px;
   }
-  .activity-expand {
-    display: none;
+  .activity-thread-events li {
+    padding-left: 18px;
+  }
+  .activity-event-topline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .activity-section-heading h2 {
+    font-size: 21px;
   }
   .workspace-footer {
     flex-direction: column;
