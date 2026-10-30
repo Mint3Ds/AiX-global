@@ -1,8 +1,9 @@
-import Image from "next/image";
+import { BrandIdentity } from "./BrandIdentity";
 export type WorkspaceTab =
   "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
 type DemoRole = "owner" | "staff";
 const tabs: { id: WorkspaceTab; label: string }[] = [
+  // Edit navigation labels here. IDs also control which workspace screen opens.
   { id: "dashboard", label: "Dashboard" },
   { id: "reviews", label: "Reviews" },
   { id: "issues", label: "Issues" },
@@ -43,17 +44,7 @@ export function WorkspaceHeader({
           onClick={() => onTabChange("dashboard")}
           aria-label="Clarity dashboard"
         >
-          <Image
-            className="brand-mark"
-            src="/clarity-symbol.svg"
-            alt=""
-            width={32}
-            height={32}
-            priority
-          />
-          <span className="brand-name">
-            Clarity<span>Review workspace</span>
-          </span>
+          <BrandIdentity />
         </button>
         <nav className="main-nav" aria-label="Main navigation">
           {tabs.map(({ id, label }) => (

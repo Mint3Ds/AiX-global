@@ -48,6 +48,7 @@ export function DashboardView({
   onOpenTask: (id: string) => void;
   onNavigate: (destination: Destination, metricTitle?: string) => void;
 }) {
+  // Layout and wording for the dashboard live here; values come from Workspace.
   const [featured, ...rest] = issues;
   const primary = [metrics[0], metrics[3], metrics[4], metrics[5]];
   const attention = metrics[3]?.value || 0;

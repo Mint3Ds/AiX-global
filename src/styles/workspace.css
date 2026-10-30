@@ -1,3 +1,4 @@
+/* Base workspace layouts and controls. Ledger-specific polish is in ledger.css. */
 .notice {
   margin: 14px 0;
   border: 1px solid var(--line);

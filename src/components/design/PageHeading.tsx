@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+/** One editorial heading for every workspace tab. Page copy stays with each tab. */
 export function PageHeading({
   index,
   eyebrow,
@@ -29,6 +30,7 @@ export function PageHeading({
   );
 }
 
+// Human-readable status names shared by review and reply badges.
 const statusLabels: Record<string, string> = {
   complete: "Analysed",
   generic: "General feedback",

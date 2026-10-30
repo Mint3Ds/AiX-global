@@ -1,4 +1,4 @@
-/* Desktop, tablet, phone, and reduced-motion behavior for the Ledger system. */
+/* Responsive overrides for every workspace tab. Edit breakpoints here. */
 @media (max-width: 1280px) {
   .shell {
     padding: 0 28px;

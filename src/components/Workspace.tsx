@@ -179,6 +179,50 @@ const issueWorkLabels: Record<string, string> = {
 };
 const issueWorkLabel = (status: string) =>
   issueWorkLabels[status] || "Work task";
+
+/** Edit action confirmation copy here; state and API behavior live below. */
+function actionSuccessMessage(
+  type: string,
+  values: Record<string, unknown>,
+  result: { status?: string; count?: number } | null,
+) {
+  if (type === "analyze") {
+    if (result?.status === "needs_review")
+      return "No exact fixture matches this review. It remains searchable and needs review.";
+    if (result?.status === "generic")
+      return "Analysis complete. No specific feedback found.";
+    return "Analysis complete.";
+  }
+  if (type === "theme_status") {
+    if (values.status === "dismissed") return "Issue dismissed.";
+    if (values.status === "suggested") return "Issue reopened for review.";
+    return "Issue confirmed.";
+  }
+  if (type === "decide_task")
+    return values.decision === "defer"
+      ? "Task saved for later."
+      : "Task assigned.";
+  if (type === "prepare_replies")
+    return `${result?.count ?? 0} linked replies ready for review.`;
+
+  const messages: Record<string, string> = {
+    intake: "Review saved. Analysis is starting…",
+    severity: "Priority updated.",
+    edit_task: "Work task saved.",
+    report_task: "Work update submitted.",
+    verify_task: "Work verified.",
+    reject_task_report:
+      "Report returned for rework. The employee can see your reason.",
+    reject_reply: "Draft rejected. Revise it before approval or posting.",
+    approve_reply_batch: "Eligible replies approved.",
+    simulate_publish: "Reply marked as posted in this demo.",
+    propose_task: "Work task created.",
+    edit_reply: "Reply saved.",
+    approve_reply: "Reply approved.",
+    correct_membership: "Evidence updated.",
+  };
+  return messages[type] || "Changes saved.";
+}
 function revealDetailOnMobile(id: string, maxWidth = 640) {
   if (!window.matchMedia(`(max-width: ${maxWidth}px)`).matches) return;
   requestAnimationFrame(() => {
@@ -297,7 +341,12 @@ const isOwnerVisibleTheme = (theme: Theme, support: number) =>
         ["owner_confirmed", "recurrence"].includes(theme.status))
     : support > 0 || theme.status === "owner_confirmed";
 
+/**
+ * Workspace owns the shared snapshot, filters, and navigation for all seven tabs.
+ * For visual edits, start with tokens.css and the matching screen section below.
+ */
 export function Workspace() {
+  // UI-only state. Server data is always refreshed from /api/state after actions.
   const [state, setState] = useState<State | null>(null);
   const [error, setError] = useState("");
   const [errorSource, setErrorSource] = useState<"load" | "action" | null>(
@@ -375,6 +424,7 @@ export function Workspace() {
       .querySelector<HTMLElement>("[data-page-title]")
       ?.focus({ preventScroll: true });
   }, [tab]);
+  // Shared data loading and action feedback for every tab.
   const refresh = useCallback(async () => {
     try {
       const response = await fetch(
@@ -432,51 +482,7 @@ export function Workspace() {
           );
           setErrorSource("action");
         } else {
-          setMessage(
-            type === "analyze"
-              ? result?.status === "needs_review"
-                ? "No exact fixture matches this review. It remains searchable and needs review."
-                : result?.status === "generic"
-                  ? "Analysis complete. No specific feedback found."
-                  : "Analysis complete."
-              : type === "intake"
-                ? "Review saved. Analysis is starting…"
-                : type === "severity"
-                  ? "Priority updated."
-                  : type === "theme_status"
-                    ? values.status === "dismissed"
-                      ? "Issue dismissed."
-                      : values.status === "suggested"
-                        ? "Issue reopened for review."
-                        : "Issue confirmed."
-                    : type === "edit_task"
-                      ? "Work task saved."
-                      : type === "decide_task"
-                        ? values.decision === "defer"
-                          ? "Task saved for later."
-                          : "Task assigned."
-                        : type === "report_task"
-                          ? "Work update submitted."
-                          : type === "verify_task"
-                            ? "Work verified."
-                            : type === "reject_task_report"
-                              ? "Report returned for rework. The employee can see your reason."
-                              : type === "reject_reply"
-                                ? "Draft rejected. Revise it before approval or posting."
-                                : type === "prepare_replies"
-                                  ? `${result?.count ?? 0} linked replies ready for review.`
-                                  : type === "approve_reply_batch"
-                                    ? "Eligible replies approved."
-                                    : type === "simulate_publish"
-                                      ? "Reply marked as posted in this demo."
-                                      : {
-                                          propose_task: "Work task created.",
-                                          edit_reply: "Reply saved.",
-                                          approve_reply: "Reply approved.",
-                                          correct_membership:
-                                            "Evidence updated.",
-                                        }[type] || "Changes saved.",
-          );
+          setMessage(actionSuccessMessage(type, values, result));
         }
         return body.result;
       } catch (reason) {
@@ -560,6 +566,7 @@ export function Workspace() {
     }
   };
   const theme = state?.themes.find((item) => item.id === selectedTheme);
+  // Derived collections used by Dashboard, Issues, Tasks, and Replies.
   const openTasks = useMemo(() => {
     const rank: Record<string, number> = {
       needs_rework: 5,
@@ -1055,6 +1062,7 @@ export function Workspace() {
             disabled={!!busy}
             aria-label="Workspace"
           >
+            {/* 01 Dashboard: summary metrics and links to each workflow. */}
             {tab === "dashboard" && (
               <DashboardView
                 metrics={[
@@ -1200,6 +1208,7 @@ export function Workspace() {
                 }}
               />
             )}
+            {/* 02 New review: intake form and analysis provenance. */}
             {tab === "new" && (
               <section className="new-review-page">
                 <PageHeading
@@ -1357,6 +1366,7 @@ export function Workspace() {
                 </div>
               </section>
             )}
+            {/* 03 Reviews: filters, register, and source evidence. */}
             {tab === "reviews" && (
               <section className="reviews-page">
                 <PageHeading
@@ -1843,6 +1853,7 @@ export function Workspace() {
                 </div>
               </section>
             )}
+            {/* 04 Issues: priorities, linked work, and grouped evidence. */}
             {tab === "issues" && (
               <section className="issues-page">
                 <PageHeading
@@ -2157,6 +2168,7 @@ export function Workspace() {
                 </div>
               </section>
             )}
+            {/* 05 Tasks: assignment, staff reports, and owner decisions. */}
             {tab === "tasks" && (
               <section className="tasks-page">
                 <PageHeading
@@ -2573,6 +2585,7 @@ export function Workspace() {
                 </div>
               </section>
             )}
+            {/* 06 Replies: drafts, revision, approval, and simulated posting. */}
             {tab === "replies" && (
               <section className="replies-page">
                 <div className="reply-page-heading">
@@ -2712,6 +2725,7 @@ export function Workspace() {
                 )}
               </section>
             )}
+            {/* 07 Activity: persistent decision and workflow history. */}
             {tab === "activity" && (
               <ActivityView
                 events={state.events}

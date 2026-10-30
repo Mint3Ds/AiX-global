@@ -24,6 +24,7 @@ const kinds: { id: ActivityKind; label: string }[] = [
   { id: "replies", label: "Replies" },
 ];
 
+// Edit these labels to change how stored event types read in the Activity tab.
 const titles: Record<string, string> = {
   review_intake: "Review added",
   analysis_started: "Analysis started",

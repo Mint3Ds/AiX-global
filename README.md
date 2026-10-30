@@ -17,13 +17,13 @@ Every business, employee, guest review, source label, and outcome in this reposi
 
 ## Links
 
-| Resource           | Link                                  |
-| -----------------  | ------------------------------------- |
-| GitHub Repository  | https://github.com/Mint3Ds/AiX-global |
+| Resource           | Link                                             |
+| ------------------ | ------------------------------------------------ |
+| GitHub Repository  | https://github.com/Mint3Ds/AiX-global            |
 | Live Demo          | https://ai-x-global.replit.app/ (password below) |
-| Live Demo Password | AixGlobal123456789                    |
-| Slide Deck         | https://canva.link/gjz6konw9zie5y9    |
-| Demo Video         | https://youtu.be/laQ-Ig410YM          |
+| Live Demo Password | AixGlobal123456789                               |
+| Slide Deck         | https://canva.link/gjz6konw9zie5y9               |
+| Demo Video         | https://youtu.be/laQ-Ig410YM                     |
 
 ---
 
@@ -93,7 +93,7 @@ npm run build
 - `src/data/schema.ts`, `migrations/`: PostgreSQL/Drizzle schema and additive migrations.
 - `scripts/seed-impl.ts`, `scripts/generate-hotel-fixtures.py`, `data/fixtures/visit2value/`: repeatable synthetic data.
 
-See the [technical pipeline guide](docs/TECHNICAL_PIPELINE.md) for the complete UI-to-database walkthrough, diagrams, action contract, state transitions, and debugging steps. [ARCHITECTURE.md](ARCHITECTURE.md) gives the short overview, and the [dataset documentation](data/fixtures/visit2value/DATASET_README.md) explains fixture provenance. Production use would need authorized review-source access, real identity and permissions, operational verification controls, and a documented Orbyte integration. This demo makes no claim of real posting or measured business improvement.
+See the [design editing guide](docs/DESIGN_EDITING.md) for a map of editable styles, components, copy, and safe manual changes. The [technical pipeline guide](docs/TECHNICAL_PIPELINE.md) covers the UI-to-database flow, diagrams, action contract, state transitions, and debugging steps. [ARCHITECTURE.md](ARCHITECTURE.md) gives the short overview, and the [dataset documentation](data/fixtures/visit2value/DATASET_README.md) explains fixture provenance. Production use would need authorized review-source access, real identity and permissions, operational verification controls, and a documented Orbyte integration. This demo makes no claim of real posting or measured business improvement.
 
 ## Overall Project Structure
 

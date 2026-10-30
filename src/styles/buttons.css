@@ -1,3 +1,4 @@
+/* Shared controls. Change the primary and secondary states here. */
 main button:where(:not(.link):not(.review-row):not(.register-review-button)),
 .notice button {
   min-height: 40px;
@@ -26,8 +27,8 @@ summary {
 main
   button:where(:not(.link):not(.review-row):not(.register-review-button)):hover,
 .notice button:hover {
-  background: #213d2c;
-  border-color: #213d2c;
+  background: var(--action-hover);
+  border-color: var(--action-hover);
 }
 button:active:not(:disabled) {
   transform: translateY(1px);

@@ -1,4 +1,5 @@
-/* Dashboard: four clear entry points, then evidence, history, and follow-through. */
+/* DASHBOARD: metrics, evidence, activity, and work previews. */
+/* Shared colors, typography, and motion are defined in tokens.css. */
 .dashboard .page-heading {
   margin-bottom: 28px;
 }
@@ -68,12 +69,12 @@ main .dashboard button.metric:hover {
   font-weight: 400;
 }
 main .dashboard button.metric-1 {
-  background: #eef1e7;
-  border-color: #dbe3d1;
+  background: var(--metric-sage);
+  border-color: var(--metric-sage-line);
 }
 main .dashboard button.metric-3 {
-  background: #eeedf1;
-  border-color: #e0dee7;
+  background: var(--metric-lilac);
+  border-color: var(--metric-lilac-line);
 }
 .dashboard-summary {
   display: flex;

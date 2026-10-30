@@ -1,3 +1,4 @@
+/* Import order matters: later screen polish overrides the base styles. */
 @import "../styles/tokens.css";
 @import "../styles/shell.css";
 @import "../styles/buttons.css";
