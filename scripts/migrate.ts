@@ -11,6 +11,7 @@ try {
     "0001_initial.sql",
     "0002_hotel_workflow.sql",
     "0003_historical_imports.sql",
+    "0004_review_time_tracking.sql",
   ]) {
     await pool.query(readFileSync(resolve("migrations", file), "utf8"));
     console.log(`Migration applied: ${file}`);

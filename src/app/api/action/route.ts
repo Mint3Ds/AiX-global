@@ -23,6 +23,8 @@ import {
   verifyTask,
   simulatePublish,
   approveReplyBatch,
+  trackReviewView,
+  recordReviewDwell,
 } from "@/domain/service";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
@@ -130,6 +132,21 @@ export async function POST(request: NextRequest) {
         break;
       case "analyze_batch":
         result = await analyzePendingBatch(businessId, Number(body.limit || 5));
+        break;
+      case "track_view":
+        result = await trackReviewView(
+          String(body.reviewId),
+          role,
+          body.activeSeconds ? Number(body.activeSeconds) : undefined,
+        );
+        break;
+      case "record_dwell":
+        result = await recordReviewDwell(
+          String(body.reviewId),
+          Number(body.durationSeconds || 0),
+          role,
+          Boolean(body.markTriaged),
+        );
         break;
       default:
         throw new Error("Unknown action");

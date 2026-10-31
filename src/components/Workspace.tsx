@@ -1,11 +1,12 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DashboardView } from "@/components/design/DashboardView";
 import { ActivityView } from "@/components/design/ActivityView";
 import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
+import type { WorkspaceMetrics } from "@/domain/metrics";
 
 type Review = {
   id: string;
@@ -21,6 +22,10 @@ type Review = {
   processingStatus: string;
   processingStage: string | null;
   language: string;
+  firstViewedAt?: string | null;
+  lastViewedAt?: string | null;
+  triagedAt?: string | null;
+  triageDurationSeconds?: number | null;
 };
 type Observation = {
   id: string;
@@ -141,6 +146,7 @@ type State = {
     createdAt: string;
   }[];
   themeSupport: Record<string, number>;
+  metrics?: WorkspaceMetrics;
 };
 const date = (value: string | null) =>
   value
@@ -342,6 +348,52 @@ export function Workspace() {
       .then((rows) => setPreparedReviews(Array.isArray(rows) ? rows : []))
       .catch(() => setPreparedReviews([]));
   }, [businessId]);
+
+  const activeReviewTimerRef = useRef<{
+    reviewId: string;
+    startTime: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (tab === "reviews" && selectedReview) {
+      activeReviewTimerRef.current = {
+        reviewId: selectedReview,
+        startTime: performance.now(),
+      };
+
+      void fetch("/api/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "track_view",
+          role,
+          businessId,
+          reviewId: selectedReview,
+        }),
+      }).catch(() => {});
+    }
+
+    return () => {
+      if (activeReviewTimerRef.current) {
+        const { reviewId, startTime } = activeReviewTimerRef.current;
+        const totalSeconds = Math.round((performance.now() - startTime) / 1000);
+        if (totalSeconds >= 1) {
+          void fetch("/api/action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "record_dwell",
+              role,
+              businessId,
+              reviewId,
+              durationSeconds: totalSeconds,
+            }),
+          }).catch(() => {});
+        }
+        activeReviewTimerRef.current = null;
+      }
+    };
+  }, [tab, selectedReview, role, businessId]);
   const act = useCallback(
     async (type: string, values: Record<string, unknown> = {}) => {
       setBusy(type);

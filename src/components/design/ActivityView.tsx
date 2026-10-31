@@ -24,6 +24,9 @@ const kinds: { id: ActivityKind; label: string }[] = [
 
 const titles: Record<string, string> = {
   review_intake: "Review added",
+  review_viewed: "Review opened",
+  review_triaged: "Review triaged",
+  review_dwell_recorded: "Dwell time recorded",
   analysis_started: "Analysis started",
   analysis_completed: "Review analysed",
   analysis_needs_review: "Review needs attention",
