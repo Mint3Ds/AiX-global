@@ -15,6 +15,7 @@ import {
   normalizeOpenAIError,
   ProviderError,
 } from "@/integrations/provider-errors";
+import { maskGuestPii } from "@/integrations/pii-masking";
 export function modelName() {
   return process.env.OPENAI_MODEL || "gpt-5-mini";
 }
@@ -52,8 +53,10 @@ async function parse<T extends z.ZodTypeAny>(
         reasoning: { effort: "low" },
         service_tier: tier,
         input: [
-          { role: "system", content: system },
-          { role: "user", content: user },
+          { role: "system", content: maskGuestPii(system) },
+          // Mask at the provider boundary so review text embedded in any
+          // operation's JSON payload is covered, including matching and replies.
+          { role: "user", content: maskGuestPii(user) },
         ],
         text: { format: zodTextFormat(schema, name) },
       });

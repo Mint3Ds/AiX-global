@@ -5,6 +5,13 @@ import { ActivityView } from "@/components/design/ActivityView";
 import { StatsView } from "@/components/design/StatsView";
 import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
 import { TaskReportHistory } from "@/components/design/TaskReportHistory";
+import { TaskEditHistory } from "@/components/design/TaskEditHistory";
+import { OrbyteHandoffDetails } from "@/components/design/OrbyteHandoffDetails";
+import { ChoiceMenu } from "@/components/design/ChoiceMenu";
+import {
+  ReportAttachmentPicker,
+  evidenceMediaType,
+} from "@/components/design/ReportAttachmentPicker";
 import { StaffDashboardView } from "@/components/design/StaffDashboardView";
 import { PageHeading, StatusBadge } from "@/components/design/PageHeading";
 import { RatingStars } from "@/components/design/RatingStars";
@@ -14,6 +21,11 @@ import {
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
 import type { WorkspaceMetrics } from "@/domain/metrics";
+import {
+  reviewCategoryGroup,
+  reviewCategoryOptions,
+} from "@/domain/review-filter";
+import { getSimulatedAttendance } from "@/integrations/orbyte/attendance";
 
 type Review = {
   id: string;
@@ -69,18 +81,24 @@ type EvidenceGroup = {
   key: string;
   quote: string;
   reviews: Review[];
+  observations: Observation[];
 };
 type Task = {
   id: string;
   themeId: string;
+  branchId: string;
   title: string;
   description: string;
+  priority: string;
+  originalTitle: string | null;
+  originalDescription: string | null;
   assigneeRole: string;
   assigneeId: string | null;
   dueAt: string | null;
   employeeReport: string | null;
   reportVersion: number;
   rejectionReason: string | null;
+  reworkInstructions: string | null;
   rejectedAt: string | null;
   reportedAt: string | null;
   reportedBy: string | null;
@@ -89,6 +107,7 @@ type Task = {
   status: string;
   resolutionNote: string | null;
   approvedAt: string | null;
+  taskVersion: number;
   resolvedAt: string | null;
 };
 type TaskReportAttempt = {
@@ -99,8 +118,16 @@ type TaskReportAttempt = {
   reportedAt: string;
   decision: string;
   decisionReason: string | null;
+  decisionInstructions: string | null;
   decidedAt: string | null;
-  attachments: { id: string; name: string; url: string }[];
+  attachments: {
+    id: string;
+    name: string;
+    mediaType: string;
+    uploadedBy: string;
+    context: string;
+    url: string;
+  }[];
 };
 type Reply = {
   id: string;
@@ -147,13 +174,19 @@ type State = {
   synthetic: boolean;
   selectedBusinessId: string;
   businesses: { id: string; name: string; businessType: string }[];
-  branches: { id: string; businessId: string; name: string }[];
+  branches: {
+    id: string;
+    businessId: string;
+    name: string;
+    timezone: string;
+  }[];
   employees: {
     id: string;
     businessId: string;
     branchId: string;
     name: string;
     jobTitle: string;
+    orbyteStaffId: string;
   }[];
   reviews: Review[];
   observations: Observation[];
@@ -167,6 +200,7 @@ type State = {
   handoffs: {
     id: string;
     approvedTaskId: string;
+    approvedTaskVersion: number;
     payload: Record<string, unknown>;
     simulatedStatus: string;
     createdAt: string;
@@ -290,6 +324,7 @@ const label = (value: string) => {
   return formatSentenceCase(value);
 };
 
+
 function formatEventDescription(desc: string): string {
   if (!desc) return "";
   if (
@@ -307,7 +342,7 @@ function formatEventDescription(desc: string): string {
   return desc;
 }
 
-const imageAsDataUrl = (file: File) =>
+const fileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () =>
@@ -318,6 +353,14 @@ const imageAsDataUrl = (file: File) =>
       reject(new Error("Could not read the selected image."));
     reader.readAsDataURL(file);
   });
+const evidencePayload = (files: File[]) =>
+  Promise.all(
+    files.map(async (file) => ({
+      name: file.name,
+      mediaType: evidenceMediaType(file),
+      dataUrl: await fileAsDataUrl(file),
+    })),
+  );
 const issueWorkLabels: Record<string, string> = {
   proposed: "Task awaiting approval",
   deferred: "Task saved for later",
@@ -370,8 +413,11 @@ function actionSuccessMessage(
     propose_task: "Work task created.",
     edit_reply: "Reply saved.",
     approve_reply: "Reply approved.",
-    correct_membership: "Evidence updated.",
   };
+  if (type === "membership")
+    return values.themeId
+      ? "Feedback moved to the selected issue."
+      : "Feedback removed from its issue.";
   return messages[type] || "Changes saved.";
 }
 function revealDetailOnMobile(id: string, maxWidth = 640) {
@@ -434,6 +480,134 @@ function EvidenceReviewList({
     </ul>
   );
 }
+function observationThemeType(kind: string) {
+  if (kind === "operational_complaint") return "operational_issue";
+  if (kind === "suggestion") return "suggestion";
+  return "positive_pattern";
+}
+
+function ObservationIssueControl({
+  observation,
+  businessId,
+  themes,
+  currentTheme,
+  disabled,
+  onMove,
+}: {
+  observation: Observation;
+  businessId: string;
+  themes: Theme[];
+  currentTheme: Theme | null;
+  disabled: boolean;
+  onMove: (themeId: string | null) => Promise<unknown>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const candidates = themes.filter(
+    (theme) =>
+      theme.id !== currentTheme?.id &&
+      theme.businessId === businessId &&
+      theme.branchId === observation.branchId &&
+      theme.type === observationThemeType(observation.kind) &&
+      theme.status !== "dismissed",
+  );
+  const matchingCandidates = candidates
+    .filter((theme) =>
+      !query.trim() || theme.title.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+    )
+    .slice(0, 6);
+
+  const move = async (themeId: string | null) => {
+    const result = await onMove(themeId);
+    if (result) {
+      setOpen(false);
+      setQuery("");
+    }
+  };
+
+  return (
+    <div className="observation-issue-control">
+      <button
+        type="button"
+        className="link observation-issue-trigger"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {currentTheme ? "Change issue" : "Link to an issue"}
+      </button>
+      {open && (
+        <div
+          className="observation-issue-panel"
+          role="group"
+          aria-label="Move this feedback"
+        >
+          <p>
+            {currentTheme
+              ? `Move this feedback from ${currentTheme.title}.`
+              : "Choose an issue at this property."}
+          </p>
+          {candidates.length > 5 && (
+            <input
+              className="observation-issue-search"
+              type="search"
+              aria-label="Search active issues"
+              placeholder="Find an issue by name"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          )}
+          {matchingCandidates.length ? (
+            <ul>
+              {matchingCandidates.map((theme) => (
+                <li key={theme.id}>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => void move(theme.id)}
+                  >
+                    <span>{theme.title}</span>
+                    <small>{label(theme.priority)} priority</small>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="observation-issue-empty">
+              {query
+                ? "No matching active issue at this property."
+                : "No other active issue matches this feedback type at this property."}
+            </p>
+          )}
+          {!query && candidates.length > matchingCandidates.length && (
+            <p className="observation-issue-count">
+              Showing 6 of {candidates.length}. Search to find another issue.
+            </p>
+          )}
+          <div className="observation-issue-actions">
+            {currentTheme && (
+              <button
+                type="button"
+                className="link"
+                disabled={disabled}
+                onClick={() => void move(null)}
+              >
+                Remove from issue
+              </button>
+            )}
+            <button
+              type="button"
+              className="link"
+              onClick={() => setOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PageControls({
   page,
   pageCount,
@@ -480,12 +654,13 @@ const workspaceTabs: Tab[] = [
   "new",
 ];
 const isOwnerVisibleTheme = (theme: Theme, support: number) =>
-  theme.type === "operational_issue"
+  theme.status !== "dismissed" &&
+  (theme.type === "operational_issue"
     ? support > 0 &&
       (support >= 4 ||
         theme.priority === "urgent" ||
         ["owner_confirmed", "recurrence"].includes(theme.status))
-    : support > 0 || theme.status === "owner_confirmed";
+    : support > 0 || theme.status === "owner_confirmed");
 
 /**
  * Workspace owns the shared snapshot, filters, and navigation for all tabs.
@@ -536,8 +711,9 @@ export function Workspace({
     setEmployeeId(id);
   }, []);
   const [selectedReview, setSelectedReview] = useState<string | null>(null);
-  const [selectedTheme, setSelectedTheme] =
-    useState<string>("hotel-central-ac");
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(
+    "hotel-central-ac",
+  );
   const [selectedTask, setSelectedTask] = useState<string>("");
   const [replyIndex, setReplyIndex] = useState(0);
   const [replyTaskId, setReplyTaskId] = useState<string | null>(null);
@@ -574,12 +750,20 @@ export function Workspace({
   const [workReport, setWorkReport] = useState("");
   const [workImages, setWorkImages] = useState<File[]>([]);
   const [workImageError, setWorkImageError] = useState("");
+  const [ownerVerifyNote, setOwnerVerifyNote] = useState("");
+  const [ownerVerifyNoteError, setOwnerVerifyNoteError] = useState("");
+  const [ownerVerifyFiles, setOwnerVerifyFiles] = useState<File[]>([]);
+  const [ownerVerifyFileError, setOwnerVerifyFileError] = useState("");
+  const [decisionFiles, setDecisionFiles] = useState<File[]>([]);
+  const [decisionFileError, setDecisionFileError] = useState("");
   const [decision, setDecision] = useState<{
     kind: "task" | "reply";
     id: string;
     version: number;
   } | null>(null);
   const [decisionNote, setDecisionNote] = useState("");
+  const [decisionInstructions, setDecisionInstructions] = useState("");
+  const [decisionInstructionsError, setDecisionInstructionsError] = useState("");
   const [decisionError, setDecisionError] = useState("");
   const [introComplete, setIntroComplete] = useState(false);
   const decisionInput = useRef<HTMLTextAreaElement>(null);
@@ -616,17 +800,35 @@ export function Workspace({
   // Shared data loading and action feedback for every tab.
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch(
-        `/api/state?businessId=${encodeURIComponent(businessId)}`,
-        { cache: "no-store" },
-      );
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "Could not load data");
-      if (activeBusinessId.current !== businessId) return;
-      setCachedBusinesses(body.businesses || []);
-      setState(body);
-      setError("");
-      setErrorSource(null);
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const response = await fetch(
+            `/api/state?businessId=${encodeURIComponent(businessId)}`,
+            { cache: "no-store" },
+          );
+          if (response.status === 503 && attempt < 2) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, 300 * 2 ** attempt),
+            );
+            continue;
+          }
+          const body = await response.json();
+          if (!response.ok) throw new Error(body.error || "Could not load data");
+          if (activeBusinessId.current !== businessId) return;
+          setCachedBusinesses(body.businesses || []);
+          setState(body);
+          setError("");
+          setErrorSource(null);
+          return;
+        } catch (reason) {
+          // Browser/network connection resets are safe to retry because this
+          // endpoint only reads state. Do not retry application errors.
+          if (!(reason instanceof TypeError) || attempt === 2) throw reason;
+          await new Promise((resolve) =>
+            setTimeout(resolve, 300 * 2 ** attempt),
+          );
+        }
+      }
     } catch (reason) {
       if (activeBusinessId.current !== businessId) return;
       setError(
@@ -956,7 +1158,11 @@ export function Workspace({
     );
     const groups = new Map<
       string,
-      { quote: string; reviews: Map<string, Review> }
+      {
+        quote: string;
+        reviews: Map<string, Review>;
+        observations: Observation[];
+      }
     >();
 
     for (const point of themeObservations) {
@@ -965,8 +1171,10 @@ export function Workspace({
       const review = reviewsById.get(point.reviewId);
       if (!review) continue;
 
-      if (!groups.has(key)) groups.set(key, { quote, reviews: new Map() });
+      if (!groups.has(key))
+        groups.set(key, { quote, reviews: new Map(), observations: [] });
       groups.get(key)!.reviews.set(review.id, review);
+      groups.get(key)!.observations.push(point);
     }
 
     return Array.from(groups, ([key, group]) => {
@@ -978,6 +1186,7 @@ export function Workspace({
         key,
         quote: group.quote,
         reviews: orderedReviews,
+        observations: group.observations,
       };
     }).sort((a, b) => b.reviews.length - a.reviews.length);
   }, [state, themeObservations]);
@@ -1007,21 +1216,22 @@ export function Workspace({
     currentEvidencePage * 5,
     currentEvidencePage * 5 + 5,
   );
-  const affectedReviews = useMemo(() => {
-    if (!state || !task) return [];
+  const taskThemeId = task?.themeId;
+  const affectedReviews = (() => {
+    if (!state || !taskThemeId) return [];
     const reviewIds = new Set(
       state.observations
         .filter((point) =>
           state.memberships.some(
             (membership) =>
-              membership.themeId === task.themeId &&
+              membership.themeId === taskThemeId &&
               membership.observationId === point.id,
           ),
         )
         .map((point) => point.reviewId),
     );
     return state.reviews.filter((review) => reviewIds.has(review.id));
-  }, [state, task]);
+  })();
   const filtered = useMemo(
     () =>
       state?.reviews
@@ -1044,7 +1254,10 @@ export function Workspace({
                 localDay(review.createdAt) ===
                   localDay(new Date().toISOString()))) &&
             (category === "all" ||
-              points.some((point) => point.category === category)) &&
+              points.some(
+                (point) =>
+                  reviewCategoryGroup(label(point.category)) === category,
+              )) &&
             (!query ||
               review.originalText.toLowerCase().includes(query) ||
               points.some((point) =>
@@ -1104,11 +1317,9 @@ export function Workspace({
     selected && state
       ? state.observations.filter((point) => point.reviewId === selected.id)
       : [];
-  const categories = [
-    ...new Set(
-      state?.observations.map((observation) => observation.category) || [],
-    ),
-  ].sort();
+  const categories = reviewCategoryOptions(
+    (state?.observations || []).map((observation) => observation.category),
+  );
   const openTheme = (id: string) => {
     const target = state?.themes.find((item) => item.id === id);
     if (target) {
@@ -1176,6 +1387,10 @@ export function Workspace({
     setWorkReport("");
     setWorkImages([]);
     setWorkImageError("");
+    setOwnerVerifyNote("");
+    setOwnerVerifyNoteError("");
+    setOwnerVerifyFiles([]);
+    setOwnerVerifyFileError("");
     setSelectedTask(id);
     navigateTab("tasks");
     revealDetailOnMobile("task-detail-title");
@@ -1188,7 +1403,8 @@ export function Workspace({
         (item) =>
           item.type === "operational_issue" &&
           isOwnerVisibleTheme(item, state.themeSupport[item.id] || 0) &&
-          ["suggested", "recurrence"].includes(item.status),
+          ["suggested", "recurrence"].includes(item.status) &&
+          ["urgent", "high"].includes(item.priority),
       )
       .sort((a, b) => {
         return (
@@ -1197,7 +1413,7 @@ export function Workspace({
           (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0)
         );
       })
-      .slice(0, 4) || [];
+      .slice(0, 3) || [];
   const spotlight = priorityIssues[0];
   const spotlightEvidence =
     spotlight && state
@@ -1224,6 +1440,56 @@ export function Workspace({
   const activeAnalysisStage = state?.reviews.find(
     (review) => review.processingStatus === "processing",
   )?.processingStage;
+  const dashboardReviews = state?.reviews || [];
+  const dashboardThemes = state?.themes || [];
+  const dashboardThemeSupport = state?.themeSupport || {};
+  const dashboardTasks = state?.tasks || [];
+  const dashboardToday = new Date();
+  const analyzedReviewIds = new Set(
+    (state?.observations || []).map((point) => point.reviewId),
+  );
+  const dailyReviewSeries = Array.from({ length: 7 }, (_, index) => {
+    const offset = 6 - index;
+    const dateForDay = new Date(dashboardToday);
+    dateForDay.setDate(dashboardToday.getDate() - offset);
+    const day = localDay(dateForDay.toISOString());
+    return {
+      label: offset === 0
+        ? "Today"
+        : dateForDay.toLocaleDateString("en-MY", {
+            weekday: "short",
+            timeZone: "Asia/Kuala_Lumpur",
+          }),
+      value: dashboardReviews.filter(
+        (review) =>
+          !review.isHistoricalImport && localDay(review.createdAt) === day,
+      ).length,
+    };
+  });
+  const issuePrioritySegments = [
+    { label: "Urgent", priority: "urgent", tone: "urgent" },
+    { label: "High", priority: "high", tone: "high" },
+    { label: "Medium", priority: "medium", tone: "medium" },
+    { label: "Low", priority: "low", tone: "low" },
+  ].map((item) => ({
+    ...item,
+    value: dashboardThemes.filter(
+      (theme) =>
+        theme.type === "operational_issue" &&
+        isOwnerVisibleTheme(theme, dashboardThemeSupport[theme.id] || 0) &&
+        ["suggested", "recurrence"].includes(theme.status) &&
+        theme.priority === item.priority,
+    ).length,
+  }));
+  const taskFlowSegments = [
+    { label: "Assigned", status: "approved_open", tone: "assigned" },
+    { label: "Active", status: "in_progress", tone: "progress" },
+    { label: "Review", status: "reported", tone: "review" },
+    { label: "Rework", status: "needs_rework", tone: "rework" },
+  ].map((item) => ({
+    ...item,
+    value: dashboardTasks.filter((task) => task.status === item.status).length,
+  }));
 
   const currentBranches = (state?.branches || []).filter(
     (branch) => branch.businessId === businessId,
@@ -1424,6 +1690,7 @@ export function Workspace({
                           "in_progress",
                           "reported",
                           "needs_rework",
+                          "resolved",
                         ].includes(item.status),
                     )
                     .sort(
@@ -1437,9 +1704,14 @@ export function Workspace({
                     .map((item) => ({
                       id: item.id,
                       title: item.title,
+                      description: item.description,
+                      priority: item.priority,
+                      relatedIssue: state.themes.find((theme) => theme.id === item.themeId)?.title || "Related issue",
+                      sourceReviewCount: state.themeSupport[item.themeId] || 0,
                       status: item.status,
                       dueAt: item.dueAt,
                       rejectionReason: item.rejectionReason,
+                      reworkInstructions: item.reworkInstructions,
                       rejections: state.taskReportAttempts.filter(
                         (attempt) =>
                           attempt.taskId === item.id &&
@@ -1465,14 +1737,33 @@ export function Workspace({
                       hint: "All saved reviews",
                       destination: "reviews",
                       visual: {
-                        type: "ratings" as const,
-                        segments: [1, 2, 3, 4, 5].map((rating) => ({
-                          label: `${rating} star${rating === 1 ? "" : "s"}`,
-                          value: state.reviews.filter(
-                            (review) => Math.round(review.rating) === rating,
-                          ).length,
-                          tone: "cool",
-                        })),
+                        type: "review_mix" as const,
+                        segments: [
+                          {
+                            label: "Positive",
+                            value: state.reviews.filter((review) => review.rating >= 4).length,
+                            tone: "positive",
+                          },
+                          {
+                            label: "Negative",
+                            value: state.reviews.filter((review) => review.rating <= 2).length,
+                            tone: "negative",
+                          },
+                          {
+                            label: "General",
+                            value: state.reviews.filter(
+                              (review) =>
+                                ["generic", "complete"].includes(review.processingStatus) &&
+                                !analyzedReviewIds.has(review.id),
+                            ).length,
+                            tone: "general",
+                          },
+                          {
+                            label: "Actionable",
+                            value: analyzedReviewIds.size,
+                            tone: "actionable",
+                          },
+                        ],
                       },
                     },
                     {
@@ -1485,6 +1776,10 @@ export function Workspace({
                       ).length,
                       hint: "Received today",
                       destination: "reviews",
+                      visual: {
+                        type: "daily_meter" as const,
+                        days: dailyReviewSeries,
+                      },
                     },
                     {
                       title: "Specific feedback",
@@ -1508,26 +1803,8 @@ export function Workspace({
                       hint: "Ready for your review",
                       destination: "issues",
                       visual: {
-                        type: "distribution" as const,
-                        segments: [
-                          { label: "Urgent", priority: "urgent", tone: "deep" },
-                          { label: "High", priority: "high", tone: "mid" },
-                          { label: "Medium", priority: "medium", tone: "soft" },
-                          { label: "Low", priority: "low", tone: "pale" },
-                        ].map((priority) => ({
-                          label: priority.label,
-                          tone: priority.tone,
-                          value: state.themes.filter(
-                            (theme) =>
-                              theme.type === "operational_issue" &&
-                              isOwnerVisibleTheme(
-                                theme,
-                                state.themeSupport[theme.id] || 0,
-                              ) &&
-                              ["suggested", "recurrence"].includes(theme.status) &&
-                              theme.priority === priority.priority,
-                          ).length,
-                        })),
+                        type: "priority_meter" as const,
+                        segments: issuePrioritySegments,
                       },
                     },
                     {
@@ -1543,19 +1820,8 @@ export function Workspace({
                       hint: "Work in progress",
                       destination: "tasks",
                       visual: {
-                        type: "distribution" as const,
-                        segments: [
-                          { label: "Assigned", status: "approved_open", tone: "pale" },
-                          { label: "In progress", status: "in_progress", tone: "mid" },
-                          { label: "Awaiting verification", status: "reported", tone: "deep" },
-                          { label: "Needs rework", status: "needs_rework", tone: "warm" },
-                        ].map((status) => ({
-                          label: status.label,
-                          tone: status.tone,
-                          value: state.tasks.filter(
-                            (task) => task.status === status.status,
-                          ).length,
-                        })),
+                        type: "task_flow" as const,
+                        segments: taskFlowSegments,
                       },
                     },
                     {
@@ -1588,23 +1854,41 @@ export function Workspace({
                     priority: item.priority,
                     branchName: branchName(item.branchId),
                     support: state.themeSupport[item.id] || 0,
+                    status: item.status === "recurrence" ? "Recurring" : "New issue",
                     evidenceQuote:
                       item.id === spotlight?.id
                         ? spotlightEvidence?.evidenceQuote
                         : undefined,
                   }))}
-                  work={[...openTasks]
+                  work={state.tasks
+                    .filter((task) =>
+                      [
+                        "approved_open",
+                        "in_progress",
+                        "reported",
+                        "needs_rework",
+                        "proposed",
+                        "deferred",
+                      ].includes(task.status),
+                    )
                     .sort(
                       (a, b) =>
-                        Number(b.status === "reported") -
-                          Number(a.status === "reported") ||
+                        Number(["reported", "proposed", "deferred"].includes(b.status)) -
+                          Number(["reported", "proposed", "deferred"].includes(a.status)) ||
                         (a.dueAt || "9999").localeCompare(b.dueAt || "9999"),
                     )
-                    .slice(0, 3)
+                    .slice(0, 5)
                     .map((item) => ({
                       id: item.id,
                       title: item.title,
+                      description: item.description,
+                      priority: item.priority,
+                      relatedIssue:
+                        state.themes.find((theme) => theme.id === item.themeId)?.title || "",
                       status: item.status,
+                      assigneeId: item.assigneeId,
+                      dueAt: item.dueAt,
+                      reportVersion: item.reportVersion,
                       assignee:
                         state.employees.find(
                           (employee) => employee.id === item.assigneeId,
@@ -1612,8 +1896,51 @@ export function Workspace({
                       due: item.dueAt
                         ? `Due ${date(item.dueAt)}`
                         : "Due date not set",
+                      employees: state.employees
+                        .filter((employee) => employee.branchId === item.branchId)
+                        .map(({ id, name, jobTitle, orbyteStaffId }) => ({
+                          id,
+                          name,
+                          jobTitle,
+                          orbyteStaffId,
+                        })),
+                      timezone:
+                        state.branches.find((branch) => branch.id === item.branchId)
+                          ?.timezone || "Asia/Kuala_Lumpur",
                     }))}
                   onOpenTask={openTask}
+                  busy={busy}
+                  onVerifyTask={(taskId, reportVersion) =>
+                    void act("verify_task", { taskId, reportVersion })
+                  }
+                  onRejectTask={(taskId, reportVersion) => {
+                    setDecision({ kind: "task", id: taskId, version: reportVersion });
+                    setDecisionNote("");
+                    setDecisionInstructions("");
+                    setDecisionInstructionsError("");
+                    setDecisionError("");
+                    setDecisionFiles([]);
+                    setDecisionFileError("");
+                  }}
+                  onApproveTask={async (taskItem, assigneeId, dueAt) => {
+                    const employee = state.employees.find((item) => item.id === assigneeId);
+                    const saved = await act("edit_task", {
+                      taskId: taskItem.id,
+                      data: {
+                        title: taskItem.title,
+                        description: taskItem.description,
+                        priority: taskItem.priority,
+                        assigneeRole: employee?.jobTitle || "Employee",
+                        assigneeId,
+                        dueAt,
+                      },
+                    });
+                    if (saved)
+                      await act("decide_task", {
+                        taskId: taskItem.id,
+                        decision: "approve",
+                      });
+                  }}
                   activity={recentActivity.map((item) => ({
                     id: item.id,
                     title: label(item.type),
@@ -1670,7 +1997,7 @@ export function Workspace({
                   index="07"
                   eyebrow="Review intake"
                   title="Add guest feedback"
-                  description="Save the original wording. Analysis follows automatically."
+                  description="Personal identifiers are removed before review text is stored and analyzed."
                 />
                 <div className="new-review-layout">
                   <form
@@ -1679,37 +2006,26 @@ export function Workspace({
                   >
                     <div className="new-review-form-heading">
                       <h3>Review details</h3>
-                      <p>Keep the guest’s words exactly as written.</p>
+                      <p>Review text is screened for personal identifiers before it enters the workspace.</p>
                     </div>
-                    <label>
-                      Property or branch
-                      <select
-                        value={newBranch}
-                        onChange={(event) => setNewBranch(event.target.value)}
-                      >
-                        {state.branches.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      Rating
-                      <select
-                        value={newRating}
-                        onChange={(event) =>
-                          setNewRating(Number(event.target.value))
-                        }
-                      >
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <option key={value} value={value}>
-                            {"★".repeat(value)}
-                            {"☆".repeat(5 - value)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <ChoiceMenu
+                      label="Property or branch"
+                      value={newBranch}
+                      options={state.branches.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={setNewBranch}
+                    />
+                    <ChoiceMenu
+                      label="Rating"
+                      value={String(newRating)}
+                      options={[1, 2, 3, 4, 5].map((value) => ({
+                        value: String(value),
+                        label: `${"★".repeat(value)}${"☆".repeat(5 - value)}`,
+                      }))}
+                      onChange={(value) => setNewRating(Number(value))}
+                    />
                     <label className="wide" htmlFor="new-review-text">
                       Original review text
                       <textarea
@@ -1729,6 +2045,10 @@ export function Workspace({
                         required
                         placeholder="Paste the guest's review here…"
                       />
+                      <small className="intake-privacy-note">
+                        Contact, identity, and payment number patterns are
+                        redacted before saving or external AI analysis.
+                      </small>
                       {newTextError && (
                         <span
                           id="new-review-text-error"
@@ -1841,7 +2161,7 @@ export function Workspace({
                       Search reviews
                       <input
                         type="search"
-                        placeholder="Search original words or evidence…"
+                        placeholder="Search reviews or evidence"
                         value={search}
                         onChange={(event) =>
                           changeReviewFilter(() =>
@@ -1850,49 +2170,26 @@ export function Workspace({
                         }
                       />
                     </label>
-                    <label>
-                      Property
-                      <select
-                        value={branch}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setBranch(event.target.value),
-                          )
-                        }
-                      >
-                        <option value="all">All properties</option>
-                        {state.branches.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      Rating
-                      <select
-                        value={rating}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setRating(event.target.value),
-                          )
-                        }
-                      >
-                        <option value="all">All ratings</option>
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <option key={value} value={value}>
-                            {value} {value === 1 ? "star" : "stars"}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <ChoiceMenu
+                      label="Sort"
+                      value={reviewSort}
+                      options={[
+                        { value: "newest", label: "Newest" },
+                        { value: "oldest", label: "Oldest" },
+                        { value: "lowest", label: "Lowest rating" },
+                        { value: "highest", label: "Highest rating" },
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setReviewSort(value))
+                      }
+                    />
                     <button
                       className="secondary filter-toggle"
                       aria-expanded={showReviewFilters}
                       aria-controls="advanced-review-filters"
                       onClick={() => setShowReviewFilters(!showReviewFilters)}
                     >
-                      More filters
+                      Filters
                       {advancedFilterCount
                         ? ` (${advancedFilterCount})`
                         : ""}{" "}
@@ -1906,64 +2203,78 @@ export function Workspace({
                     className="review-advanced-filters"
                     hidden={!showReviewFilters}
                   >
-                    <label>
-                      Category
-                      <select
-                        value={category}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setCategory(event.target.value),
-                          )
-                        }
-                      >
-                        <option value="all">All categories</option>
-                        {categories.map((value) => (
-                          <option key={value} value={value}>
-                            {label(value)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      Screening status
-                      <select
-                        value={status}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setStatus(event.target.value),
-                          )
-                        }
-                      >
-                        <option value="all">All statuses</option>
-                        <option value="attention">Needs attention</option>
-                        {[
+                    <ChoiceMenu
+                      label="Property"
+                      value={branch}
+                      options={[
+                        { value: "all", label: "All properties" },
+                        ...state.branches.map((item) => ({
+                          value: item.id,
+                          label: item.name,
+                        })),
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setBranch(value))
+                      }
+                    />
+                    <ChoiceMenu
+                      label="Rating"
+                      value={rating}
+                      options={[
+                        { value: "all", label: "All ratings" },
+                        ...[1, 2, 3, 4, 5].map((value) => ({
+                          value: String(value),
+                          label: `${value} ${value === 1 ? "star" : "stars"}`,
+                        })),
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setRating(value))
+                      }
+                    />
+                    <ChoiceMenu
+                      label="Category"
+                      value={category}
+                      options={[
+                        { value: "all", label: "All categories" },
+                        ...categories.map((item) => ({
+                          value: item.key,
+                          label: item.name,
+                        })),
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setCategory(value))
+                      }
+                    />
+                    <ChoiceMenu
+                      label="Screening status"
+                      value={status}
+                      options={[
+                        { value: "all", label: "All statuses" },
+                        { value: "attention", label: "Needs attention" },
+                        ...[
                           "pending",
                           "processing",
                           "complete",
                           "generic",
                           "needs_review",
                           "failed",
-                        ].map((value) => (
-                          <option key={value} value={value}>
-                            {label(value)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      Received
-                      <select
-                        value={received}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setReceived(event.target.value),
-                          )
-                        }
-                      >
-                        <option value="all">All dates</option>
-                        <option value="today">Today</option>
-                      </select>
-                    </label>
+                        ].map((value) => ({ value, label: label(value) })),
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setStatus(value))
+                      }
+                    />
+                    <ChoiceMenu
+                      label="Received"
+                      value={received}
+                      options={[
+                        { value: "all", label: "All dates" },
+                        { value: "today", label: "Today" },
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setReceived(value))
+                      }
+                    />
                   </div>
                   <div className="review-view-controls">
                     <div
@@ -2021,7 +2332,7 @@ export function Workspace({
                     </div>
                     {hasReviewFilters && (
                       <button className="link" onClick={resetReviewFilters}>
-                        Reset filters
+                        Clear filters
                       </button>
                     )}
                   </div>
@@ -2032,24 +2343,7 @@ export function Workspace({
                       ? `${currentReviewPage * 8 + 1}–${Math.min(currentReviewPage * 8 + 8, filtered.length)} of ${filtered.length}`
                       : "No matching"}{" "}
                     reviews
-                    {hasReviewFilters && ` · ${state.reviews.length} total`}
                   </p>
-                  <label>
-                    <span className="sr-only">Sort reviews</span>
-                    <select
-                      value={reviewSort}
-                      onChange={(event) =>
-                        changeReviewFilter(() =>
-                          setReviewSort(event.target.value),
-                        )
-                      }
-                    >
-                      <option value="newest">Newest first</option>
-                      <option value="oldest">Oldest first</option>
-                      <option value="lowest">Lowest rating</option>
-                      <option value="highest">Highest rating</option>
-                    </select>
-                  </label>
                 </div>
                 <div className="review-workspace">
                   <div className="review-register-panel">
@@ -2220,6 +2514,28 @@ export function Workspace({
                                         {linkedTheme.title}{" "}
                                       </button>
                                     )}
+                                  {owner && (
+                                    <ObservationIssueControl
+                                      observation={point}
+                                      businessId={businessId}
+                                      themes={state.themes.filter(
+                                        (candidate) =>
+                                          candidate.businessId ===
+                                            businessId &&
+                                          candidate.branchId === point.branchId &&
+                                          candidate.type ===
+                                            observationThemeType(point.kind),
+                                      )}
+                                      currentTheme={linkedTheme || null}
+                                      disabled={busy === "membership"}
+                                      onMove={(themeId) =>
+                                        act("membership", {
+                                          observationId: point.id,
+                                          themeId,
+                                        })
+                                      }
+                                    />
+                                  )}
                                 </div>
                               </article>
                             );
@@ -2348,7 +2664,10 @@ export function Workspace({
                             <span className="issue-row-bottom">
                               <span className="issue-row-meta">
                                 {branchName(item.branchId)} ·{" "}
-                                {state.themeSupport[item.id] || 0} reviews
+                                {state.themeSupport[item.id] || 0} distinct source
+                                {state.themeSupport[item.id] === 1
+                                  ? " review"
+                                  : " reviews"}
                               </span>
                               {issueTaskByTheme.has(item.id) ? (
                                 <span className="issue-row-work-status">
@@ -2399,10 +2718,19 @@ export function Workspace({
                           </h3>
                           <div className="issue-title-meta">
                             <span>
-                              {state.themeSupport[theme.id] || 0} reviews
+                              {state.themeSupport[theme.id] || 0} distinct source
+                              {state.themeSupport[theme.id] === 1
+                                ? " review"
+                                : " reviews"}
                             </span>
                           </div>
                         </div>
+                        {theme.priorityReason.trim() && (
+                          <details className="priority-rationale">
+                            <summary>Why this priority</summary>
+                            <p>{theme.priorityReason}</p>
+                          </details>
+                        )}
                         {issueTask && (
                           <div className="issue-work-strip">
                             <div>
@@ -2443,26 +2771,25 @@ export function Workspace({
                                       ? "Confirm this issue to make a work task available."
                                       : "Confirm to keep this suggestion for follow-up."
                                     : theme.status === "dismissed"
-                                      ? "Dismissed issues stay in the record. Reopen to review them again."
+                                      ? "Dismissed feedback remains available in Reviews and Activity."
                                       : "Severity sets the issue priority."}
                                 </p>
                               </div>
-                              <label>
-                                Severity
-                                <select
-                                  value={theme.severity}
-                                  onChange={(event) =>
-                                    void act("severity", {
-                                      themeId: theme.id,
-                                      severity: Number(event.target.value),
-                                    })
-                                  }
-                                >
-                                  <option value={1}>Low</option>
-                                  <option value={2}>Medium</option>
-                                  <option value={3}>Safety concern</option>
-                                </select>
-                              </label>
+                              <ChoiceMenu
+                                label="Severity"
+                                value={String(theme.severity)}
+                                options={[
+                                  { value: "1", label: "Low" },
+                                  { value: "2", label: "Medium" },
+                                  { value: "3", label: "Safety concern" },
+                                ]}
+                                onChange={(value) =>
+                                  void act("severity", {
+                                    themeId: theme.id,
+                                    severity: Number(value),
+                                  })
+                                }
+                              />
                             </div>
                             {theme.status === "suggested" && (
                               <div className="issue-decision-actions">
@@ -2479,12 +2806,13 @@ export function Workspace({
                                 </button>
                                 <button
                                   className="secondary"
-                                  onClick={() =>
-                                    void act("theme_status", {
+                                  onClick={async () => {
+                                    const dismissed = await act("theme_status", {
                                       themeId: theme.id,
                                       status: "dismissed",
-                                    })
-                                  }
+                                    });
+                                    if (dismissed) setSelectedTheme(null);
+                                  }}
                                 >
                                   Dismiss
                                 </button>
@@ -2518,9 +2846,8 @@ export function Workspace({
                                 <div className="evidence-group-header">
                                   <strong>
                                     {group.reviews.length}{" "}
-                                    {group.reviews.length === 1
-                                      ? "guest mention"
-                                      : "guest mentions"}
+                                    distinct source review
+                                    {group.reviews.length === 1 ? "" : "s"}
                                   </strong>
                                   {group.reviews.length > 1 && (
                                     <span>Same feedback</span>
@@ -2529,6 +2856,47 @@ export function Workspace({
                                 <blockquote className="evidence-quote">
                                   “{group.quote}”
                                 </blockquote>
+                                {owner && group.observations.length > 0 && (
+                                  <details className="evidence-reassign">
+                                    <summary>Move source feedback</summary>
+                                    <ul>
+                                      {group.observations.map((point) => {
+                                        const sourceReview = state.reviews.find(
+                                          (review) => review.id === point.reviewId,
+                                        );
+                                        const linkedTheme = state.themes.find(
+                                          (candidate) =>
+                                            state.memberships.some(
+                                              (membership) =>
+                                                membership.observationId === point.id &&
+                                                membership.themeId === candidate.id,
+                                            ),
+                                        );
+                                        if (!sourceReview) return null;
+                                        return (
+                                          <li key={point.id}>
+                                            <span>
+                                              {date(sourceReview.reviewedAt)} · {point.summary}
+                                            </span>
+                                            <ObservationIssueControl
+                                              observation={point}
+                                              businessId={businessId}
+                                              themes={state.themes}
+                                              currentTheme={linkedTheme || null}
+                                              disabled={busy === "membership"}
+                                              onMove={(themeId) =>
+                                                act("membership", {
+                                                  observationId: point.id,
+                                                  themeId,
+                                                })
+                                              }
+                                            />
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                  </details>
+                                )}
                                 <EvidenceReviewList
                                   reviews={group.reviews.slice(0, 1)}
                                   onOpenReview={(review) =>
@@ -2630,7 +2998,7 @@ export function Workspace({
                               <span>
                                 {item.status === "deferred"
                                   ? "Saved for later"
-                                  : "Needs approval"}
+                                  : "Saved"}
                               </span>
                             </button>
                           ))}
@@ -2661,17 +3029,14 @@ export function Workspace({
                         >
                           <b>{item.title}</b>
                           <span>
-                            {state.employees.find(
-                              (employee) => employee.id === item.assigneeId,
-                            )?.name || "Assigned employee"}{" "}
-                            ·{" "}
+                            {owner && `${state.employees.find((employee) => employee.id === item.assigneeId)?.name || "Assigned employee"} · `}
                             {item.status === "reported"
-                              ? "Awaiting owner verification"
+                              ? owner ? "Pending Verification" : "Pending Owner Approval"
                               : item.status === "needs_rework"
-                                ? "Returned for rework"
+                                ? owner ? "Pending" : "Assigned · Needs Rework"
                                 : item.status === "in_progress"
-                                  ? "In progress"
-                                  : "Awaiting employee confirmation"}
+                                  ? owner ? "Pending · In Progress" : "In Progress"
+                                  : owner ? "Pending" : "Assigned"}
                           </span>
                         </button>
                       ))}
@@ -2704,7 +3069,7 @@ export function Workspace({
                                 (employee) => employee.id === item.assigneeId,
                               )?.name
                             }{" "}
-                            · Verified {date(item.verifiedAt)}
+                            · Completed — Verified by Owner {date(item.verifiedAt)}
                           </span>
                         </button>
                       ))}
@@ -2733,12 +3098,20 @@ export function Workspace({
                               className={`task-detail-state task-detail-state-${task.status}`}
                             >
                               {task.status === "resolved"
-                                ? "Verified"
-                                : task.status === "approved_open"
-                                  ? "Assigned"
-                                  : task.status === "reported"
-                                    ? "Awaiting verification"
-                                    : label(task.status)}
+                                ? "Completed — Verified by Owner"
+                                : task.status === "proposed"
+                                  ? "Saved"
+                                  : task.status === "deferred"
+                                    ? "Saved for later"
+                                : task.status === "reported"
+                                  ? owner ? "Pending Verification" : "Pending Owner Approval"
+                                  : task.status === "needs_rework"
+                                    ? owner ? "Pending" : "Assigned — Needs Rework"
+                                    : task.status === "approved_open"
+                                      ? owner ? "Pending" : "Assigned"
+                                      : task.status === "in_progress"
+                                        ? owner ? "Pending · In Progress" : "In Progress"
+                                        : label(task.status)}
                             </span>
                           </div>
                         </header>
@@ -2747,23 +3120,40 @@ export function Workspace({
                             task.status,
                           ) && (
                             <div className="decision-callout" role="note">
-                              <strong>
-                                {task.status === "needs_rework"
-                                  ? "Needs rework"
-                                  : "Previous manager feedback"}
-                              </strong>
+                              <strong>Owner’s reason</strong>
                               <p>{task.rejectionReason}</p>
+                              {task.reworkInstructions && (
+                                <div className="decision-instructions">
+                                  <strong>Instructions for rework</strong>
+                                  <p>{task.reworkInstructions}</p>
+                                </div>
+                              )}
                               {task.rejectedAt && (
                                 <small>Returned {date(task.rejectedAt)}</small>
                               )}
                             </div>
                           )}
-                        <section className="task-brief" aria-label="Task brief">
-                          <p className="eyebrow">01&nbsp;&nbsp;Task brief</p>
-                          <p>{task.description}</p>
+                        <section className="task-brief" aria-label="Original task brief">
+                          <p className="eyebrow">01&nbsp;&nbsp;Original task brief</p>
+                          {task.originalTitle && task.originalTitle !== task.title && <h3>{task.originalTitle}</h3>}
+                          <p>{task.originalDescription || task.description}</p>
                         </section>
+                        {task.originalDescription && task.description !== task.originalDescription && (
+                          <section className="task-brief task-current-brief" aria-label="Current task brief">
+                            <p className="eyebrow">Current approved instructions</p>
+                            <p>{task.description}</p>
+                          </section>
+                        )}
+                        <TaskEditHistory
+                          events={state.events.filter((item) => item.entityType === "task" && item.entityId === task.id)}
+                          employees={state.employees}
+                        />
                         {!["proposed", "deferred"].includes(task.status) && (
                           <dl className="task-facts">
+                            <div>
+                              <dt>Priority</dt>
+                              <dd><PriorityBadge priority={task.priority} /></dd>
+                            </div>
                             <div>
                               <dt>Assigned to</dt>
                               <dd>
@@ -2804,6 +3194,20 @@ export function Workspace({
                             .filter((attempt) => attempt.taskId === task.id)
                             .sort((a, b) => a.version - b.version)}
                         />
+                        {state.handoffs
+                          .filter(
+                            (handoff) =>
+                              handoff.approvedTaskId === task.id &&
+                              handoff.approvedTaskVersion === task.taskVersion,
+                          )
+                          .map((handoff) => (
+                            <OrbyteHandoffDetails
+                              key={handoff.id}
+                              payload={handoff.payload}
+                              recordStatus={handoff.simulatedStatus}
+                              createdAt={handoff.createdAt}
+                            />
+                          ))}
                         {["proposed", "deferred"].includes(task.status) &&
                           owner && (
                             <>
@@ -2821,6 +3225,11 @@ export function Workspace({
                                       (item) => item.id === task.themeId,
                                     )?.branchId,
                                 )}
+                                timezone={
+                                  state.branches.find(
+                                    (item) => item.id === task.branchId,
+                                  )?.timezone || "Asia/Kuala_Lumpur"
+                                }
                                 save={(data) =>
                                   void act("edit_task", {
                                     taskId: task.id,
@@ -2853,6 +3262,54 @@ export function Workspace({
                               />
                             </>
                           )}
+                        {["approved_open", "in_progress", "needs_rework"].includes(
+                          task.status,
+                        ) &&
+                          owner && (
+                            <details className="task-revision-disclosure">
+                              <summary>Revise task or assignment</summary>
+                              <p className="form-hint">
+                                Saving a change supersedes the current simulated handoff and returns the task for approval.
+                              </p>
+                              <TaskEditor
+                                key={`revise:${task.id}:${task.taskVersion}`}
+                                task={task}
+                                employees={state.employees.filter(
+                                  (employee) => employee.branchId === task.branchId,
+                                )}
+                                timezone={
+                                  state.branches.find(
+                                    (item) => item.id === task.branchId,
+                                  )?.timezone || "Asia/Kuala_Lumpur"
+                                }
+                                save={(data) =>
+                                  void act("edit_task", { taskId: task.id, data })
+                                }
+                                approve={async (data) => {
+                                  const saved = await act("edit_task", {
+                                    taskId: task.id,
+                                    data,
+                                  });
+                                  if (saved)
+                                    await act("decide_task", {
+                                      taskId: task.id,
+                                      decision: "approve",
+                                    });
+                                }}
+                                defer={async (data) => {
+                                  const saved = await act("edit_task", {
+                                    taskId: task.id,
+                                    data,
+                                  });
+                                  if (saved)
+                                    await act("decide_task", {
+                                      taskId: task.id,
+                                      decision: "defer",
+                                    });
+                                }}
+                              />
+                            </details>
+                          )}
                         {[
                           "approved_open",
                           "in_progress",
@@ -2869,32 +3326,25 @@ export function Workspace({
                             className="staff-work-update"
                             aria-label="Employee work update"
                           >
-                            <label className="staff-employee-picker">
-                              Your staff profile
-                              <select
-                                value={effectiveEmployeeId}
-                                onChange={(event) =>
-                                  changeEmployee(event.target.value)
-                                }
-                              >
-                                {state.employees
-                                  .filter(
-                                    (employee) =>
-                                      employee.branchId ===
-                                      state.themes.find(
-                                        (item) => item.id === task.themeId,
-                                      )?.branchId,
-                                  )
-                                  .map((employee) => (
-                                    <option
-                                      key={employee.id}
-                                      value={employee.id}
-                                    >
-                                      {employee.name} · {employee.jobTitle}
-                                    </option>
-                                  ))}
-                              </select>
-                            </label>
+                            <ChoiceMenu
+                              className="staff-employee-picker"
+                              label="Your staff profile"
+                              value={effectiveEmployeeId}
+                              options={state.employees
+                                .filter(
+                                  (employee) =>
+                                    employee.branchId ===
+                                    state.themes.find(
+                                      (item) => item.id === task.themeId,
+                                    )?.branchId,
+                                )
+                                .map((employee) => ({
+                                  value: employee.id,
+                                  label: employee.name,
+                                  description: employee.jobTitle,
+                                }))}
+                              onChange={changeEmployee}
+                            />
                             {task.assigneeId === effectiveEmployeeId &&
                             ["approved_open", "needs_rework"].includes(
                               task.status,
@@ -2939,86 +3389,20 @@ export function Workspace({
                                     }
                                   />
                                 </label>
-                                <label className="staff-evidence-upload">
-                                  Add photo evidence
-                                  <input
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    multiple
-                                    onChange={(event) => {
-                                      const files = Array.from(
-                                        event.currentTarget.files || [],
-                                      );
-                                      const total = files.reduce(
-                                        (size, file) => size + file.size,
-                                        0,
-                                      );
-                                      if (
-                                        files.length > 5 ||
-                                        total > 6 * 1024 * 1024 ||
-                                        files.some(
-                                          (file) =>
-                                            ![
-                                              "image/jpeg",
-                                              "image/png",
-                                              "image/webp",
-                                            ].includes(file.type) ||
-                                            file.size > 2 * 1024 * 1024,
-                                        )
-                                      ) {
-                                        setWorkImageError(
-                                          "Choose up to five JPEG, PNG, or WebP images, 2 MB each and 6 MB total.",
-                                        );
-                                        setWorkImages([]);
-                                        event.currentTarget.value = "";
-                                        return;
-                                      }
-                                      setWorkImageError("");
-                                      setWorkImages(files);
-                                    }}
-                                  />
-                                </label>
-                                {workImages.length > 0 && (
-                                  <ul className="staff-selected-images">
-                                    {workImages.map((file, index) => (
-                                      <li key={file.name + file.lastModified}>
-                                        {file.name}
-                                        <button
-                                          type="button"
-                                          className="link"
-                                          onClick={() =>
-                                            setWorkImages((current) =>
-                                              current.filter(
-                                                (_, itemIndex) =>
-                                                  itemIndex !== index,
-                                              ),
-                                            )
-                                          }
-                                        >
-                                          Remove
-                                        </button>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                                {workImageError && (
-                                  <p className="field-error" role="alert">
-                                    {workImageError}
-                                  </p>
-                                )}
+                                <ReportAttachmentPicker
+                                  files={workImages}
+                                  onChange={setWorkImages}
+                                  error={workImageError}
+                                  onError={setWorkImageError}
+                                />
                                 <button
                                   disabled={
                                     !!busy || workReport.trim().length < 10
+                                    || !!workImageError
                                   }
                                   onClick={async () => {
                                     try {
-                                      const attachments = await Promise.all(
-                                        workImages.map(async (file) => ({
-                                          name: file.name,
-                                          mediaType: file.type,
-                                          dataUrl: await imageAsDataUrl(file),
-                                        })),
-                                      );
+                                      const attachments = await evidencePayload(workImages);
                                       const result = await act("report_task", {
                                         taskId: task.id,
                                         employeeId: effectiveEmployeeId,
@@ -3032,7 +3416,7 @@ export function Workspace({
                                       }
                                     } catch {
                                       setWorkImageError(
-                                        "Could not read the selected image. Choose it again.",
+                                        "Could not read the selected attachment. Choose it again.",
                                       );
                                     }
                                   }}
@@ -3054,17 +3438,70 @@ export function Workspace({
                           </section>
                         )}
                         {task.status === "reported" && owner && (
+                          <>
+                          <section className="owner-verification-panel" aria-label="Owner verification evidence">
+                            <p className="form-hint">
+                              Add a short verification note or attach evidence for the work decision.
+                            </p>
+                            <label>
+                              Verification note <span>(optional)</span>
+                              <textarea
+                                rows={3}
+                                value={ownerVerifyNote}
+                                aria-invalid={!!ownerVerifyNoteError}
+                                aria-describedby={ownerVerifyNoteError ? "owner-verify-note-error" : undefined}
+                                placeholder="What did you check before verifying this work?"
+                                onChange={(event) => {
+                                  setOwnerVerifyNote(event.target.value);
+                                  setOwnerVerifyNoteError(
+                                    event.target.value.trim() && event.target.value.trim().length < 10
+                                      ? "Add at least 10 characters, or leave the note empty."
+                                      : "",
+                                  );
+                                }}
+                                onBlur={() => {
+                                  if (ownerVerifyNote.trim() && ownerVerifyNote.trim().length < 10)
+                                    setOwnerVerifyNoteError("Add at least 10 characters, or leave the note empty.");
+                                }}
+                              />
+                              {ownerVerifyNoteError && (
+                                <span id="owner-verify-note-error" className="field-error" role="alert">
+                                  {ownerVerifyNoteError}
+                                </span>
+                              )}
+                            </label>
+                            <ReportAttachmentPicker
+                              files={ownerVerifyFiles}
+                              onChange={setOwnerVerifyFiles}
+                              error={ownerVerifyFileError}
+                              onError={setOwnerVerifyFileError}
+                              label="Attach verification evidence"
+                            />
+                          </section>
                           <div className="controls verification-actions">
                             <button
-                              disabled={!!busy}
-                              onClick={() =>
-                                void act("verify_task", {
-                                  taskId: task.id,
-                                  reportVersion: task.reportVersion,
-                                })
-                              }
+                              disabled={!!busy || !!ownerVerifyNoteError || !!ownerVerifyFileError}
+                              onClick={async () => {
+                                try {
+                                  const attachments = await evidencePayload(ownerVerifyFiles);
+                                  const result = await act("verify_task", {
+                                    taskId: task.id,
+                                    note: ownerVerifyNote,
+                                    reportVersion: task.reportVersion,
+                                    attachments,
+                                  });
+                                  if (result) {
+                                    setOwnerVerifyNote("");
+                                    setOwnerVerifyNoteError("");
+                                    setOwnerVerifyFiles([]);
+                                    setOwnerVerifyFileError("");
+                                  }
+                                } catch {
+                                  setOwnerVerifyFileError("Could not read a selected attachment. Choose it again.");
+                                }
+                              }}
                             >
-                              Verify completed work
+                              {busy === "verify_task" ? "Verifying…" : "Verify completed work"}
                             </button>
                             <button
                               className="secondary"
@@ -3076,12 +3513,17 @@ export function Workspace({
                                   version: task.reportVersion,
                                 });
                                 setDecisionNote("");
+                                setDecisionInstructions("");
+                                setDecisionInstructionsError("");
                                 setDecisionError("");
+                                setDecisionFiles([]);
+                                setDecisionFileError("");
                               }}
                             >
                               Reject / return for rework
                             </button>
                           </div>
+                          </>
                         )}
                         {task.status === "resolved" && (
                           <div className="task-actions">
@@ -3277,6 +3719,7 @@ export function Workspace({
                 themes={state.themes}
                 reviews={state.reviews}
                 replies={state.replies}
+              handoffs={state.handoffs}
                 onOpenTask={openTask}
               />
             )}
@@ -3375,6 +3818,39 @@ export function Workspace({
             <p className="form-hint">
               10–500 characters. This reason is saved in the activity log.
             </p>
+            {decision.kind === "task" && (
+              <>
+                <label htmlFor="decision-instructions">Instructions for the employee</label>
+                <textarea
+                  id="decision-instructions"
+                  rows={4}
+                  maxLength={500}
+                  value={decisionInstructions}
+                  aria-invalid={!!decisionInstructionsError}
+                  aria-describedby={decisionInstructionsError ? "decision-instructions-error" : undefined}
+                  onChange={(event) => {
+                    setDecisionInstructions(event.target.value);
+                    setDecisionInstructionsError("");
+                  }}
+                  onBlur={() => {
+                    if (decisionInstructions.length && decisionInstructions.trim().length < 10)
+                      setDecisionInstructionsError("Write at least 10 characters describing the corrective work.");
+                  }}
+                  placeholder="Describe the exact corrective work needed."
+                />
+                {decisionInstructionsError && <p id="decision-instructions-error" role="alert" className="field-error">{decisionInstructionsError}</p>}
+                <p className="form-hint">These instructions are saved separately from the original task brief and this rejection reason.</p>
+              </>
+            )}
+            {decision.kind === "task" && (
+              <ReportAttachmentPicker
+                files={decisionFiles}
+                onChange={setDecisionFiles}
+                error={decisionFileError}
+                onError={setDecisionFileError}
+                label="Attach owner review evidence"
+              />
+            )}
             <div className="controls">
               <button
                 className="secondary"
@@ -3386,12 +3862,24 @@ export function Workspace({
               </button>
               <button
                 type="button"
-                disabled={!!busy || decisionNote.trim().length < 10}
+                disabled={!!busy || decisionNote.trim().length < 10 || (decision.kind === "task" && decisionInstructions.trim().length < 10) || !!decisionFileError}
                 onClick={async () => {
                   if (decisionNote.trim().length < 10) {
                     setDecisionError(
                       "Write at least 10 characters so the next person knows what to change.",
                     );
+                    return;
+                  }
+                  if (decision.kind === "task" && decisionInstructions.trim().length < 10) {
+                    setDecisionInstructionsError("Write at least 10 characters describing the corrective work.");
+                    return;
+                  }
+                  let attachments: Awaited<ReturnType<typeof evidencePayload>> = [];
+                  try {
+                    if (decision.kind === "task")
+                      attachments = await evidencePayload(decisionFiles);
+                  } catch {
+                    setDecisionFileError("Could not read a selected attachment. Choose it again.");
                     return;
                   }
                   const result = await act(
@@ -3405,9 +3893,15 @@ export function Workspace({
                         ? "reportVersion"
                         : "draftVersion"]: decision.version,
                       reason: decisionNote.trim(),
+                      instructions: decision.kind === "task" ? decisionInstructions.trim() : undefined,
+                      attachments,
                     },
                   );
-                  if (result) setDecision(null);
+                  if (result) {
+                    setDecision(null);
+                    setDecisionFiles([]);
+                    setDecisionFileError("");
+                  }
                 }}
               >
                 {busy
@@ -3427,15 +3921,18 @@ export function Workspace({
 function TaskEditor({
   task,
   employees,
+  timezone,
   save,
   approve,
   defer,
 }: {
   task: Task;
   employees: State["employees"];
+  timezone: string;
   save: (data: {
     title: string;
     description: string;
+    priority: string;
     assigneeRole: string;
     assigneeId: string;
     dueAt: string;
@@ -3443,6 +3940,7 @@ function TaskEditor({
   approve: (data: {
     title: string;
     description: string;
+    priority: string;
     assigneeRole: string;
     assigneeId: string;
     dueAt: string;
@@ -3450,6 +3948,7 @@ function TaskEditor({
   defer: (data: {
     title: string;
     description: string;
+    priority: string;
     assigneeRole: string;
     assigneeId: string;
     dueAt: string;
@@ -3457,6 +3956,7 @@ function TaskEditor({
 }) {
   const [title, setTitle] = useState(task.title),
     [description, setDescription] = useState(task.description),
+    [priority, setPriority] = useState(task.priority),
     [assigneeId, setAssigneeId] = useState(
       task.assigneeId ||
         employees.find((employee) => employee.name === "Daniel Lim")?.id ||
@@ -3473,11 +3973,21 @@ function TaskEditor({
   const data = () => ({
     title,
     description,
+    priority,
     assigneeId,
     assigneeRole:
       employees.find((employee) => employee.id === assigneeId)?.jobTitle ||
       "Employee",
     dueAt,
+  });
+  const selectedEmployee = employees.find(
+    (employee) => employee.id === assigneeId,
+  );
+  const attendance = getSimulatedAttendance({
+    employeeId: selectedEmployee?.id || "",
+    orbyteStaffId: selectedEmployee?.orbyteStaffId,
+    dueAt,
+    timezone,
   });
   return (
     <div className="form">
@@ -3496,19 +4006,45 @@ function TaskEditor({
           onChange={(event) => setDescription(event.target.value)}
         />
       </label>
-      <label>
-        Assign to employee
-        <select
-          value={assigneeId}
-          onChange={(event) => setAssigneeId(event.target.value)}
-        >
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.name} · {employee.jobTitle}
-            </option>
-          ))}
-        </select>
-      </label>
+      <ChoiceMenu
+        label="Task priority"
+        value={priority}
+        options={[
+          { value: "urgent", label: "Urgent", description: "Needs immediate attention" },
+          { value: "high", label: "High", description: "Address promptly" },
+          { value: "medium", label: "Medium", description: "Standard priority" },
+          { value: "low", label: "Low", description: "When capacity allows" },
+        ]}
+        onChange={setPriority}
+      />
+      <ChoiceMenu
+        label="Assign to employee"
+        value={assigneeId}
+        options={employees.map((employee) => ({
+          value: employee.id,
+          label: employee.name,
+          description: `${employee.jobTitle} · ${employee.orbyteStaffId}`,
+        }))}
+        onChange={setAssigneeId}
+      />
+      <div
+        className={`attendance-context attendance-${attendance.state}`}
+        role="status"
+        aria-live="polite"
+      >
+        <div>
+          <strong>
+            {selectedEmployee?.name || "No employee"} · {attendance.label}
+          </strong>
+          <span>{attendance.detail}</span>
+        </div>
+        <small>{attendance.source}</small>
+      </div>
+      {!["on_shift", "unknown"].includes(attendance.state) && (
+        <p className="attendance-warning">
+          This employee is not scheduled for the selected date. You can still assign the task.
+        </p>
+      )}
       <label>
         Due date
         <input
@@ -3593,6 +4129,10 @@ function ReplyCard({
                 {unresolvedConcerns.length}
               </span>
             </div>
+            <p className="reply-warning-copy">
+              This review includes concerns that remain open. Keep the response
+              specific about what was verified and what still needs attention.
+            </p>
             <ul>
               {unresolvedConcerns.map((concern, index) => (
                 <li key={`${index}-${concern}`}>{concern}</li>

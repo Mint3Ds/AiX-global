@@ -1,11 +1,17 @@
 import { PageHeading } from "./PageHeading";
+import { ChoiceMenu } from "./ChoiceMenu";
 
 type StaffTask = {
   id: string;
   title: string;
+  description: string;
+  priority: string;
+  relatedIssue: string;
+  sourceReviewCount: number;
   status: string;
   dueAt: string | null;
   rejectionReason: string | null;
+  reworkInstructions: string | null;
   rejections: number;
 };
 
@@ -29,14 +35,17 @@ export function StaffDashboardView({
   );
   const awaitingReview = tasks.filter((task) => task.status === "reported");
   const rework = tasks.filter((task) => task.status === "needs_rework");
+  const completed = tasks.filter((task) => task.status === "resolved");
   const statusLabel = (status: string) =>
     status === "needs_rework"
-      ? "Returned for rework"
+      ? "Assigned · Needs rework"
       : status === "reported"
-        ? "Awaiting owner review"
-        : status === "approved_open"
-          ? "Assigned"
-          : "In progress";
+        ? "Pending Owner Approval"
+        : status === "resolved"
+          ? "Completed · Verified by Owner"
+          : status === "approved_open"
+            ? "Assigned"
+            : "In progress";
   const dueLabel = (value: string | null) =>
     value
       ? new Date(value).toLocaleDateString("en-MY", {
@@ -54,19 +63,17 @@ export function StaffDashboardView({
         title="Know what needs doing."
         description="See your assignments, owner feedback, and submitted reports in one place."
       >
-        <label className="staff-dashboard-profile">
-          Working as
-          <select
-            value={employeeId}
-            onChange={(event) => onEmployeeChange(event.target.value)}
-          >
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>
-                {employee.name} · {employee.jobTitle}
-              </option>
-            ))}
-          </select>
-        </label>
+        <ChoiceMenu
+          className="staff-dashboard-profile"
+          label="Working as"
+          value={employeeId}
+          options={employees.map((employee) => ({
+            value: employee.id,
+            label: employee.name,
+            description: employee.jobTitle,
+          }))}
+          onChange={onEmployeeChange}
+        />
       </PageHeading>
 
       <div className="staff-dashboard-summary" aria-label="Task summary">
@@ -106,12 +113,33 @@ export function StaffDashboardView({
               >
                 <button type="button" onClick={() => onOpenTask(task.id)}>
                   <span className="staff-queue-main">
-                    <strong>{task.title}</strong>
+                    <span className="staff-queue-title-row">
+                      <strong>{task.title}</strong>
+                      <span
+                        className={`priority-badge priority-${task.priority}`}
+                      >
+                        {task.priority} priority
+                      </span>
+                    </span>
+                    <span className="staff-queue-description">
+                      {task.description}
+                    </span>
+                    <small className="staff-queue-source">
+                      Issue · {task.relatedIssue} · {task.sourceReviewCount}{" "}
+                      source{" "}
+                      {task.sourceReviewCount === 1 ? "review" : "reviews"}
+                    </small>
                     {task.status === "needs_rework" && task.rejectionReason && (
                       <span className="staff-queue-reason">
-                        Owner feedback: {task.rejectionReason}
+                        <strong>Owner’s reason:</strong> {task.rejectionReason}
                       </span>
                     )}
+                    {task.status === "needs_rework" &&
+                      task.reworkInstructions && (
+                        <span className="staff-queue-reason staff-queue-instructions">
+                          <strong>Next steps:</strong> {task.reworkInstructions}
+                        </span>
+                      )}
                   </span>
                   <span className="staff-queue-meta">
                     <span
@@ -136,6 +164,36 @@ export function StaffDashboardView({
           </p>
         )}
       </section>
+      {completed.length > 0 && (
+        <section
+          className="staff-dashboard-queue staff-dashboard-completed"
+          aria-labelledby="staff-completed-title"
+        >
+          <header className="panel-heading">
+            <div>
+              <p className="eyebrow">03&nbsp;&nbsp;Verified work</p>
+              <h2 id="staff-completed-title">Completed</h2>
+            </div>
+          </header>
+          <ul>
+            {completed.map((task) => (
+              <li key={task.id}>
+                <button type="button" onClick={() => onOpenTask(task.id)}>
+                  <span className="staff-queue-main">
+                    <strong>{task.title}</strong>
+                  </span>
+                  <span className="staff-queue-meta">
+                    <span className="task-detail-state task-detail-state-resolved">
+                      Completed · Verified by Owner
+                    </span>
+                    <small>{dueLabel(task.dueAt)}</small>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </section>
   );
 }

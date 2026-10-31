@@ -31,7 +31,6 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(false);
     const timer = setTimeout(() => setMounted(true), 10);
     return () => clearTimeout(timer);
   }, []);
@@ -124,7 +123,8 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         description="Real server dwell telemetry, review screening funnel, and peer-reviewed hospitality benchmarks."
       >
         <span className="page-count">
-          <strong>{timeTracking.totalTriagedReviews}</strong> triaged
+          <strong>{timeTracking.trackedReviewsCount}</strong> dwell sessions ·{" "}
+          <strong>{timeTracking.totalTriagedReviews}</strong> formally triaged
         </span>
       </PageHeading>
 
@@ -158,7 +158,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         </div>
 
         <div>
-          <span className="stat-label">Response Readiness</span>
+          <span className="stat-label">Verified reply coverage</span>
           <strong>
             {kpis.responseReadinessRatePercent !== null
               ? `${kpis.responseReadinessRatePercent}%`
@@ -166,16 +166,16 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           </strong>
           <span className="stat-hint">
             {kpis.responseRateMultiplier !== null
-              ? `${kpis.responseRateMultiplier}x vs TripAdvisor (31.5%)`
-              : "Industry baseline: 31.5%"}
+              ? `${kpis.responseRateMultiplier}× vs 31.5% industry response benchmark`
+              : "Industry response benchmark: 31.5%"}
           </span>
         </div>
 
         <div>
-          <span className="stat-label">Labor Hours Reclaimed</span>
+          <span className="stat-label">Estimated triage time saved</span>
           <strong>{kpis.hoursReclaimed}h</strong>
           <span className="stat-hint">
-            Across {funnel.specificReviewsCount} actionable reviews
+            Across {timeTracking.trackedReviewsCount} measured reviews
           </span>
         </div>
       </div>
@@ -301,14 +301,14 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                 </td>
               </tr>
               <tr>
-                <td className="table-label">Tracked vs Total Triaged Reviews</td>
+                <td className="table-label">Dwell tracked / formally triaged</td>
                 <td className="table-value">
                   {timeTracking.trackedReviewsCount} tracked /{" "}
                   {timeTracking.totalTriagedReviews} triaged
                 </td>
               </tr>
               <tr>
-                <td className="table-label">End-to-End Operational Turnaround</td>
+                <td className="table-label">Review intake to simulated publication</td>
                 <td className="table-value">
                   {timeTracking.averageEndToEndResolutionMinutes !== null
                     ? `${timeTracking.averageEndToEndResolutionMinutes} min`
@@ -360,7 +360,10 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                   </Pie>
                   <Tooltip
                     contentStyle={tooltipStyle}
-                    formatter={(val: unknown, name: any) => [
+                    formatter={(
+                      val: unknown,
+                      name: string | number | undefined,
+                    ) => [
                       `${val} reviews`,
                       String(name),
                     ]}
@@ -416,10 +419,10 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         {/* Management Response Readiness (Bar Chart) */}
         <div className="stats-panel">
           <div className="stats-panel-heading">
-            <h3>Management Response Readiness</h3>
+            <h3>Verified reply coverage</h3>
             <p>
-              Verified response rate backed by physical task completion compared to
-              hospitality benchmarks.
+              Share of all reviews with an approved reply tied to verified work,
+              shown beside the published industry response benchmark.
             </p>
           </div>
 

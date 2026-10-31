@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import type { Screening } from "@/domain/analysis";
+import { maskGuestPii } from "@/integrations/pii-masking";
 const responseSchema = z.object({
   model: z.string(),
   answers: z.object({
@@ -28,7 +29,7 @@ export async function screenWithJev(
         signal: AbortSignal.timeout(8000),
         body: JSON.stringify({
           model: "jev-latest",
-          state: text,
+          state: maskGuestPii(text),
           questions: {
             specific_feedback: {
               type: "noul",

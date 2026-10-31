@@ -112,36 +112,29 @@
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
-.workspace-control select {
+.workspace-control .choice-menu {
   min-height: 28px;
   max-width: 180px;
-  padding: 2px 25px 2px 4px;
-  margin-left: -4px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  background-color: transparent;
   color: var(--ink);
   font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--motion-fast), background-color var(--motion-fast);
 }
-.workspace-control select:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+.workspace-control .choice-menu > summary {
+  min-height: 30px;
+  padding: 4px 7px;
+  border-color: transparent;
+  background: transparent;
 }
-.workspace-control select:focus,
-.workspace-control select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-radius: 2px;
-  background-color: var(--paper-light);
-  box-shadow: none;
+.workspace-control .choice-menu[open] > summary,
+.workspace-control .choice-menu > summary:hover {
+  border-color: var(--line);
+  background: var(--paper-light);
 }
 .role-switcher {
   padding-left: 16px;
   border-left: 1px solid var(--line);
 }
-.role-switcher select {
+.role-switcher .choice-menu {
   width: 80px;
 }
 .skip-link {

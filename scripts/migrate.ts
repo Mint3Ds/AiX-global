@@ -14,6 +14,10 @@ try {
     "0004_rejection_workflow.sql",
     "0005_task_report_attachments_and_analysis_timings.sql",
     "0006_review_time_tracking.sql",
+    "0007_orbyte_attendance_and_handoffs.sql",
+    "0008_handoff_legacy_column_cleanup.sql",
+    "0009_report_evidence_context.sql",
+    "0010_task_rework_history.sql",
   ]) {
     await pool.query(readFileSync(resolve("migrations", file), "utf8"));
     console.log(`Migration applied: ${file}`);

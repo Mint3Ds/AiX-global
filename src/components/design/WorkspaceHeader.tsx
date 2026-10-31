@@ -1,4 +1,5 @@
 import { BrandIdentity } from "./BrandIdentity";
+import { ChoiceMenu } from "./ChoiceMenu";
 export type WorkspaceTab =
   | "dashboard"
   | "reviews"
@@ -74,31 +75,28 @@ export function WorkspaceHeader({
             ))}
         </nav>
         <div className="workspace-controls">
-          <label className="workspace-control business-switcher">
-            <span>Business</span>
-            <select
-              value={businessId}
-              disabled={busy}
-              onChange={(event) => onBusinessChange(event.target.value)}
-            >
-              {businesses.map((business) => (
-                <option key={business.id} value={business.id}>
-                  {business.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="workspace-control role-switcher">
-            <span>View as</span>
-            <select
-              value={role}
-              disabled={busy}
-              onChange={(event) => onRoleChange(event.target.value as DemoRole)}
-            >
-              <option value="owner">Owner</option>
-              <option value="staff">Staff</option>
-            </select>
-          </label>
+          <ChoiceMenu
+            className="workspace-control business-switcher"
+            label="Business"
+            value={businessId}
+            disabled={busy}
+            options={businesses.map((business) => ({
+              value: business.id,
+              label: business.name,
+            }))}
+            onChange={onBusinessChange}
+          />
+          <ChoiceMenu
+            className="workspace-control role-switcher"
+            label="View as"
+            value={role}
+            disabled={busy}
+            options={[
+              { value: "owner", label: "Owner" },
+              { value: "staff", label: "Staff" },
+            ]}
+            onChange={(value) => onRoleChange(value as DemoRole)}
+          />
         </div>
       </div>
     </header>

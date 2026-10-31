@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeading } from "./PageHeading";
+import { OrbyteHandoffDetails } from "./OrbyteHandoffDetails";
 import {
   activityKind,
   groupActivity,
@@ -105,9 +106,15 @@ type EventRowProps = {
   event: ActivityEvent;
   actor: string;
   subject?: string;
+  handoff?: {
+    id: string;
+    payload: Record<string, unknown>;
+    simulatedStatus: string;
+    createdAt: string;
+  };
 };
 
-function EventRow({ event, actor, subject }: EventRowProps) {
+function EventRow({ event, actor, subject, handoff }: EventRowProps) {
   const metadata =
     event.metadata && typeof event.metadata === "object"
       ? (event.metadata as Record<string, unknown>)
@@ -117,9 +124,7 @@ function EventRow({ event, actor, subject }: EventRowProps) {
       <span className="activity-event-marker" aria-hidden="true" />
       <div className="activity-event-content">
         <div className="activity-event-topline">
-          <strong>
-            {titles[event.type] || toSentenceCase(event.type)}
-          </strong>
+          <strong>{titles[event.type] || toSentenceCase(event.type)}</strong>
           <time dateTime={event.createdAt}>
             {date(event.createdAt)} · {time(event.createdAt)}
           </time>
@@ -145,6 +150,13 @@ function EventRow({ event, actor, subject }: EventRowProps) {
             Result: {toSentenceCase(metadata.outcome)}
           </p>
         )}
+        {handoff && (
+          <OrbyteHandoffDetails
+            payload={handoff.payload}
+            recordStatus={handoff.simulatedStatus}
+            createdAt={handoff.createdAt}
+          />
+        )}
       </div>
     </article>
   );
@@ -157,6 +169,7 @@ export function ActivityView({
   themes,
   reviews,
   replies,
+  handoffs,
   onOpenTask,
 }: {
   events: ActivityEvent[];
@@ -165,6 +178,13 @@ export function ActivityView({
   themes: { id: string; title: string }[];
   reviews: { id: string; originalText: string }[];
   replies: ActivityReply[];
+  handoffs: {
+    id: string;
+    approvedTaskId: string;
+    payload: Record<string, unknown>;
+    simulatedStatus: string;
+    createdAt: string;
+  }[];
   onOpenTask: (id: string) => void;
 }) {
   const [selectedKind, setSelectedKind] = useState<ActivityKind>("all");
@@ -216,6 +236,19 @@ export function ActivityView({
     if (event.entityType === "reply")
       return reviewNames.get(replyReviews.get(event.entityId) || "");
     return undefined;
+  };
+  const handoffFor = (event: ActivityEvent) => {
+    if (event.type !== "handoff_simulated" || event.entityType !== "task")
+      return undefined;
+    const metadata =
+      event.metadata && typeof event.metadata === "object"
+        ? (event.metadata as Record<string, unknown>)
+        : {};
+    const id = typeof metadata.handoffId === "string" ? metadata.handoffId : "";
+    return handoffs.find(
+      (handoff) =>
+        handoff.id === id || (!id && handoff.approvedTaskId === event.entityId),
+    );
   };
 
   return (
@@ -306,6 +339,7 @@ export function ActivityView({
                         <EventRow
                           event={event}
                           actor={actorName(event)}
+                          handoff={handoffFor(event)}
                           subject={
                             event.entityType === "reply"
                               ? subject(event)
@@ -349,6 +383,7 @@ export function ActivityView({
                 event={event}
                 actor={actorName(event)}
                 subject={subject(event)}
+                handoff={handoffFor(event)}
               />
             ))}
           </div>

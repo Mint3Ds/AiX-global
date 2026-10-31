@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/data/db";
 import {
   reviews,
@@ -23,6 +23,16 @@ export const LITERATURE_BENCHMARKS = {
   MANUAL_TRIAGE_SECONDS: 600, // 10.0 minutes (conservative lower bound of Johnston, 2001 10-15 min range)
   INDUSTRY_RESPONSE_RATE_PERCENT: 31.5,
 } as const;
+
+/** Reviews with approved replies can never exceed the business review count. */
+export function responseReadinessPercent(
+  totalReviews: number,
+  readyReviewCount: number,
+) {
+  if (totalReviews <= 0) return null;
+  const boundedCount = Math.min(Math.max(readyReviewCount, 0), totalReviews);
+  return Number(((boundedCount / totalReviews) * 100).toFixed(1));
+}
 
 export type WorkspaceMetrics = {
   timeTracking: {
@@ -131,6 +141,7 @@ export async function calculateWorkspaceMetrics(
             .select({
               id: replies.id,
               reviewId: replies.reviewId,
+              taskId: replies.taskId,
               status: replies.status,
               createdAt: replies.generatedAt,
               publishedAt: replies.publishedAt,
@@ -282,11 +293,22 @@ export async function calculateWorkspaceMetrics(
     ? Number(((tasksResolved / tasksApproved) * 100).toFixed(1))
     : null;
 
-  const responseReadinessRatePercent = tasksResolved > 0
-    ? Number(((repliesApproved / tasksResolved) * 100).toFixed(1))
-    : repliesDrafted > 0
-      ? Number(((repliesApproved / repliesDrafted) * 100).toFixed(1))
-      : null;
+  const resolvedTaskIds = new Set(
+    allTasks.filter((task) => task.status === "resolved").map((task) => task.id),
+  );
+  const responseReadyReviewIds = new Set(
+    allReplies
+      .filter(
+        (reply) =>
+          resolvedTaskIds.has(reply.taskId) &&
+          ["approved_ready", "simulated_published"].includes(reply.status),
+      )
+      .map((reply) => reply.reviewId),
+  );
+  const responseReadinessRatePercent = responseReadinessPercent(
+    totalReviews,
+    responseReadyReviewIds.size,
+  );
 
   const responseRateMultiplier = responseReadinessRatePercent !== null
     ? Number(
@@ -301,7 +323,7 @@ export async function calculateWorkspaceMetrics(
     averageTriageSeconds !== null
       ? Number(
           (
-            (specificReviewsCount *
+            (trackedReviews.length *
               (LITERATURE_BENCHMARKS.MANUAL_TRIAGE_SECONDS -
                 averageTriageSeconds)) /
             3600

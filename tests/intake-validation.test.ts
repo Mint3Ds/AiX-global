@@ -37,7 +37,21 @@ describe("source review validation", () => {
     expect(
       publicActionError(new Error('Failed query: select "id" from businesses')),
     ).toBe(
-      "Workspace unavailable. Check the database connection and try again.",
+      "The database rejected this action. Refresh before retrying; the server log records the database error code.",
+    );
+  });
+
+  it("identifies an outdated database schema without exposing SQL", () => {
+    expect(
+      publicActionError(
+        Object.assign(new Error('Failed query: select "id" from reviews'), {
+          cause: Object.assign(new Error('relation "reviews" does not exist'), {
+            code: "42P01",
+          }),
+        }),
+      ),
+    ).toBe(
+      "The database schema is out of date. Run the database migrations, then refresh the workspace.",
     );
   });
 });
