@@ -435,34 +435,20 @@ function PageControls({
   onPageChange: (page: number) => void;
 }) {
   return (
-    <nav className="page-controls" aria-label="List pages">
+    <nav className="page-controls" aria-label="Pagination">
       <button
-        className="secondary"
+        className="link page-navigation"
         type="button"
+        aria-label="Previous page"
         disabled={pageCount <= 1 || page === 0}
         onClick={() => onPageChange(page - 1)}
       >
         Previous
       </button>
-      <label className="page-selector" aria-label="Select page">
-        <span className="page-selector-label">Page</span>
-        <select
-          value={page}
-          aria-label="Select page number"
-          disabled={pageCount <= 1}
-          onChange={(event) => onPageChange(Number(event.target.value))}
-        >
-          {Array.from({ length: Math.max(1, pageCount) }, (_, i) => (
-            <option key={i} value={i}>
-              {i + 1}
-            </option>
-          ))}
-        </select>
-        <span className="page-selector-total">of {pageCount}</span>
-      </label>
       <button
-        className="secondary"
+        className="link page-navigation"
         type="button"
+        aria-label="Next page"
         disabled={pageCount <= 1 || page + 1 >= pageCount}
         onClick={() => onPageChange(page + 1)}
       >

@@ -425,7 +425,7 @@ main .review-quick-filters button:hover {
   font-size: 11px;
 }
 .review-register-panel > .page-controls {
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 18px;
   padding: 0;
 }
@@ -739,63 +739,28 @@ main .issue-category-tabs button:hover:not(.review-row) {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 13px;
+  gap: 20px;
   overflow: visible;
   padding: 0;
   border: 0;
   color: var(--muted);
   font-size: 11px;
 }
-main .page-controls button {
-  min-height: 34px;
-  padding: 6px 10px;
-  font-size: 11px;
-}
-.page-selector {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.page-controls .page-navigation {
+  min-height: 44px;
+  padding: 10px 0;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.page-selector span {
-  flex: initial !important;
+  font-size: 12px;
+  font-weight: 550;
   white-space: nowrap;
 }
-.page-selector select {
-  min-height: 28px;
-  height: 28px;
-  padding: 0 20px 0 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper-light);
+.page-controls .page-navigation:not(:disabled):hover {
   color: var(--ink);
-  font-size: 11px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23606e63' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 6px center;
-  background-size: 8px 5px;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: border-color var(--motion-fast), background-color var(--motion-fast);
+  text-decoration: underline;
 }
-.page-selector select:hover:not(:disabled) {
-  border-color: var(--line-strong);
-  background-color: var(--surface);
-}
-.page-selector select:focus {
-  border-color: var(--accent);
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-.page-selector select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.page-controls .page-navigation:disabled {
+  cursor: default;
+  opacity: 0.38;
 }
 .issue-detail-heading h3 {
   font-size: 27px;

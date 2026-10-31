@@ -279,37 +279,11 @@ main .issue-category-tabs button span {
   align-items: center;
   gap: 8px;
 }
-main .page-controls button.secondary:not(.link) {
-  min-width: 68px;
-  min-height: 34px;
-  padding: 5px 8px;
-  border-color: transparent;
-  border-radius: 2px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
-  box-shadow: none;
-}
-.page-controls span {
-  flex: 0 0 92px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
 @media (min-width: 821px) and (min-height: 800px) {
   .issue-list-panel {
     position: sticky;
     top: 20px;
   }
-}
-main .page-controls button.secondary:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-main .page-controls button.secondary:not(:disabled):hover {
-  border-color: var(--line);
-  background: var(--paper-deep);
-  color: var(--ink);
 }
 .evidence-page-footer {
   padding-top: 4px;
