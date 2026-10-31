@@ -18,7 +18,8 @@ export function PageHeading({
     <header className="page-heading">
       <div>
         <p className="eyebrow">
-          <span>{index}</span> / {eyebrow}
+          <span>{index}</span>
+          <span>{eyebrow}</span>
         </p>
         <h1 tabIndex={-1} data-page-title>
           {title}

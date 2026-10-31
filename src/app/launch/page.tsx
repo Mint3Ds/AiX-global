@@ -16,7 +16,7 @@ export default function LaunchPage() {
           <BrandIdentity />
         </Link>
         <Link href="/" className="launch-page-back">
-          Open workspace ↗
+          Open workspace
         </Link>
       </header>
       <section className="launch-page-intro">
@@ -43,7 +43,7 @@ export default function LaunchPage() {
       <div className="launch-film-footer">
         <p>42 seconds · Original soundtrack · Synthetic demo</p>
         <a href="/clarity-launch.mp4" download="Clarity-Launch.mp4">
-          Download the MP4 ↓
+          Download the MP4
         </a>
       </div>
     </main>

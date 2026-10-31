@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { RatingStars } from "@/components/design/RatingStars";
 
 type Review = {
   id: string;
@@ -113,11 +114,13 @@ const demoText =
   "The booth rocked when I leaned back, but the fried rice was beautifully smoky.";
 const date = (value: string | null) =>
   value
-    ? new Date(value).toLocaleString("en-MY", {
+    ? `${new Date(value).toLocaleDateString("en-MY", {
         dateStyle: "medium",
+        timeZone: "Asia/Kuala_Lumpur",
+      })} · ${new Date(value).toLocaleTimeString("en-MY", {
         timeStyle: "short",
         timeZone: "Asia/Kuala_Lumpur",
-      })
+      })}`
     : "—";
 const label = (value: string) => value.replaceAll("_", " ");
 const pointType = (kind: string) =>
@@ -309,7 +312,7 @@ export function Workspace() {
       <header className="top">
         <div>
           <h1>Visit2Value</h1>
-          <p>Customer evidence → owner decision → visible action</p>
+          <p>Customer evidence, owner decision, visible action</p>
         </div>
         <div className="badges">
           <strong>Synthetic demo data</strong>
@@ -614,7 +617,7 @@ export function Workspace() {
                         onClick={() => setSelectedReview(review.id)}
                       >
                         <span>
-                          <b>{review.rating}★</b> · {review.branchId} ·{" "}
+                          <RatingStars rating={review.rating} /> · {review.branchId} ·{" "}
                           {label(review.processingStatus)}
                         </span>
                         <small>
@@ -634,8 +637,8 @@ export function Workspace() {
                   {selected ? (
                     <>
                       <p className="eyebrow">
-                        {selected.id} · {selected.branchId} · {selected.source}{" "}
-                        · {selected.rating} stars · {date(selected.reviewedAt)}
+                        {selected.branchId} · <RatingStars rating={selected.rating} /> ·{" "}
+                        {date(selected.reviewedAt)}
                       </p>
                       <h3>Original review</h3>
                       <blockquote>{selected.originalText}</blockquote>
@@ -644,7 +647,6 @@ export function Workspace() {
                         {selected.processingStage
                           ? ` · stage: ${label(selected.processingStage)}`
                           : ""}{" "}
-                        · <b>Source ID:</b> {selected.sourceReviewId}
                       </p>
                       {latestRun && (
                         <div className="provider">
@@ -930,7 +932,7 @@ export function Workspace() {
                                 >
                                   {point.reviewId}
                                 </button>{" "}
-                                · {review?.rating}★ · {review?.source} ·{" "}
+                                · <RatingStars rating={review?.rating ?? 0} /> · {review?.source} ·{" "}
                                 {date(review?.reviewedAt || null)} ·{" "}
                                 {membership?.source}
                               </p>

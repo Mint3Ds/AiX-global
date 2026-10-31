@@ -178,7 +178,7 @@ textarea {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: #3b6348;
+  color: #315776;
   font-size: 11px;
   font-weight: 550;
   line-height: 1.4;
@@ -215,7 +215,7 @@ textarea {
 .status-approved,
 .status-resolved,
 .status-analysed {
-  color: #2d5a3b;
+  color: #315776;
 }
 .status-needs_revision,
 .status-needs_rework {
@@ -302,7 +302,7 @@ main .review-quick-filters button:hover {
 .review-quick-filters button span {
   margin-left: 5px;
   padding: 2px 5px;
-  border-radius: 3px;
+  border-radius: 2px;
   background: var(--paper-deep);
   font-size: 10px;
 }
@@ -428,6 +428,25 @@ main .review-quick-filters button:hover {
   justify-content: space-between;
   margin-top: 18px;
   padding: 0;
+}
+.register-rating-stars {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.rating-stars-filled {
+  color: #315776;
+}
+.rating-stars-empty {
+  color: #bdcbd5;
+}
+.review-filters select {
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23586978' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 8px 5px;
+  appearance: none;
+  -webkit-appearance: none;
 }
 .review-detail {
   min-width: 0;
@@ -634,7 +653,7 @@ main .issue-category-tabs button:hover:not(.review-row) {
 .issue-category-tabs button span {
   margin-left: 8px;
   padding: 2px 5px;
-  border-radius: 3px;
+  border-radius: 2px;
   background: var(--paper-deep);
   font-size: 10px;
 }
@@ -843,8 +862,14 @@ main .page-controls button {
   font-size: 11px;
 }
 .priority-badge {
-  border-radius: 3px;
+  border-radius: 2px;
   font-size: 10px;
+}
+.priority-urgent,
+.priority-chip-urgent {
+  border-color: #b7c8d4;
+  background: #e8f0f5;
+  color: #233d52;
 }
 .priority-high {
   background: var(--warning);
@@ -972,7 +997,7 @@ main .page-controls button {
   margin-top: 3px;
   padding: 4px 10px;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
+  border-radius: 2px;
   color: var(--action);
   font-size: 11px;
   font-weight: 550;
@@ -1304,7 +1329,7 @@ main .page-controls button {
 .task-rejection-count {
   padding: 5px 8px;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 2px;
   color: var(--muted);
   font-size: 11px;
   font-weight: 600;
@@ -1341,7 +1366,7 @@ main .page-controls button {
   width: fit-content;
   padding: 3px 8px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   color: var(--muted);
   font-size: 11px;
   font-weight: 550;
@@ -1397,7 +1422,7 @@ main .page-controls button {
   width: 112px;
   height: 78px;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 2px;
   background: var(--surface-alt);
   object-fit: cover;
 }
@@ -1464,7 +1489,7 @@ main .page-controls button {
   line-height: 1.75;
 }
 .reply-card-heading span {
-  border-radius: 3px;
+  border-radius: 2px;
   color: var(--action);
   font-size: 10px;
 }
@@ -1586,7 +1611,7 @@ main .activity-filters button:not(.link):hover {
   display: inline-block;
   padding: 3px 9px;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
+  border-radius: 2px;
   color: var(--action);
   font-size: 11px;
   font-weight: 550;
@@ -1609,7 +1634,7 @@ main .activity-filters button:not(.link):hover {
 .activity-thread-events li::before {
   position: absolute;
   top: 23px;
-  left: -5px;
+  left: -4px;
   width: 9px;
   height: 9px;
   border: 2px solid var(--paper-light);

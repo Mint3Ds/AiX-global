@@ -65,22 +65,19 @@ export function DashboardView({
       <div className="dashboard-context">
         <span>Across all properties</span>
       </div>
-      <div className="metrics">
+      <nav className="metrics" aria-label="Workspace totals">
         {primary.map((metric, index) => (
           <button
             className={`metric metric-${index}`}
             key={metric.title}
             onClick={() => onNavigate(metric.destination, metric.title)}
           >
-            <span className="metric-top">
-              <span>{metric.title}</span>
-              <span aria-hidden="true">↗</span>
-            </span>
+            <span className="metric-top">{metric.title}</span>
             <strong>{metric.value.toLocaleString()}</strong>
             <span className="metric-hint">{metric.hint}</span>
           </button>
         ))}
-      </div>
+      </nav>
       <div className="dashboard-summary">
         <p>
           <span className="summary-dot" aria-hidden="true" />
@@ -107,7 +104,6 @@ export function DashboardView({
               onClick={() => onNavigate(metric.destination, metric.title)}
             >
               <strong>{metric.value}</strong> {metric.title}
-              <span aria-hidden="true">↗</span>
             </button>
           ))}
         </div>
@@ -116,11 +112,11 @@ export function DashboardView({
         <section className="priority-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">02 / Guest signals</p>
+              <p className="eyebrow">02&nbsp;&nbsp;Guest signals</p>
               <h3>Priority issues</h3>
             </div>
             <button className="link" onClick={() => onNavigate("issues")}>
-              All issues <span aria-hidden="true">↗</span>
+              All issues
             </button>
           </div>
           {featured ? (
@@ -130,17 +126,16 @@ export function DashboardView({
                   <span
                     className={`priority-chip priority-chip-${featured.priority.toLowerCase()}`}
                   >
-                    {featured.priority} priority
+                    {featured.priority === "urgent"
+                      ? "Immediate"
+                      : `${featured.priority} priority`}
                   </span>
                   <span className="neutral-chip">{featured.branchName}</span>
                 </div>
                 <h4>{featured.title}</h4>
                 <p>
-                  {featured.support} distinct{" "}
-                  {featured.support === 1
-                    ? "review mentions"
-                    : "reviews mention"}{" "}
-                  this issue.
+                  {featured.support} guest{" "}
+                  {featured.support === 1 ? "mention" : "mentions"}
                 </p>
                 {featured.evidenceQuote && (
                   <blockquote>“{featured.evidenceQuote}”</blockquote>
@@ -149,7 +144,7 @@ export function DashboardView({
                   className="secondary"
                   onClick={() => onInspect(featured.id)}
                 >
-                  Inspect the evidence <span aria-hidden="true">↗</span>
+                  Inspect the evidence
                 </button>
               </article>
               <div className="compact-issues">
@@ -167,7 +162,6 @@ export function DashboardView({
                     >
                       {issue.priority}
                     </span>
-                    <span aria-hidden="true">↗</span>
                   </button>
                 ))}
               </div>
@@ -179,7 +173,7 @@ export function DashboardView({
                 Review your guest feedback to explore individual observations.
               </p>
               <button className="link" onClick={() => onNavigate("reviews")}>
-                Explore reviews →
+                Explore reviews
               </button>
             </div>
           )}
@@ -187,7 +181,7 @@ export function DashboardView({
         <section className="activity-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">03 / Workspace history</p>
+              <p className="eyebrow">03&nbsp;&nbsp;Workspace history</p>
               <h3>Recent activity</h3>
             </div>
             <button
@@ -195,7 +189,7 @@ export function DashboardView({
               onClick={() => onNavigate("activity")}
               aria-label="View all activity"
             >
-              View all <span aria-hidden="true">↗</span>
+              View all
             </button>
           </div>
           <ol className="activity-preview-list">
@@ -219,7 +213,7 @@ export function DashboardView({
         <section className="work-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">04 / Follow through</p>
+              <p className="eyebrow">04&nbsp;&nbsp;Follow through</p>
               <h3>Work in focus</h3>
             </div>
             <button
@@ -227,7 +221,7 @@ export function DashboardView({
               onClick={() => onNavigate("tasks")}
               aria-label="View all work tasks"
             >
-              All work <span aria-hidden="true">↗</span>
+              All work
             </button>
           </div>
           {work.length ? (
@@ -250,9 +244,6 @@ export function DashboardView({
                   <strong>{item.title}</strong>
                   <span>{item.assignee}</span>
                   <small>{item.due}</small>
-                  <span className="work-arrow" aria-hidden="true">
-                    ↗
-                  </span>
                 </button>
               ))}
             </div>
@@ -261,7 +252,7 @@ export function DashboardView({
               <h4>No open work.</h4>
               <p>Confirm an issue to create and assign a work task.</p>
               <button className="link" onClick={() => onNavigate("tasks")}>
-                View work history →
+                View work history
               </button>
             </div>
           )}

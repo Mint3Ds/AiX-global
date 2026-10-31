@@ -1,3 +1,5 @@
+import { RatingStars } from "./RatingStars";
+
 /** Evidence is grouped by source review so quotes do not lose their context. */
 type EvidenceReview = {
   id: string;
@@ -79,7 +81,7 @@ export function TaskEvidencePanel({
       <div className="task-source-heading">
         <span>Review {String(index + 1).padStart(2, "0")}</span>
         <span>
-          {review.rating}/5 · {review.source} · {reviewDate(review.reviewedAt)}
+          <RatingStars rating={review.rating} /> · {reviewDate(review.reviewedAt)}
         </span>
       </div>
       <div className="task-source-quotes">
@@ -92,7 +94,7 @@ export function TaskEvidencePanel({
         className="link"
         onClick={() => onOpenReview(review.id)}
       >
-        Open source review <span aria-hidden="true">↗</span>
+        Open source review
       </button>
     </li>
   );
@@ -104,7 +106,7 @@ export function TaskEvidencePanel({
     >
       <header className="task-evidence-heading">
         <div>
-          <p className="eyebrow">02 / Source evidence</p>
+          <p className="eyebrow">02&nbsp;&nbsp;Source evidence</p>
           <h3 id={`task-evidence-${taskId}`}>What guests reported</h3>
           <p>
             {evidence.length} source reviews · {excerptCount} exact excerpts
@@ -115,7 +117,7 @@ export function TaskEvidencePanel({
           className="link"
           onClick={() => onOpenTheme(themeId)}
         >
-          View issue <span aria-hidden="true">↗</span>
+          View issue
         </button>
       </header>
       <p className="task-evidence-topic">Related issue · {themeTitle}</p>

@@ -11,12 +11,16 @@ type ReportAttempt = {
   attachments: { id: string; name: string; url: string }[];
 };
 
-const reportDate = (value: string) =>
-  new Date(value).toLocaleString("en-MY", {
+const reportDate = (value: string) => {
+  const date = new Date(value);
+  return `${date.toLocaleDateString("en-MY", {
     timeZone: "Asia/Kuala_Lumpur",
     dateStyle: "medium",
+  })} · ${date.toLocaleTimeString("en-MY", {
+    timeZone: "Asia/Kuala_Lumpur",
     timeStyle: "short",
-  });
+  })}`;
+};
 
 export function TaskReportHistory({ attempts }: { attempts: ReportAttempt[] }) {
   if (!attempts.length) return null;
@@ -31,7 +35,7 @@ export function TaskReportHistory({ attempts }: { attempts: ReportAttempt[] }) {
     >
       <header className="task-report-history-heading">
         <div>
-          <p className="eyebrow">03 / Completion history</p>
+          <p className="eyebrow">03&nbsp;&nbsp;Completion history</p>
           <h3>Staff reports</h3>
         </div>
         <span className="task-rejection-count">

@@ -90,11 +90,11 @@ export function StaffDashboardView({
       >
         <header className="panel-heading">
           <div>
-            <p className="eyebrow">02 / Assigned to you</p>
+            <p className="eyebrow">02&nbsp;&nbsp;Assigned to you</p>
             <h2 id="staff-queue-title">Work queue</h2>
           </div>
           <button className="link" type="button" onClick={onOpenTasks}>
-            Open tasks <span aria-hidden="true">↗</span>
+            Open tasks
           </button>
         </header>
         {tasks.length ? (
@@ -125,7 +125,6 @@ export function StaffDashboardView({
                         : ""}
                     </span>
                     <small>{dueLabel(task.dueAt)}</small>
-                    <span aria-hidden="true">↗</span>
                   </span>
                 </button>
               </li>

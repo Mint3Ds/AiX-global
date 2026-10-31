@@ -6,6 +6,7 @@ import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
 import { TaskReportHistory } from "@/components/design/TaskReportHistory";
 import { StaffDashboardView } from "@/components/design/StaffDashboardView";
 import { PageHeading, StatusBadge } from "@/components/design/PageHeading";
+import { RatingStars } from "@/components/design/RatingStars";
 import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
@@ -167,11 +168,13 @@ type State = {
 };
 const date = (value: string | null) =>
   value
-    ? new Date(value).toLocaleString("en-MY", {
+    ? `${new Date(value).toLocaleDateString("en-MY", {
         dateStyle: "medium",
+        timeZone: "Asia/Kuala_Lumpur",
+      })} · ${new Date(value).toLocaleTimeString("en-MY", {
         timeStyle: "short",
         timeZone: "Asia/Kuala_Lumpur",
-      })
+      })}`
     : "—";
 const localDay = (value: string) =>
   new Intl.DateTimeFormat("en-CA", {
@@ -376,19 +379,6 @@ function revealDetailOnMobile(id: string, maxWidth = 640) {
   });
 }
 
-function RatingStars({ rating }: { rating: number }) {
-  const value = Math.max(0, Math.min(5, rating));
-  return (
-    <span
-      className="rating-stars"
-      role="img"
-      aria-label={`${value} out of 5 stars`}
-    >
-      <span className="rating-stars-filled">{"★".repeat(value)}</span>
-      <span className="rating-stars-empty">{"☆".repeat(5 - value)}</span>
-    </span>
-  );
-}
 function PriorityBadge({ priority }: { priority: string }) {
   const tone = priority.toLowerCase();
   return (
@@ -1621,7 +1611,7 @@ export function Workspace() {
                         className="link new-review-all-link"
                         onClick={() => setTab("reviews")}
                       >
-                        View all reviews →
+                        View all reviews
                       </button>
                     )}
                   </aside>
@@ -1633,7 +1623,7 @@ export function Workspace() {
               <section className="reviews-page">
                 <PageHeading
                   index="02"
-                  eyebrow="The review register"
+                  eyebrow="Guest reviews"
                   title="Guest words, in full."
                   description="Explore the original feedback and the evidence behind every issue."
                 >
@@ -1904,10 +1894,11 @@ export function Workspace() {
                                   <td>
                                     <span
                                       className="register-rating"
-                                      aria-label={`${review.rating} out of 5 stars`}
                                     >
-                                      {review.rating}
-                                      <span aria-hidden="true">★</span>
+                                      <RatingStars
+                                        rating={review.rating}
+                                        className="register-rating-stars"
+                                      />
                                     </span>
                                   </td>
                                   <td>
@@ -1976,19 +1967,6 @@ export function Workspace() {
                         <blockquote className="review-original">
                           {selected.originalText}
                         </blockquote>
-                        <details className="review-provenance">
-                          <summary>Source details</summary>
-                          <dl>
-                            <div>
-                              <dt>Source</dt>
-                              <dd>{selected.source}</dd>
-                            </div>
-                            <div>
-                              <dt>Source ID</dt>
-                              <dd>{selected.sourceReviewId}</dd>
-                            </div>
-                          </dl>
-                        </details>
                         {state.replies.find(
                           (reply) => reply.reviewId === selected.id,
                         ) && (
@@ -2003,7 +1981,7 @@ export function Workspace() {
                               setTab("replies");
                             }}
                           >
-                            View guest reply →
+                            View guest reply
                           </button>
                         )}
                         <div className="findings-heading">
@@ -2047,7 +2025,6 @@ export function Workspace() {
                                         }
                                       >
                                         {linkedTheme.title}{" "}
-                                        <span aria-hidden="true">↗</span>
                                       </button>
                                     )}
                                 </div>
@@ -2593,7 +2570,7 @@ export function Workspace() {
                             </div>
                           )}
                         <section className="task-brief" aria-label="Task brief">
-                          <p className="eyebrow">01 / Task brief</p>
+                          <p className="eyebrow">01&nbsp;&nbsp;Task brief</p>
                           <p>{task.description}</p>
                         </section>
                         {!["proposed", "deferred"].includes(task.status) && (
