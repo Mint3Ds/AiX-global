@@ -44,6 +44,7 @@ function formatEventDescription(desc: string): string {
 
 // Edit these labels to change how stored event types read in the Activity tab.
 const titles: Record<string, string> = {
+  dataset_seeded: "Demo dataset ready",
   review_intake: "Review added",
   review_viewed: "Review opened",
   review_triaged: "Review triaged",
@@ -117,9 +118,7 @@ function EventRow({ event, actor, subject }: EventRowProps) {
       <span className="activity-event-marker" aria-hidden="true" />
       <div className="activity-event-content">
         <div className="activity-event-topline">
-          <strong>
-            {titles[event.type] || toSentenceCase(event.type)}
-          </strong>
+          <strong>{titles[event.type] || toSentenceCase(event.type)}</strong>
           <time dateTime={event.createdAt}>
             {date(event.createdAt)} · {time(event.createdAt)}
           </time>

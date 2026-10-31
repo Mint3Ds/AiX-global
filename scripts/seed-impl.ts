@@ -272,22 +272,32 @@ try {
         status: "proposed",
       })
       .onConflictDoNothing();
-  if (seedLegacyReviews)
-    await db
-      .insert(events)
-      .values({
-        id: "event-seed-v1",
-        actor: "seed process",
-        role: "system",
-        type: "dataset_seeded",
-        entityType: "business",
-        entityId: "nusa-table",
-        description:
-          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-        businessId: restaurantConfig.businessId,
-        metadata: { reviewCount: seedReviews.length },
-      })
-      .onConflictDoNothing();
+  if (seedLegacyReviews) {
+    for (const config of businessConfigs) {
+      const reviewCount = [
+        ...seedReviews,
+        ...hotelSeedReviews,
+        ...salonSeedReviews,
+      ].filter((review) => review.businessId === config.businessId).length;
+      await db
+        .insert(events)
+        .values({
+          id:
+            config.businessId === restaurantConfig.businessId
+              ? "event-seed-v1"
+              : `event-seed-v1-${config.businessId}`,
+          actor: "seed process",
+          role: "system",
+          type: "dataset_seeded",
+          entityType: "business",
+          entityId: config.businessId,
+          description: `${reviewCount} historical synthetic reviews are available with labelled fixture analyses. This entry records dataset setup, not customer or staff activity.`,
+          businessId: config.businessId,
+          metadata: { reviewCount },
+        })
+        .onConflictDoNothing();
+    }
+  }
   console.log(
     seedLegacyReviews
       ? `Seed ready: ${seedReviews.length} restaurant, ${hotelSeedReviews.length} hotel, ${salonSeedReviews.length} salon reviews; separate demo reviews were not inserted.`

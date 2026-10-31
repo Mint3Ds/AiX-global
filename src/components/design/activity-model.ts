@@ -24,7 +24,8 @@ export function activityKind(event: ActivityEvent): ActivityKind {
   if (event.entityType === "review") return "reviews";
   if (["theme", "observation"].includes(event.entityType)) return "issues";
   if (event.entityType === "task") return "tasks";
-  return "replies";
+  if (event.entityType === "reply") return "replies";
+  return "all";
 }
 
 export function groupActivity(

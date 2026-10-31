@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  activityKind,
   groupActivity,
   type ActivityEvent,
   type ActivityTask,
@@ -25,6 +26,23 @@ const event = (
 });
 
 describe("activity threads", () => {
+  it("keeps business setup events out of the reply category", () => {
+    expect(
+      activityKind(
+        event(
+          "dataset_seeded",
+          "business",
+          "harbour-house",
+          "2026-10-31T09:00:00Z",
+        ),
+      ),
+    ).toBe("all");
+    expect(
+      activityKind(
+        event("reply_drafted", "reply", "reply-1", "2026-10-31T09:00:00Z"),
+      ),
+    ).toBe("replies");
+  });
   it("connects task, handoff, and linked reply events without losing audit entries", () => {
     const events = [
       event("intake", "review", "review-1", "2026-10-30T09:00:00Z"),
