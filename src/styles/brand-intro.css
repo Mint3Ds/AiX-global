@@ -1,0 +1,388 @@
+/* Clarity Brand Intro & Loading Screen Styles */
+.brand-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--paper, #f3f7fa);
+  color: var(--ink, #17232d);
+  font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  overflow: hidden;
+  opacity: 1;
+  filter: blur(0px);
+  transform: scale(1);
+  transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, filter, transform;
+}
+
+.brand-loading-screen.is-exiting {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+/* Subtle architectural ledger grid */
+.brand-loading-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--line, #d4e0e8) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line, #d4e0e8) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.35;
+  mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
+}
+
+/* Ambient halo behind logo during initial zoom-in */
+.brand-loading-halo {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(73, 107, 134, 0.16) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+  animation: brandHaloPulse 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Brand lockup container */
+.brand-loading-lockup {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+/*
+ * 1. Logo Mark Wrapper (84px × 84px)
+ * Optical elevation: -8px along Y-axis relative to the text cap height.
+ * Starts centered at translateX(132px) translateY(-8px) scale(2.05).
+ */
+.brand-loading-symbol-wrap {
+  position: relative;
+  z-index: 3;
+  width: 84px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translate3d(132px, -8px, 0) scale(2.05);
+  filter: blur(6px);
+  will-change: transform, opacity, filter;
+  animation: brandLogoFadeAndZoomPull 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.brand-loading-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.brand-loading-svg path {
+  stroke: var(--ink, #17232d);
+  stroke-width: 5.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+}
+
+.brand-loading-svg .path-left {
+  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.06s forwards;
+}
+
+.brand-loading-svg .path-right {
+  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.18s forwards;
+}
+
+/*
+ * 2. Wordmark Reveal ("Clarity")
+ * Locked clearance of 22px to the right of the logo edge at every frame.
+ */
+.brand-loading-wordmark-mask {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding: 6px 14px 14px 2px;
+  transform: translate3d(163.5px, 0, 0);
+  clip-path: inset(0 100% 0 0);
+  will-change: transform, clip-path;
+  animation: brandWordmarkTowAndUnmask 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
+}
+
+.brand-loading-wordmark-track {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translate3d(-22px, 0, 0);
+  transform-origin: left center;
+  will-change: transform, opacity;
+  animation: brandWordmarkPullOut 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
+}
+
+.brand-loading-title {
+  display: flex;
+  font-size: clamp(48px, 5.5vw, 74px);
+  font-weight: 720;
+  line-height: 1.14;
+  letter-spacing: -0.055em;
+  color: var(--ink, #17232d);
+}
+
+.brand-loading-title span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  filter: blur(3px);
+  will-change: transform, opacity, filter;
+  animation: brandLetterSettle 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.brand-loading-title span:nth-child(1) { animation-delay: 0.98s; }
+.brand-loading-title span:nth-child(2) { animation-delay: 1.06s; }
+.brand-loading-title span:nth-child(3) { animation-delay: 1.14s; }
+.brand-loading-title span:nth-child(4) { animation-delay: 1.22s; }
+.brand-loading-title span:nth-child(5) { animation-delay: 1.30s; }
+.brand-loading-title span:nth-child(6) { animation-delay: 1.38s; }
+.brand-loading-title span:nth-child(7) { animation-delay: 1.46s; }
+
+/* Architectural ledger rule + subtitle beneath "Clarity" */
+.brand-loading-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-left: 3px;
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  animation: brandSubFadeIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.95s forwards;
+}
+
+.brand-loading-sub-line {
+  width: 22px;
+  height: 1.5px;
+  background: var(--accent, #496b86);
+}
+
+.brand-loading-sub-text {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted, #586978);
+}
+
+/* Bottom status / skip pill */
+.brand-loading-meta {
+  position: absolute;
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, #586978);
+  opacity: 0;
+  animation: brandMetaFade 0.6s ease 2.2s forwards;
+}
+
+.brand-loading-skip-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line, #d4e0e8);
+  border-radius: 2px;
+  color: var(--muted, #586978);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.brand-loading-skip-btn:hover {
+  border-color: var(--accent, #496b86);
+  color: var(--ink, #17232d);
+}
+
+/* Error state during loading */
+.brand-loading-error {
+  position: absolute;
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line-strong, #aabac7);
+  padding: 10px 18px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--ink, #17232d);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.brand-loading-retry-btn {
+  appearance: none;
+  background: var(--action, #243d52);
+  color: #ffffff;
+  border: none;
+  border-radius: 2px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.brand-loading-retry-btn:hover {
+  background: var(--action-hover, #172f42);
+}
+
+/* Replay intro link in workspace footer */
+.replay-intro-link {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.055em;
+  color: var(--muted, #586978);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong, #aabac7);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.replay-intro-link:hover {
+  color: var(--ink, #17232d);
+  text-decoration-color: var(--accent, #496b86);
+}
+
+/* Keyframes */
+@keyframes brandLogoFadeAndZoomPull {
+  0% {
+    opacity: 0;
+    transform: translate3d(132px, -8px, 0) scale(2.05);
+    filter: blur(6px);
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  32% {
+    opacity: 1;
+    transform: translate3d(132px, -8px, 0) scale(1.75);
+    filter: blur(0px);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0px, -8px, 0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes brandStrokeDraw {
+  0% {
+    stroke-dashoffset: 160;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes brandWordmarkTowAndUnmask {
+  0% {
+    transform: translate3d(163.5px, 0, 0);
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    transform: translate3d(0px, 0, 0);
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+@keyframes brandWordmarkPullOut {
+  0% {
+    opacity: 0;
+    transform: translate3d(-22px, 0, 0);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0px, 0, 0);
+  }
+}
+
+@keyframes brandLetterSettle {
+  0% {
+    opacity: 0;
+    transform: translate3d(-10px, 0, 0);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0px, 0, 0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes brandSubFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes brandHaloPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  32% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes brandMetaFade {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-symbol-wrap,
+  .brand-loading-wordmark-mask,
+  .brand-loading-wordmark-track,
+  .brand-loading-title span,
+  .brand-loading-sub,
+  .brand-loading-svg .path-left,
+  .brand-loading-svg .path-right {
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
+  }
+}

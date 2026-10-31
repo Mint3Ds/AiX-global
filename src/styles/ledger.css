@@ -640,6 +640,7 @@ main .issue-category-tabs button:not(.review-row) {
   background: none;
   color: var(--muted);
   font-size: 12px;
+  margin-bottom: -1px;
 }
 main .issue-category-tabs button.active:not(.review-row) {
   border-bottom-color: var(--action);
@@ -693,20 +694,15 @@ main .issue-category-tabs button:hover:not(.review-row) {
   font-size: 10px;
 }
 .issue-row-work-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  flex: 0 0 auto;
   color: var(--action);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-align: right;
+  white-space: nowrap;
 }
 .issue-row-work-status > span {
-  width: 6px;
-  height: 6px;
-  flex: none;
-  border-radius: 50%;
-  background: currentColor;
+  display: none;
 }
 .issues-page .issue-list-paginated {
   gap: 0;
@@ -728,7 +724,7 @@ main .issue-category-tabs button:hover:not(.review-row) {
   background: var(--surface-alt);
 }
 .issue-list-panel {
-  border-top: 2px solid var(--accent);
+  border-top: 0;
 }
 .issue-list-footer {
   margin-top: 17px;

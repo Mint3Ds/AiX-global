@@ -7,6 +7,7 @@ import { TaskReportHistory } from "@/components/design/TaskReportHistory";
 import { StaffDashboardView } from "@/components/design/StaffDashboardView";
 import { PageHeading, StatusBadge } from "@/components/design/PageHeading";
 import { RatingStars } from "@/components/design/RatingStars";
+import { BrandLoadingScreen } from "@/components/design/BrandLoadingScreen";
 import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
@@ -543,6 +544,7 @@ export function Workspace() {
   } | null>(null);
   const [decisionNote, setDecisionNote] = useState("");
   const [decisionError, setDecisionError] = useState("");
+  const [introComplete, setIntroComplete] = useState(false);
   const decisionInput = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -1112,14 +1114,56 @@ export function Workspace() {
     if (seenActivity.has(signature)) continue;
     seenActivity.add(signature);
     recentActivity.push(item);
-    if (recentActivity.length === 3) break;
+    if (recentActivity.length === 6) break;
   }
   const activeAnalysisStage = state?.reviews.find(
     (review) => review.processingStatus === "processing",
   )?.processingStage;
 
+  const currentBranches = (state?.branches || []).filter(
+    (branch) => branch.businessId === businessId,
+  );
+  const propertySummaries = currentBranches.map((branch) => {
+    const branchReviews = (state?.reviews || []).filter(
+      (r) => r.branchId === branch.id,
+    );
+    const avgRating = branchReviews.length
+      ? (
+          branchReviews.reduce((sum, r) => sum + r.rating, 0) /
+          branchReviews.length
+        ).toFixed(1)
+      : "—";
+    const branchIssues = (state?.themes || []).filter(
+      (t) =>
+        t.branchId === branch.id &&
+        t.type === "operational_issue" &&
+        ["suggested", "recurrence"].includes(t.status),
+    ).length;
+    return {
+      id: branch.id,
+      name: branch.name,
+      rating: avgRating,
+      reviewsCount: branchReviews.length,
+      issuesCount: branchIssues,
+    };
+  });
+  const replyStatus = {
+    draftCount: (state?.replies || []).filter((r) => r.status === "draft").length,
+    approvedCount: (state?.replies || []).filter((r) => r.status === "approved_ready").length,
+    publishedCount: (state?.replies || []).filter((r) => r.status === "simulated_published").length,
+  };
+
   return (
-    <div className="shell">
+    <>
+      {!introComplete && (
+        <BrandLoadingScreen
+          isDataReady={!!state}
+          error={errorSource === "load" ? error : null}
+          onRetry={() => void refresh()}
+          onComplete={() => setIntroComplete(true)}
+        />
+      )}
+      <div className="shell">
       <WorkspaceHeader
         businesses={
           state?.businesses ||
@@ -1303,6 +1347,12 @@ export function Workspace() {
                 />
               ) : (
                 <DashboardView
+                  properties={propertySummaries}
+                  replyStatus={replyStatus}
+                  onSelectBranch={(branchId) => {
+                    setBranch(branchId);
+                    navigateTab('reviews');
+                  }}
                   metrics={[
                     {
                       title: "Total reviews",
@@ -2145,7 +2195,6 @@ export function Workspace() {
                               </span>
                               {issueTaskByTheme.has(item.id) ? (
                                 <span className="issue-row-work-status">
-                                  <span aria-hidden="true" />
                                   {issueWorkLabel(
                                     issueTaskByTheme.get(item.id)!.status,
                                   )}
@@ -3059,6 +3108,14 @@ export function Workspace() {
       )}
       <footer className="workspace-footer">
         <span>Clarity / Review to resolution</span>
+        <button
+          type="button"
+          className="replay-intro-link"
+          onClick={() => setIntroComplete(false)}
+          title="Replay brand loading animation"
+        >
+          Replay intro
+        </button>
       </footer>
       {decision && (
         <div
@@ -3183,6 +3240,7 @@ export function Workspace() {
         </div>
       )}
     </div>
+    </>
   );
 }
 function TaskEditor({
