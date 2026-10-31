@@ -22,14 +22,12 @@ export const extractionSchema = z.object({
 });
 export const matchingSchema = z.object({
   themeId: z.string(),
-  reason: z.string(),
 });
 export const batchMatchingSchema = z.object({
   matches: z.array(
     z.object({
       observationIndex: z.number().int().min(0),
       themeId: z.string(),
-      reason: z.string(),
     }),
   ),
 });

@@ -321,13 +321,7 @@
     font-size: 22px;
   }
   .activity-preview {
-    padding-bottom: 26px;
-  }
-  .dashboard-footnote {
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 20px;
-    font-size: 9px;
+    padding-bottom: 16px;
   }
   .review-primary-filters {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
@@ -572,10 +566,10 @@
     font-size: 21px;
   }
   .workspace-footer {
-    flex-direction: column;
-    gap: 7px;
-    padding: 20px 0;
-    font-size: 9px;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 16px 0 20px;
+    flex-wrap: wrap;
   }
   .notice {
     align-items: flex-start;

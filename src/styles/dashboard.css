@@ -296,7 +296,8 @@ main .dashboard .compact-issues > button {
   gap: 11px;
   width: 100%;
   min-height: 84px;
-  padding: 16px 1px;
+  /* Keep priority labels comfortably inset from the panel edge. */
+  padding: 16px 12px 16px 1px;
   border: 0;
   border-bottom: 0;
   border-radius: 0;
@@ -339,9 +340,9 @@ main .dashboard .compact-issues > button:hover {
 }
 .activity-preview {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   position: relative;
-  padding: 0 0 30px;
+  padding: 0 0 18px;
 }
 .activity-preview:not(:last-child)::before {
   position: absolute;
@@ -364,7 +365,7 @@ main .dashboard .compact-issues > button:hover {
 }
 .activity-preview time {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: var(--muted);
   font-size: 10px;
   line-height: 1.4;
@@ -376,11 +377,15 @@ main .dashboard .compact-issues > button:hover {
   text-transform: capitalize;
 }
 .activity-preview p {
-  margin: 7px 0 0;
+  display: -webkit-box;
+  margin: 5px 0 0;
   color: var(--muted);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.45;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .work-preview-list {
   display: grid;
@@ -441,16 +446,4 @@ main .dashboard button.work-preview:hover {
 .dashboard-empty p {
   margin: 0 0 12px;
   font-size: 12px;
-}
-.dashboard-footnote {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 32px;
-  padding-top: 17px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }

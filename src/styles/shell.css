@@ -251,13 +251,22 @@ p {
 }
 .workspace-footer {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 22px 0 26px;
+  align-items: baseline;
+  gap: 14px;
+  padding: 18px 0 22px;
   border-top: 1px solid var(--line);
   color: var(--muted);
+  font-size: 11px;
+}
+.workspace-footer-brand {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.workspace-footer-purpose {
+  color: var(--muted);
   font-size: 10px;
-  letter-spacing: 0.055em;
 }
 .loading-workspace {
   min-height: 70vh;

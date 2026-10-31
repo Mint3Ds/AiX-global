@@ -26,11 +26,13 @@ Every business, employee, guest review, source label, and outcome in this reposi
 | Demo Video         | https://youtu.be/laQ-Ig410YM                     |
 
 ---
-## Run the Live Demo Here
-https://ai-x-global.replit.app/  
-Follow along the demo video for the easiest journey: https://youtu.be/laQ-Ig410YM  
 
-## Run locally 
+## Run the Live Demo Here
+
+https://ai-x-global.replit.app/  
+Follow along the demo video for the easiest journey: https://youtu.be/laQ-Ig410YM
+
+## Run locally
 
 Requires Node.js 22.12+ (or Node 24+) and PostgreSQL 16+. Clone the shared GitHub repository, then run:
 
@@ -53,14 +55,15 @@ NOTE: The old project name was named 'visited2value' and its name is still prese
 
 ### Configuration
 
-| Variable           | Purpose                                                                        |
-| ------------------ | ------------------------------------------------------------------------------ |
-| `DATABASE_URL`     | PostgreSQL connection URL; required.                                           |
-| `AI_MODE`          | `fixture` for deterministic demo or `live` for actual provider calls.          |
-| `TYPESAFE_API_KEY` | Server-side Jev key for live screening.                                        |
-| `OPENAI_API_KEY`   | Server-side OpenAI key for fallback, extraction, matching, and reply drafting. |
-| `OPENAI_MODEL`     | OpenAI model; defaults to `gpt-5-mini`.                                        |
-| `HOST`, `PORT`     | Optional shell-provided bind host and port.                                    |
+| Variable              | Purpose                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`        | PostgreSQL connection URL; required.                                                          |
+| `AI_MODE`             | `fixture` for deterministic demo or `live` for actual provider calls.                         |
+| `TYPESAFE_API_KEY`    | Server-side Jev key for live screening.                                                       |
+| `OPENAI_API_KEY`      | Server-side OpenAI key for fallback, extraction, matching, and reply drafting.                |
+| `OPENAI_MODEL`        | OpenAI model; defaults to `gpt-5-mini`.                                                       |
+| `OPENAI_SERVICE_TIER` | Optional `priority` tier for faster processing at a per-token premium; defaults to `default`. |
+| `HOST`, `PORT`        | Optional shell-provided bind host and port.                                                   |
 
 In live mode, Jev decides whether a review has any specific business feedback; OpenAI takes over screening if Jev fails. OpenAI extracts distinct observations, proposes same-property issue matches, and drafts a reply after verified work. Provider failures leave the source review searchable and retryable. Fixture mode processes only exact labelled text; arbitrary new text enters `needs_review` for manual classification or can be retried in live mode. The historical seed's provider is labelled `fixture`, never Jev.
 

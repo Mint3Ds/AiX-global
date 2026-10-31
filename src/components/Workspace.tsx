@@ -351,6 +351,7 @@ function actionSuccessMessage(
     intake: "Review saved. Analysis is starting…",
     severity: "Priority updated.",
     edit_task: "Work task saved.",
+    start_task: "Work started.",
     report_task: "Work update submitted.",
     verify_task: "Work verified.",
     reject_task_report:
@@ -790,8 +791,17 @@ export function Workspace() {
     }
     return [...byIssue.values()];
   }, [state]);
+  const completedTasks = useMemo(
+    () =>
+      (state?.tasks || []).filter(
+        (item) =>
+          item.status === "resolved" &&
+          (owner || item.assigneeId === effectiveEmployeeId),
+      ),
+    [state, owner, effectiveEmployeeId],
+  );
   const visibleTaskList = owner
-    ? openTasks
+    ? [...openTasks, ...completedTasks]
     : (state?.tasks || []).filter(
         (item) =>
           item.assigneeId === effectiveEmployeeId &&
@@ -1150,7 +1160,7 @@ export function Workspace() {
     if (seenActivity.has(signature)) continue;
     seenActivity.add(signature);
     recentActivity.push(item);
-    if (recentActivity.length === 3) break;
+    if (recentActivity.length === 5) break;
   }
   const activeAnalysisStage = state?.reviews.find(
     (review) => review.processingStatus === "processing",
@@ -2553,7 +2563,9 @@ export function Workspace() {
                               ? "Awaiting owner verification"
                               : item.status === "needs_rework"
                                 ? "Returned for rework"
-                                : "Awaiting employee confirmation"}
+                                : item.status === "in_progress"
+                                  ? "In progress"
+                                  : "Awaiting employee confirmation"}
                           </span>
                         </button>
                       ))}
@@ -2573,28 +2585,24 @@ export function Workspace() {
                     )}
                     <div className="completed-tasks">
                       <h3>Completed work tasks</h3>
-                      {visibleTaskList
-                        .filter((item) => item.status === "resolved")
-                        .map((item) => (
-                          <button
-                            key={item.id}
-                            className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
-                            onClick={() => openTask(item.id)}
-                          >
-                            <b>{item.title}</b>
-                            <span>
-                              {
-                                state.employees.find(
-                                  (employee) => employee.id === item.assigneeId,
-                                )?.name
-                              }{" "}
-                              · Verified {date(item.verifiedAt)}
-                            </span>
-                          </button>
-                        ))}
-                      {!visibleTaskList.some(
-                        (item) => item.status === "resolved",
-                      ) && (
+                      {completedTasks.map((item) => (
+                        <button
+                          key={item.id}
+                          className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
+                          onClick={() => openTask(item.id)}
+                        >
+                          <b>{item.title}</b>
+                          <span>
+                            {
+                              state.employees.find(
+                                (employee) => employee.id === item.assigneeId,
+                              )?.name
+                            }{" "}
+                            · Verified {date(item.verifiedAt)}
+                          </span>
+                        </button>
+                      ))}
+                      {completedTasks.length === 0 && (
                         <p className="task-list-empty">No completed work yet</p>
                       )}
                     </div>
@@ -2781,15 +2789,35 @@ export function Workspace() {
                                   ))}
                               </select>
                             </label>
-                            {[
-                              "approved_open",
-                              "in_progress",
-                              "needs_rework",
-                            ].includes(task.status) &&
-                            task.assigneeId === effectiveEmployeeId ? (
+                            {task.assigneeId === effectiveEmployeeId &&
+                            ["approved_open", "needs_rework"].includes(
+                              task.status,
+                            ) ? (
+                              <div className="staff-work-report">
+                                <p className="staff-assignment-note">
+                                  {task.status === "needs_rework"
+                                    ? "Review the owner’s feedback, then start the corrected work."
+                                    : "Start this assignment to mark it in progress before reporting completion."}
+                                </p>
+                                <button
+                                  disabled={!!busy}
+                                  onClick={() =>
+                                    void act("start_task", {
+                                      taskId: task.id,
+                                      employeeId: effectiveEmployeeId,
+                                    })
+                                  }
+                                >
+                                  {task.status === "needs_rework"
+                                    ? "Start rework"
+                                    : "Start work"}
+                                </button>
+                              </div>
+                            ) : task.status === "in_progress" &&
+                              task.assigneeId === effectiveEmployeeId ? (
                               <div className="staff-work-report">
                                 <label>
-                                  {task.status === "needs_rework"
+                                  {task.reportVersion > 0
                                     ? "Additional fixes completed"
                                     : "Work completed"}
                                   <textarea
@@ -2799,7 +2827,7 @@ export function Workspace() {
                                       setWorkReport(event.target.value)
                                     }
                                     placeholder={
-                                      task.status === "needs_rework"
+                                      task.reportVersion > 0
                                         ? "Describe how you addressed the owner's feedback…"
                                         : "Describe what you inspected, repaired, or replaced…"
                                     }
@@ -2887,7 +2915,7 @@ export function Workspace() {
                                       );
                                       const result = await act("report_task", {
                                         taskId: task.id,
-                                        effectiveEmployeeId,
+                                        employeeId: effectiveEmployeeId,
                                         note: workReport,
                                         attachments,
                                       });
@@ -2912,7 +2940,9 @@ export function Workspace() {
                               <p className="staff-assignment-note">
                                 {task.status === "reported"
                                   ? "Your update was submitted and is waiting for owner review."
-                                  : `Assigned to ${state.employees.find((employee) => employee.id === task.assigneeId)?.name || "another employee"}. Select the assigned staff profile to submit an update.`}
+                                  : task.status === "resolved"
+                                    ? "The owner verified this work."
+                                    : `Assigned to ${state.employees.find((employee) => employee.id === task.assigneeId)?.name || "another employee"}. Select the assigned staff profile to submit an update.`}
                               </p>
                             )}
                           </section>
@@ -3148,7 +3178,10 @@ export function Workspace() {
         </main>
       )}
       <footer className="workspace-footer">
-        <span>Clarity / Review to resolution</span>
+        <span className="workspace-footer-brand">Clarity</span>
+        <span className="workspace-footer-purpose">
+          Customer feedback and operational follow-through
+        </span>
       </footer>
       {decision && (
         <div

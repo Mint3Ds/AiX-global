@@ -36,7 +36,11 @@ import { defaultBusinessId } from "@/config/business";
 import { priorityFor, priorityRules } from "@/config/priority";
 import { detectReviewLanguage } from "./language";
 import { screenWithFallback } from "./screening";
-import { candidateThemes, distinctReviewCount } from "./themes";
+import {
+  candidateThemes,
+  distinctReviewCount,
+  exactThemeMatch,
+} from "./themes";
 import { screenWithJev } from "@/integrations/jev/screen";
 import {
   screenWithOpenAI,
@@ -689,28 +693,23 @@ export async function analyzeReview(reviewId: string) {
             (input as ObservationInput & { expectedThemeId?: string })
               .expectedThemeId ?? null,
         );
-      const exact = inputs.map((input, index) => {
-        const aspect = input.aspect.replaceAll("_", " ").trim().toLowerCase();
-        return aspect.includes(" ")
-          ? candidatesByObservation[index].find(
-              (candidate) => candidate.title.trim().toLowerCase() === aspect,
-            )?.id || null
-          : null;
-      });
-      if (
-        exact.every(Boolean) ||
-        candidatesByObservation.every((items) => !items.length)
-      )
-        return exact;
+      const exact = inputs.map((input, index) =>
+        exactThemeMatch(input, candidatesByObservation[index]),
+      );
       const result = [...exact];
+      const unmatchedIndices = exact.flatMap((themeId, index) =>
+        !themeId && candidatesByObservation[index].length ? [index] : [],
+      );
+      if (!unmatchedIndices.length) return result;
       const matched = await matchObservationsWithOpenAI(
-        inputs,
-        candidatesByObservation,
+        unmatchedIndices.map((index) => inputs[index]),
+        unmatchedIndices.map((index) => candidatesByObservation[index]),
       );
       for (const item of matched.matches) {
-        if (item.observationIndex >= inputs.length)
+        if (item.observationIndex >= unmatchedIndices.length)
           throw new Error("Theme match returned an invalid observation index.");
-        const candidates = candidatesByObservation[item.observationIndex];
+        const originalIndex = unmatchedIndices[item.observationIndex];
+        const candidates = candidatesByObservation[originalIndex];
         if (
           item.themeId &&
           !candidates.some((candidate) => candidate.id === item.themeId)
@@ -718,7 +717,7 @@ export async function analyzeReview(reviewId: string) {
           throw new Error(
             "Theme match returned an invalid or cross-branch ID.",
           );
-        result[item.observationIndex] ||= item.themeId || null;
+        result[originalIndex] ||= item.themeId || null;
       }
       if (matched.matches.length) matchingProvider = "openai";
       return result;
@@ -811,29 +810,35 @@ export async function analyzeReview(reviewId: string) {
     stageTimings.databasePersistMs = Math.round(
       performance.now() - persistStarted,
     );
-    for (const themeId of changedThemes) await recalculatePriority(themeId);
-    for (const themeId of changedThemes) {
-      const [previous] = await db
-        .select()
-        .from(tasks)
-        .where(and(eq(tasks.themeId, themeId), eq(tasks.status, "resolved")))
-        .orderBy(desc(tasks.resolvedAt))
-        .limit(1);
-      if (
-        isPossibleRecurrence(review.createdAt, previous?.resolvedAt ?? null)
-      ) {
-        await refreshRecurrenceStatus(themeId);
-        await event(
-          "possible_recurrence",
-          "theme",
-          themeId,
-          "New related review arrived after a verified resolution; owner should inspect the evidence.",
-          "system",
-          "system",
-          { reviewId, priorTaskId: previous.id },
-        );
-      }
-    }
+    await measure("postProcessingMs", async () =>
+      Promise.all(
+        [...changedThemes].map(async (themeId) => {
+          await recalculatePriority(themeId);
+          const [previous] = await db
+            .select()
+            .from(tasks)
+            .where(
+              and(eq(tasks.themeId, themeId), eq(tasks.status, "resolved")),
+            )
+            .orderBy(desc(tasks.resolvedAt))
+            .limit(1);
+          if (
+            isPossibleRecurrence(review.createdAt, previous?.resolvedAt ?? null)
+          ) {
+            await refreshRecurrenceStatus(themeId);
+            await event(
+              "possible_recurrence",
+              "theme",
+              themeId,
+              "New related review arrived after a verified resolution; owner should inspect the evidence.",
+              "system",
+              "system",
+              { reviewId, priorTaskId: previous.id },
+            );
+          }
+        }),
+      ),
+    );
     await event(
       "analysis_completed",
       "review",

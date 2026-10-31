@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { verifyEvidence } from "../src/domain/analysis";
+import { batchMatchingSchema, verifyEvidence } from "../src/domain/analysis";
 import { priorityFor } from "../src/config/priority";
 import {
   requireOwner,
@@ -7,7 +7,11 @@ import {
   canDraftReply,
   decisionReason,
 } from "../src/domain/workflow";
-import { candidateThemes, distinctReviewCount } from "../src/domain/themes";
+import {
+  candidateThemes,
+  distinctReviewCount,
+  exactThemeMatch,
+} from "../src/domain/themes";
 import { detectReviewLanguage } from "../src/domain/language";
 
 describe("review and workflow rules", () => {
@@ -94,6 +98,48 @@ describe("review and workflow rules", () => {
         "flickering bedside lamp",
       ).map((x) => x.id),
     ).toEqual([]);
+  });
+  it("uses only unique exact issue labels to bypass semantic matching", () => {
+    const candidates = [
+      { id: "ac", title: "Room air conditioning not cooling" },
+      { id: "bathroom", title: "Bathroom insect sightings" },
+    ];
+    expect(
+      exactThemeMatch(
+        {
+          aspect: "air_conditioning",
+          normalizedDescription: "Room air conditioning not cooling",
+        },
+        candidates,
+      ),
+    ).toBe("ac");
+    expect(
+      exactThemeMatch(
+        { aspect: "air_conditioning", normalizedDescription: "AC is weak" },
+        candidates,
+      ),
+    ).toBeNull();
+    expect(
+      exactThemeMatch(
+        {
+          aspect: "air_conditioning",
+          normalizedDescription: "Room air conditioning not cooling",
+        },
+        [
+          ...candidates,
+          { id: "ac-2", title: "Room air conditioning not cooling" },
+        ],
+      ),
+    ).toBeNull();
+  });
+  it("accepts compact matcher output without unused explanations", () => {
+    expect(
+      batchMatchingSchema.parse({
+        matches: [{ observationIndex: 0, themeId: "hotel-central-ac" }],
+      }),
+    ).toEqual({
+      matches: [{ observationIndex: 0, themeId: "hotel-central-ac" }],
+    });
   });
   it("counts reviews once and recalculates after an owner correction", () => {
     const points = [

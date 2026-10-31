@@ -304,10 +304,6 @@ export function DashboardView({
           )}
         </section>
       </div>
-      <div className="dashboard-footnote">
-        <span>Original words. Traceable decisions.</span>
-        <span>Clarity / Review workspace</span>
-      </div>
     </section>
   );
 }

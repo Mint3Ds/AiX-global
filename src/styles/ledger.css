@@ -1622,8 +1622,8 @@ main .activity-filters button:not(.link):hover {
 .activity-thread-events li::before {
   position: absolute;
   top: 23px;
-  /* Center the marker over the row's 1px border-left timeline rail. */
-  left: -6px;
+  /* Center the 9px marker on the row's 1px border-left timeline rail. */
+  left: -4px;
   width: 9px;
   height: 9px;
   border: 2px solid var(--paper-light);

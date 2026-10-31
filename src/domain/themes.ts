@@ -58,3 +58,24 @@ export function candidateThemes<
       .map((entry) => entry.item)
   );
 }
+
+/**
+ * Resolve only a unique exact title match. Ambiguous titles stay with the
+ * semantic matcher so this fast path cannot silently choose between issues.
+ */
+export function exactThemeMatch<T extends { id: string; title: string }>(
+  observation: { aspect: string; normalizedDescription: string },
+  candidates: T[],
+) {
+  const normalize = (value: string) =>
+    value.replaceAll("_", " ").trim().toLowerCase().replace(/\s+/g, " ");
+  const labels = new Set(
+    [observation.aspect, observation.normalizedDescription]
+      .map(normalize)
+      .filter(Boolean),
+  );
+  const matches = candidates.filter((candidate) =>
+    labels.has(normalize(candidate.title)),
+  );
+  return matches.length === 1 ? matches[0].id : null;
+}
