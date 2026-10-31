@@ -94,7 +94,7 @@ export function CustomDropdown<T extends string | number = string>({
   return (
     <div
       ref={containerRef}
-      className={`clarity-dropdown ${fullWidth ? "clarity-dropdown-full" : ""} ${className}`.trim()}
+      className={`clarity-dropdown ${open ? "is-open" : ""} ${fullWidth ? "clarity-dropdown-full" : ""} ${className}`.trim()}
       onClick={(event) => {
         // Prevent synthetic <label> click forwarding when nested inside a <label>
         if (event.target !== triggerRef.current && !triggerRef.current?.contains(event.target as Node)) {

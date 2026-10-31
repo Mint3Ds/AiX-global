@@ -6,6 +6,8 @@
   padding: 0 44px;
 }
 .workspace-header {
+  position: relative;
+  z-index: 90;
   border-bottom: 1px solid var(--line);
 }
 .top {
@@ -125,6 +127,46 @@
   text-transform: none;
   letter-spacing: normal;
 }
+.clarity-dropdown.is-open {
+  z-index: 1000;
+}
+.review-filters,
+.review-primary-filters,
+.review-advanced-filters,
+.review-results,
+.page-heading,
+.issue-decision,
+.issue-decision-header,
+.staff-work-update,
+.form {
+  position: relative;
+}
+.review-filters {
+  z-index: 40;
+}
+.review-primary-filters {
+  z-index: 45;
+}
+.review-advanced-filters {
+  z-index: 42;
+}
+.review-results {
+  z-index: 35;
+}
+.workspace-header:has(.clarity-dropdown.is-open),
+.review-filters:has(.clarity-dropdown.is-open),
+.review-primary-filters:has(.clarity-dropdown.is-open),
+.review-advanced-filters:has(.clarity-dropdown.is-open),
+.review-results:has(.clarity-dropdown.is-open),
+.page-heading:has(.clarity-dropdown.is-open),
+.issue-decision:has(.clarity-dropdown.is-open),
+.issue-decision-header:has(.clarity-dropdown.is-open),
+.staff-work-update:has(.clarity-dropdown.is-open),
+.form:has(.clarity-dropdown.is-open),
+label:has(.clarity-dropdown.is-open) {
+  position: relative;
+  z-index: 950;
+}
 .clarity-dropdown-full {
   display: flex;
   width: 100%;
@@ -224,7 +266,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 80;
+  z-index: 1000;
   min-width: 220px;
   max-width: min(340px, calc(100vw - 24px));
   padding: 6px;
@@ -238,7 +280,8 @@
   transform-origin: top right;
   animation: clarityDropdownEnter 100ms ease-out forwards;
 }
-.clarity-dropdown-menu-left {
+.clarity-dropdown-menu-left,
+.clarity-dropdown-align-left {
   right: auto;
   left: 0;
   transform-origin: top left;
@@ -274,8 +317,10 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-height: 280px;
+  max-height: 360px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 .clarity-dropdown-item {
   display: flex;
