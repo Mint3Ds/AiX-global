@@ -1,3 +1,6 @@
+import { useMemo, useState } from "react";
+import { getSimulatedAttendance } from "@/integrations/orbyte/attendance";
+import { ChoiceMenu } from "./ChoiceMenu";
 import { PageHeading } from "./PageHeading";
 
 type Destination = "reviews" | "issues" | "tasks" | "replies" | "activity";
@@ -6,11 +9,13 @@ type MetricItem = {
   value: number;
   hint: string;
   destination: Destination;
-  visual?: {
-    type: "ratings" | "distribution";
-    segments: { label: string; value: number; tone: string }[];
-  };
+  visual?: unknown;
 };
+type MetricSegment = { label: string; value: number; tone: string };
+type MetricGraphic =
+  | { type: "review_mix"; segments: MetricSegment[] }
+  | { type: "daily_meter"; days: { label: string; value: number }[] }
+  | { type: "priority_meter" | "task_flow"; segments: MetricSegment[] };
 type IssueItem = {
   id: string;
   title: string;
@@ -18,383 +23,374 @@ type IssueItem = {
   branchName: string;
   support: number;
   evidenceQuote?: string;
+  status?: string;
 };
-type ActivityItem = {
+type EmployeeItem = {
   id: string;
-  title: string;
-  description: string;
-  date: string;
+  name: string;
+  jobTitle: string;
+  orbyteStaffId: string;
 };
 type WorkItem = {
   id: string;
   title: string;
+  description: string;
+  priority: string;
+  relatedIssue: string;
   assignee: string;
+  assigneeId: string | null;
+  dueAt: string | null;
   due: string;
   status: string;
-};
-type PropertyItem = {
-  id: string;
-  name: string;
-  rating: string;
-  reviewsCount: number;
-  issuesCount: number;
-};
-type ReplyStatus = {
-  draftCount: number;
-  approvedCount: number;
-  publishedCount: number;
+  reportVersion: number;
+  employees: EmployeeItem[];
+  timezone: string;
 };
 
 export function DashboardView({
   metrics,
   issues,
-  activity,
   work,
   onNewReview,
   onInspect,
-  properties,
-  replyStatus,
-  onSelectBranch,
   onOpenTask,
   onNavigate,
+  onVerifyTask,
+  onRejectTask,
+  onApproveTask,
+  busy,
 }: {
   metrics: MetricItem[];
+  activity?: unknown[];
+  properties?: unknown[];
+  replyStatus?: unknown;
+  onSelectBranch?: (branchId: string) => void;
   issues: IssueItem[];
-  activity: ActivityItem[];
   work: WorkItem[];
   onNewReview: () => void;
   onInspect: (id: string) => void;
-  properties?: PropertyItem[];
-  replyStatus?: ReplyStatus;
-  onSelectBranch?: (branchId: string) => void;
   onOpenTask: (id: string) => void;
   onNavigate: (destination: Destination, metricTitle?: string) => void;
+  onVerifyTask: (id: string, reportVersion: number) => void;
+  onRejectTask: (id: string, reportVersion: number) => void;
+  onApproveTask: (task: WorkItem, assigneeId: string, dueAt: string) => void;
+  busy: string;
 }) {
-  // Layout and wording for the dashboard live here; values come from Workspace.
-  const [featured, ...rest] = issues;
-  const primary = [metrics[0], metrics[3], metrics[4], metrics[5]];
-  const attention = metrics[3]?.value || 0;
+  const headlineMetrics = ["Total reviews", "New today", "Issues needing attention", "Open approved tasks"]
+    .map((title) => metrics.find((metric) => metric.title === title))
+    .filter((metric): metric is MetricItem => !!metric);
+
   return (
-    <section className="dashboard">
-      <PageHeading
-        title="Your workspace"
-        description="Guest feedback, the evidence behind it, and the work that follows."
-      >
+    <section className="dashboard dashboard-focused">
+      <PageHeading title="Dashboard" description="Urgent feedback and work awaiting your decision.">
         <button onClick={onNewReview}>Add a review</button>
       </PageHeading>
-      <div className="dashboard-context">
-        <span>Across all properties</span>
-      </div>
-      <nav className="metrics" aria-label="Workspace totals">
-        {primary.map((metric, index) => (
-          <button
-            className={`metric metric-${index}`}
-            key={metric.title}
-            onClick={() => onNavigate(metric.destination, metric.title)}
-          >
-            <span className="metric-top">{metric.title}</span>
-            <strong>{metric.value.toLocaleString()}</strong>
-            <span className="metric-hint">{metric.hint}</span>
-            {metric.visual && (
-              <span
-                className={`metric-visual metric-visual-${metric.visual.type}`}
-                role="img"
-                aria-label={metric.visual.segments
-                  .map((segment) => `${segment.label}: ${segment.value}`)
-                  .join(", ")}
-              >
-                {metric.visual.type === "ratings" ? (
-                  metric.visual.segments.map((segment) => {
-                    const maximum = Math.max(
-                      1,
-                      ...metric.visual!.segments.map((item) => item.value),
-                    );
-                    return (
-                      <span
-                        className="metric-rating-bar"
-                        key={segment.label}
-                        title={`${segment.label}: ${segment.value}`}
-                      >
-                        <i
-                          style={{ height: `${Math.max(8, (segment.value / maximum) * 100)}%` }}
-                        />
-                      </span>
-                    );
-                  })
-                ) : (
-                  <span className="metric-distribution-track">
-                    {metric.visual.segments.map((segment) => (
-                      <i
-                        className={`metric-segment metric-segment-${segment.tone}`}
-                        key={segment.label}
-                        title={`${segment.label}: ${segment.value}`}
-                        style={{
-                          flexGrow: segment.value,
-                          flexBasis: 0,
-                          minWidth: segment.value ? 2 : 0,
-                        }}
-                      />
-                    ))}
-                  </span>
-                )}
-              </span>
-            )}
-          </button>
-        ))}
-      </nav>
-      <div className="dashboard-summary">
-        <p>
-          <span className="summary-dot" aria-hidden="true" />
-          {attention ? (
-            <>
-              <strong>
-                {attention} {attention === 1 ? "issue needs" : "issues need"}{" "}
-                attention.
-              </strong>{" "}
-              Review the original evidence before deciding.
-            </>
-          ) : (
-            <>
-              <strong>Your issue queue is clear.</strong> New feedback will
-              appear here.
-            </>
-          )}
-        </p>
-        <div>
-          {[metrics[1], metrics[2]].map((metric) => (
+
+      <nav className="dashboard-overview" aria-label="Workspace overview">
+        {headlineMetrics.map((metric) => {
+          const visual = metric.visual as MetricGraphic | undefined;
+          return (
             <button
-              className="summary-metric"
+              className="dashboard-overview-item"
               key={metric.title}
               onClick={() => onNavigate(metric.destination, metric.title)}
             >
-              <strong>{metric.value}</strong> {metric.title}
+              <span>{metric.title}</span>
+              <strong>{metric.value.toLocaleString()}</strong>
+              <small>{metric.hint}</small>
+              {visual && <DashboardMetricGraphic visual={visual} title={metric.title} />}
             </button>
-          ))}
-        </div>
-      </div>
+          );
+        })}
+      </nav>
+
       <div className="dashboard-grid">
-        <section className="priority-panel">
+        <section className="priority-panel" aria-labelledby="urgent-review-heading">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">02&nbsp;&nbsp;Guest signals</p>
-              <h3>Priority issues</h3>
+              <p className="eyebrow">Needs attention</p>
+              <h3 id="urgent-review-heading">Priority issues</h3>
             </div>
             <button className="link" onClick={() => onNavigate("issues")}>
               All issues
             </button>
           </div>
-          {featured ? (
-            <>
-              <article className="featured-issue">
-                <div className="issue-pills">
-                  <span
-                    className={`priority-chip priority-chip-${featured.priority.toLowerCase()}`}
-                  >
-                    {featured.priority === "urgent"
-                      ? "Immediate"
-                      : `${featured.priority} priority`}
-                  </span>
-                  <span className="neutral-chip">{featured.branchName}</span>
-                </div>
-                <h4>{featured.title}</h4>
-                <p>
-                  {featured.support} guest{" "}
-                  {featured.support === 1 ? "mention" : "mentions"}
-                </p>
-                {featured.evidenceQuote && (
-                  <blockquote>“{featured.evidenceQuote}”</blockquote>
-                )}
-                <button
-                  className="secondary"
-                  onClick={() => onInspect(featured.id)}
-                >
-                  Inspect the evidence
-                </button>
-              </article>
-              <div className="compact-issues">
-                {rest.map((issue, index) => (
-                  <button key={issue.id} onClick={() => onInspect(issue.id)}>
-                    <span className="issue-number">0{index + 2}</span>
-                    <span className="compact-issue-copy">
-                      <strong>{issue.title}</strong>
-                      <small>
-                        {issue.branchName} · {issue.support} reviews
-                      </small>
+          {issues.length ? (
+            <div className="dashboard-issue-list">
+              {issues.map((issue, index) => (
+                <article className={`dashboard-issue-row ${index === 0 ? "featured" : ""}`} key={issue.id}>
+                  <div className="dashboard-issue-meta">
+                    <span className={`priority-chip priority-chip-${issue.priority.toLowerCase()}`}>
+                      {issue.priority === "urgent" ? "Urgent" : issue.priority}
                     </span>
-                    <span
-                      className={`priority-chip priority-chip-${issue.priority.toLowerCase()}`}
-                    >
-                      {issue.priority}
-                    </span>
+                    <span>{issue.branchName}</span>
+                    {issue.status && <span>{issue.status}</span>}
+                  </div>
+                  <h4>{issue.title}</h4>
+                  <p>{issue.support} distinct source {issue.support === 1 ? "review" : "reviews"}</p>
+                  {index === 0 && issue.evidenceQuote && <blockquote>“{issue.evidenceQuote}”</blockquote>}
+                  <button className="link" onClick={() => onInspect(issue.id)}>
+                    Review evidence
                   </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="dashboard-empty">
-              <h4>No issues need attention.</h4>
-              <p>
-                Review your guest feedback to explore individual observations.
-              </p>
-              <button className="link" onClick={() => onNavigate("reviews")}>
-                Explore reviews
-              </button>
-            </div>
-          )}
-        </section>
-        <section className="activity-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">03&nbsp;&nbsp;Workspace history</p>
-              <h3>Recent activity</h3>
-            </div>
-            <button
-              className="link"
-              onClick={() => onNavigate("activity")}
-              aria-label="View all activity"
-            >
-              View all
-            </button>
-          </div>
-          <ol className="activity-preview-list">
-            {activity.map((item) => (
-              <li className="activity-preview" key={item.id}>
-                <span className="timeline-marker" aria-hidden="true" />
-                <div>
-                  <time>{item.date}</time>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          {!activity.length && (
-            <p className="dashboard-empty">
-              No activity yet. Add a review to begin.
-            </p>
-          )}
-        </section>
-        <section className="work-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">04&nbsp;&nbsp;Follow through</p>
-              <h3>Work in focus</h3>
-            </div>
-            <button
-              className="link"
-              onClick={() => onNavigate("tasks")}
-              aria-label="View all work tasks"
-            >
-              All work
-            </button>
-          </div>
-          {work.length ? (
-            <div className="work-preview-list">
-              {work.map((item) => (
-                <button
-                  className="work-preview"
-                  key={item.id}
-                  onClick={() => onOpenTask(item.id)}
-                >
-                  <span
-                    className={`work-state ${item.status === "reported" ? "reported" : ""}`}
-                  >
-                    {item.status === "reported"
-                      ? "Ready to verify"
-                      : ["proposed", "deferred"].includes(item.status)
-                        ? "Awaiting approval"
-                        : "Assigned"}
-                  </span>
-                  <strong>{item.title}</strong>
-                  <span>{item.assignee}</span>
-                  <small>{item.due}</small>
-                </button>
+                </article>
               ))}
             </div>
           ) : (
             <div className="dashboard-empty">
-              <h4>No open work.</h4>
-              <p>Confirm an issue to create and assign a work task.</p>
-              <button className="link" onClick={() => onNavigate("tasks")}>
-                View work history
-              </button>
+              <h4>No urgent reviews</h4>
+              <p>New urgent feedback will appear here for review.</p>
             </div>
           )}
-          {properties && properties.length > 0 && (
-            <div className="dashboard-property-section">
-              <div className="panel-subheading">
-                <div>
-                  <p className="eyebrow">Property signals</p>
-                  <h4>Locations &amp; coverage</h4>
-                </div>
-                <button
-                  type="button"
-                  className="link"
-                  onClick={() => onNavigate("reviews")}
-                >
-                  All reviews
-                </button>
-              </div>
-              <div className="property-preview-grid">
-                {properties.map((prop) => (
-                  <button
-                    key={prop.id}
-                    type="button"
-                    className="property-preview-card"
-                    onClick={() =>
-                      onSelectBranch
-                        ? onSelectBranch(prop.id)
-                        : onNavigate("reviews")
-                    }
-                  >
-                    <div className="property-preview-top">
-                      <strong>{prop.name}</strong>
-                      <span className="property-rating-tag">{prop.rating} ★</span>
-                    </div>
-                    <div className="property-preview-meta">
-                      <span>{prop.reviewsCount} reviews</span>
-                      <span className="dot-sep">·</span>
-                      <span>
-                        {prop.issuesCount}{" "}
-                        {prop.issuesCount === 1 ? "issue" : "issues"}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
+        </section>
+
+        <section className="work-panel" aria-labelledby="active-work-heading">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Owner queue</p>
+              <h3 id="active-work-heading">Ongoing work</h3>
             </div>
-          )}
-          <div className="dashboard-reply-section">
-            <div className="reply-preview-card">
-              <div className="reply-preview-top">
-                <span className="eyebrow">Guest follow-through</span>
-                {replyStatus && replyStatus.draftCount > 0 ? (
-                  <span className="reply-badge attention">
-                    {replyStatus.draftCount} draft
-                    {replyStatus.draftCount === 1 ? "" : "s"} ready
-                  </span>
-                ) : (
-                  <span className="reply-badge neutral">Workflow ready</span>
-                )}
-              </div>
-              <p className="reply-preview-copy">
-                {replyStatus && replyStatus.draftCount > 0
-                  ? `${replyStatus.draftCount} guest ${replyStatus.draftCount === 1 ? "reply is" : "replies are"} waiting for owner sign-off after verified work.`
-                  : "Verified work tasks automatically draft responses for linked guest reviews."}
-              </p>
-              <button
-                type="button"
-                className="link reply-action-link"
-                onClick={() => onNavigate("replies")}
-              >
-                {replyStatus && replyStatus.draftCount > 0
-                  ? "Inspect & approve replies ↗"
-                  : "Manage guest replies ↗"}
-              </button>
-            </div>
+            <button className="link" onClick={() => onNavigate("tasks")}>
+              All tasks
+            </button>
           </div>
+          {work.length ? (
+            <div className="dashboard-task-list">
+              {work.map((task) => (
+                <DashboardTask
+                  key={task.id}
+                  task={task}
+                  busy={busy}
+                  onOpen={() => onOpenTask(task.id)}
+                  onVerify={() => onVerifyTask(task.id, task.reportVersion)}
+                  onReject={() => onRejectTask(task.id, task.reportVersion)}
+                  onApprove={(assigneeId, dueAt) => onApproveTask(task, assigneeId, dueAt)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="dashboard-empty">
+              <h4>No active work tasks</h4>
+              <p>Approved assignments and tasks awaiting your decision will appear here.</p>
+            </div>
+          )}
         </section>
       </div>
     </section>
+  );
+}
+
+function DashboardMetricGraphic({
+  visual,
+  title,
+}: {
+  visual: MetricGraphic;
+  title: string;
+}) {
+  if (visual.type === "review_mix") {
+    const maximum = Math.max(1, ...visual.segments.map((segment) => segment.value));
+    return (
+      <div
+        className="dashboard-graphic review-mix-graphic"
+        role="img"
+        aria-label={`Review mix for ${title}. Categories can overlap. ${visual.segments
+          .map((segment) => `${segment.label}: ${segment.value}`)
+          .join(", ")}`}
+      >
+        {visual.segments.map((segment) => (
+          <div className="review-mix-column" key={segment.label}>
+            <span className="review-mix-value">{segment.value.toLocaleString()}</span>
+            <span className="review-mix-bar">
+              <i
+                className={`mix-${segment.tone}`}
+                style={{ height: segment.value ? `${Math.max(5, (segment.value / maximum) * 100)}%` : "0%" }}
+              />
+            </span>
+            <small>{segment.label}</small>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (visual.type === "daily_meter") {
+    const maximum = Math.max(1, ...visual.days.map((day) => day.value));
+    return (
+      <div
+        className="dashboard-graphic daily-meter-graphic"
+        role="img"
+        aria-label={`New reviews over the last seven days: ${visual.days
+          .map((day) => `${day.label}: ${day.value}`)
+          .join(", ")}`}
+      >
+        {visual.days.map((day) => (
+          <div className={`daily-meter-day ${day.label === "Today" ? "today" : ""}`} key={day.label}>
+            <span className="daily-meter-bar">
+              <i style={{ height: `${Math.max(4, (day.value / maximum) * 100)}%` }} />
+            </span>
+            <small>{day.label === "Today" ? "Today" : day.label.slice(0, 1)}</small>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (visual.type === "priority_meter") {
+    const total = visual.segments.reduce((sum, segment) => sum + segment.value, 0);
+    return (
+      <div className="dashboard-graphic priority-meter-graphic">
+        <div className="priority-meter-track" role="img" aria-label={`Issue priority distribution: ${visual.segments.map((segment) => `${segment.label} ${segment.value}`).join(", ")}`}>
+          {visual.segments.map((segment) => (
+            <i
+              className={`priority-meter-segment tone-${segment.tone}`}
+              key={segment.label}
+              style={{ flexGrow: segment.value, flexBasis: 0, opacity: segment.value ? 1 : 0.25 }}
+            />
+          ))}
+        </div>
+        <div className="dashboard-graphic-legend">
+          {visual.segments.map((segment) => (
+            <span key={segment.label}>
+              <i className={`legend-${segment.tone}`} />
+              <b>{segment.value}</b> {segment.label}
+            </span>
+          ))}
+          {!total && <span className="graphic-quiet-label">No issues in queue</span>}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-graphic task-flow-graphic" role="img" aria-label={`Task stages: ${visual.segments.map((segment) => `${segment.label} ${segment.value}`).join(", ")}`}>
+      {visual.segments.map((segment, index) => (
+        <div className={`task-flow-stage stage-${segment.tone}`} key={segment.label}>
+          <span className="task-flow-node-wrap">
+            {index > 0 && <i className="task-flow-connector" />}
+            <i className="task-flow-node" />
+          </span>
+          <b>{segment.value}</b>
+          <small>{segment.label}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DashboardTask({
+  task,
+  busy,
+  onOpen,
+  onVerify,
+  onReject,
+  onApprove,
+}: {
+  task: WorkItem;
+  busy: string;
+  onOpen: () => void;
+  onVerify: () => void;
+  onReject: () => void;
+  onApprove: (assigneeId: string, dueAt: string) => void;
+}) {
+  const defaultDue = useMemo(() => {
+    if (!task.dueAt) return "";
+    const date = new Date(task.dueAt);
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+      .toISOString()
+      .slice(0, 16);
+  }, [task.dueAt]);
+  const [assigneeId, setAssigneeId] = useState(
+    task.assigneeId || task.employees[0]?.id || "",
+  );
+  const [dueAt, setDueAt] = useState(defaultDue);
+  const employee = task.employees.find((item) => item.id === assigneeId);
+  const attendance = getSimulatedAttendance({
+    employeeId: employee?.id || "",
+    orbyteStaffId: employee?.orbyteStaffId,
+    dueAt,
+    timezone: task.timezone,
+  });
+  const needsApproval = ["proposed", "deferred"].includes(task.status);
+  const needsVerification = task.status === "reported";
+  const statusText: Record<string, string> = {
+    proposed: "Saved",
+    deferred: "Saved for later",
+    approved_open: "Pending",
+    in_progress: "Pending · In progress",
+    reported: "Pending Verification",
+    needs_rework: "Pending · Needs rework",
+  };
+
+  return (
+    <article className="dashboard-task-row">
+      <div className="dashboard-task-heading">
+        <span className={`work-state ${needsVerification ? "reported" : ""}`}>
+          {statusText[task.status] || "Active"}
+        </span>
+        <span className={`priority-badge priority-${task.priority}`}>{task.priority} priority</span>
+        <span className="dashboard-task-due">{task.due}</span>
+      </div>
+      <h4>{task.title}</h4>
+      {task.description && <p className="dashboard-task-description">{task.description}</p>}
+      {task.relatedIssue && <p className="dashboard-task-related">Issue · {task.relatedIssue}</p>}
+      {!needsApproval && <p className="dashboard-task-assignee">{task.assignee}</p>}
+
+      {needsApproval ? (
+        <div className="dashboard-assign-form">
+          <div className="dashboard-assign-fields">
+            <ChoiceMenu
+              label="Assign to"
+              value={assigneeId}
+              options={task.employees.map((item) => ({
+                value: item.id,
+                label: item.name,
+                description: item.jobTitle,
+              }))}
+              onChange={setAssigneeId}
+              disabled={!task.employees.length || !!busy}
+              className="dashboard-assignee-choice"
+            />
+            <label className="dashboard-due-field">
+              Due date
+              <input
+                type="datetime-local"
+                value={dueAt}
+                onChange={(event) => setDueAt(event.target.value)}
+                disabled={!!busy}
+              />
+            </label>
+          </div>
+          <div className={`dashboard-attendance attendance-${attendance.state}`} role="status">
+            <span>{employee?.name || "No employee selected"} · {attendance.label}</span>
+            <small>Simulated Orbyte Attendance{attendance.detail ? ` · ${attendance.detail}` : ""}</small>
+          </div>
+          {attendance.state !== "on_shift" && attendance.state !== "unknown" && (
+            <p className="dashboard-availability-warning">This employee is not scheduled for the selected date.</p>
+          )}
+          <div className="dashboard-task-actions">
+            <button
+              disabled={!!busy || !assigneeId || !dueAt}
+              onClick={() => onApprove(assigneeId, new Date(dueAt).toISOString())}
+            >
+              {busy === "decide_task" ? "Approving…" : "Approve & assign"}
+            </button>
+            <button className="secondary" onClick={onOpen}>Review task</button>
+          </div>
+        </div>
+      ) : needsVerification ? (
+        <div className="dashboard-task-actions">
+          <button disabled={!!busy} onClick={onVerify}>
+            {busy === "verify_task" ? "Verifying…" : "Verify work"}
+          </button>
+          <button className="secondary" disabled={!!busy} onClick={onReject}>
+            Reject for rework
+          </button>
+          <button className="link" onClick={onOpen}>Review report</button>
+        </div>
+      ) : (
+        <button className="link dashboard-task-open" onClick={onOpen}>
+          Open task
+        </button>
+      )}
+    </article>
   );
 }

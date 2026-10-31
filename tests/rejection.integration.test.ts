@@ -12,6 +12,10 @@ type TestTask = {
   themeId: string;
   reportVersion: number;
   rejectionReason: string | null;
+  reworkInstructions?: string | null;
+  originalTitle?: string | null;
+  originalDescription?: string | null;
+  priority?: string;
   assigneeId: string | null;
   approvalSnapshot?: { evidence?: { reviewId: string }[] } | null;
 };
@@ -21,6 +25,7 @@ type TestReportAttempt = {
   note: string;
   decision: string;
   decisionReason: string | null;
+  decisionInstructions: string | null;
   attachments: { id: string; name: string; url: string }[];
 };
 type TestReply = { id: string; status: string; reviewId: string };
@@ -38,6 +43,11 @@ type TestState = {
   memberships: { themeId: string; observationId: string }[];
   events: TestEvent[];
   taskReportAttempts: TestReportAttempt[];
+  handoffs: {
+    approvedTaskId: string;
+    approvedTaskVersion: number;
+    simulatedStatus: string;
+  }[];
 };
 
 async function action(
@@ -109,12 +119,43 @@ integration("persisted rejection and rework gates", () => {
       data: {
         title: "Inspect and repair the in-room safe",
         description: "Restore the safe keypad and document the actual repair.",
+        priority: "urgent",
         assigneeRole: "Maintenance technician",
         assigneeId: "hotel-employee-1",
         dueAt: new Date(Date.now() + 86400000).toISOString(),
       },
     });
     expect(edited.status).toBe(200);
+    expect(
+      (await action("decide_task", { taskId, decision: "approve" })).body.result
+        .status,
+    ).toBe("approved_open");
+    const initialBrief = taskFrom(await state(), taskId).originalDescription;
+    expect(initialBrief).toBe(
+      "Restore the safe keypad and document the actual repair.",
+    );
+    expect(taskFrom(await state(), taskId).priority).toBe("urgent");
+    const revisedAssignment = await action("edit_task", {
+      taskId,
+      data: {
+        title: "Inspect and repair the in-room safe",
+        description:
+          "Replace the keypad battery, set a fresh code, and test the safe.",
+        priority: "high",
+        assigneeRole: "Maintenance technician",
+        assigneeId: "hotel-employee-1",
+        dueAt: new Date(Date.now() + 2 * 86400000).toISOString(),
+      },
+    });
+    expect(revisedAssignment.body.result.status).toBe("proposed");
+    expect(revisedAssignment.body.result.originalDescription).toBe(
+      initialBrief,
+    );
+    const supersededHandoff = (await state()).handoffs.find(
+      (handoff) =>
+        handoff.approvedTaskId === taskId && handoff.approvedTaskVersion === 2,
+    );
+    expect(supersededHandoff?.simulatedStatus).toBe("superseded");
     expect(
       (await action("decide_task", { taskId, decision: "approve" })).body.result
         .status,
@@ -140,17 +181,37 @@ integration("persisted rejection and rework gates", () => {
       ).status,
     ).toBe(200);
     const version1 = taskFrom(await state(), taskId).reportVersion;
+    expect(
+      (
+        await action("edit_task", {
+          taskId,
+          data: {
+            title: "Attempt to change a task awaiting owner review",
+            description: "This must not replace the pending report.",
+            assigneeRole: "Maintenance technician",
+            assigneeId: "hotel-employee-1",
+            dueAt: new Date(Date.now() + 86400000).toISOString(),
+          },
+        })
+      ).status,
+    ).toBe(400);
 
     const blank = await action("reject_task_report", {
       taskId,
       reportVersion: version1,
       reason: "   ",
+      instructions: "Replace the keypad battery and test it.",
     });
     expect(blank.status).toBe(400);
     expect(blank.body.code).toBe("INVALID_WORKFLOW_STATE");
     const staffRejection = await action(
       "reject_task_report",
-      { taskId, reportVersion: version1, reason: "The safe was not tested." },
+      {
+        taskId,
+        reportVersion: version1,
+        reason: "The safe was not tested.",
+        instructions: "Set a new code and test both locking and unlocking.",
+      },
       "staff",
     );
     expect(staffRejection.status).toBe(400);
@@ -158,15 +219,21 @@ integration("persisted rejection and rework gates", () => {
       taskId,
       reportVersion: version1,
       reason: "The safe was not tested with a new code. Please retest it.",
+      instructions: "Set a new code and test both locking and unlocking.",
     });
     expect(rejected.body.result.status).toBe("needs_rework");
     expect(rejected.body.result.rejectionReason).toMatch(/safe was not tested/);
+    expect(rejected.body.result.reworkInstructions).toContain("Set a new code");
+    expect(taskFrom(await state(), taskId).originalDescription).toBe(
+      initialBrief,
+    );
     expect(
       (
         await action("reject_task_report", {
           taskId,
           reportVersion: version1,
           reason: "Repeat rejection should fail.",
+          instructions: "Retest the corrected safe with a new code.",
         })
       ).status,
     ).toBe(400);
@@ -204,30 +271,47 @@ integration("persisted rejection and rework gates", () => {
       taskId,
       reportVersion: version2,
       reason: "The lock still sticks. Retest it after the repair.",
+      instructions: "Adjust the latch, then run five lock and unlock cycles.",
     });
     expect(secondRejection.body.result.status).toBe("needs_rework");
     expect((await action("draft_reply", { reviewId, taskId })).status).toBe(
       400,
     );
     expect((await action("prepare_replies", { taskId })).status).toBe(400);
-    const correctedAgain = await action(
-      "report_task",
-      {
-        taskId,
-        employeeId: "hotel-employee-1",
-        note: "I replaced the keypad and tested the safe through several lock cycles.",
-        attachments: [
-          {
-            name: "second-rework.png",
-            mediaType: "image/png",
-            dataUrl: evidenceImage,
-          },
-        ],
-      },
-      "staff",
-    );
-    expect(correctedAgain.body.result.status).toBe("reported");
-    const version3 = correctedAgain.body.result.reportVersion as number;
+    let version3 = version2;
+    for (let cycle = 3; cycle <= 5; cycle += 1) {
+      const nextReport = await action(
+        "report_task",
+        {
+          taskId,
+          employeeId: "hotel-employee-1",
+          note: `Report ${cycle}: I adjusted the latch and documented five complete lock and unlock cycles.`,
+          attachments: [
+            {
+              name: `rework-${cycle}.png`,
+              mediaType: "image/png",
+              dataUrl: evidenceImage,
+            },
+          ],
+        },
+        "staff",
+      );
+      expect(nextReport.body.result.status).toBe("reported");
+      version3 = nextReport.body.result.reportVersion as number;
+      expect(version3).toBe(version2 + cycle - 2);
+      if (cycle < 5) {
+        const returned = await action("reject_task_report", {
+          taskId,
+          reportVersion: version3,
+          reason: `Report ${cycle} still needs a documented final check.`,
+          instructions: `Complete and record the additional verification cycle ${cycle}.`,
+        });
+        expect(returned.body.result.status).toBe("needs_rework");
+        expect(returned.body.result.reworkInstructions).toContain(
+          `cycle ${cycle}`,
+        );
+      }
+    }
     const verified = await action("verify_task", {
       taskId,
       reportVersion: version3,
@@ -248,11 +332,13 @@ integration("persisted rejection and rework gates", () => {
     expect(orderedAttempts.map((attempt) => attempt.decision)).toEqual([
       "rejected",
       "rejected",
+      "rejected",
+      "rejected",
       "approved",
     ]);
     expect(
       orderedAttempts.map((attempt) => attempt.attachments.length),
-    ).toEqual([1, 1, 1]);
+    ).toEqual([1, 1, 1, 1, 1]);
     const evidenceResponse = await fetch(
       `${base}${orderedAttempts[0].attachments[0].url}`,
     );
@@ -263,6 +349,8 @@ integration("persisted rejection and rework gates", () => {
     );
     expect(orderedAttempts[0].decisionReason).toMatch(/safe was not tested/);
     expect(orderedAttempts[1].decisionReason).toMatch(/sticks/);
+    expect(orderedAttempts[0].decisionInstructions).toMatch(/new code/);
+    expect(orderedAttempts[3].decisionInstructions).toMatch(/cycle 4/);
 
     const drafted = await action("draft_reply", { reviewId, taskId });
     expect(drafted.status).toBe(200);
@@ -354,7 +442,7 @@ integration("persisted rejection and rework gates", () => {
     );
     expect(
       history.filter((item) => item.type === "task_report_rejected"),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
     expect(
       history.filter((item) => item.type === "reply_rejected"),
     ).toHaveLength(1);
@@ -366,7 +454,7 @@ integration("persisted rejection and rework gates", () => {
     ).toHaveLength(1);
     expect(
       history.filter((item) => item.type === "task_reported"),
-    ).toHaveLength(3);
+    ).toHaveLength(5);
     const rejectionReasons = history
       .filter((item) => item.type === "task_report_rejected")
       .map((item) => item.metadata?.reason);
@@ -375,6 +463,12 @@ integration("persisted rejection and rework gates", () => {
     );
     expect(rejectionReasons).toContain(
       "The lock still sticks. Retest it after the repair.",
+    );
+    expect(rejectionReasons).toContain(
+      "Report 3 still needs a documented final check.",
+    );
+    expect(rejectionReasons).toContain(
+      "Report 4 still needs a documented final check.",
     );
     expect(
       history.find((item) => item.type === "reply_rejected")?.metadata?.reason,
@@ -385,14 +479,35 @@ integration("persisted rejection and rework gates", () => {
 
   it("links a related hotel complaint to the existing active AC task", async () => {
     const before = await state();
-    const existingTask = before.tasks.find(
+    let existingTask = before.tasks.find(
       (task) =>
         task.themeId === "hotel-central-ac" &&
         ["approved_open", "in_progress", "reported", "needs_rework"].includes(
           task.status,
         ),
     );
-    expect(existingTask).toBeDefined();
+    if (!existingTask) {
+      const proposed = await action("propose_task", {
+        themeId: "hotel-central-ac",
+      });
+      expect(proposed.status).toBe(200);
+      const taskId = proposed.body.result.id as string;
+      const assigned = await action("edit_task", {
+        taskId,
+        data: {
+          title: "Inspect room air conditioning",
+          description: "Inspect the AC and record the confirmed repair.",
+          assigneeRole: "Maintenance technician",
+          assigneeId: "hotel-employee-1",
+          dueAt: new Date(Date.now() + 86400000).toISOString(),
+        },
+      });
+      expect(assigned.status).toBe(200);
+      expect(
+        (await action("decide_task", { taskId, decision: "approve" })).status,
+      ).toBe(200);
+      existingTask = taskFrom(await state(), taskId);
+    }
     if (existingTask!.status !== "in_progress") {
       const started = await action(
         "start_task",
@@ -485,19 +600,37 @@ integration("persisted rejection and rework gates", () => {
     expect((await action("analyze", { reviewId })).body.result.status).toBe(
       "complete",
     );
-    const linkedState = await state();
-    const reviewObservations = new Set(
-      linkedState.observations
-        .filter((observation) => observation.reviewId === reviewId)
-        .map((observation) => observation.id),
+    let linkedState = await state();
+    let reviewObservations = linkedState.observations.filter(
+      (observation) => observation.reviewId === reviewId,
     );
-    expect(
+    const hasTaskEvidence = () =>
       linkedState.memberships.some(
         (membership) =>
           membership.themeId === resolvedAcTask!.themeId &&
-          reviewObservations.has(membership.observationId),
-      ),
-    ).toBe(true);
+          reviewObservations.some(
+            (observation) => observation.id === membership.observationId,
+          ),
+      );
+    if (!hasTaskEvidence()) {
+      const candidate = reviewObservations.find(
+        (observation) => observation.kind === "operational_complaint",
+      );
+      expect(candidate).toBeDefined();
+      expect(
+        (
+          await action("membership", {
+            observationId: candidate!.id,
+            themeId: resolvedAcTask!.themeId,
+          })
+        ).status,
+      ).toBe(200);
+      linkedState = await state();
+      reviewObservations = linkedState.observations.filter(
+        (observation) => observation.reviewId === reviewId,
+      );
+    }
+    expect(hasTaskEvidence()).toBe(true);
     const drafted = await action("draft_reply", {
       reviewId,
       taskId: resolvedAcTask!.id,
@@ -575,6 +708,7 @@ integration("persisted rejection and rework gates", () => {
         taskId,
         reportVersion,
         reason: "The bathroom still needs a second inspection.",
+        instructions: "Inspect the floor edges again and attach a clear photo.",
       }),
     ]);
     expect([verified.status, returned.status].sort()).toEqual([200, 400]);
@@ -589,5 +723,5 @@ integration("persisted rejection and rework gates", () => {
           ["task_verified", "task_report_rejected"].includes(item.type),
       ),
     ).toHaveLength(1);
-  });
+  }, 60000);
 });

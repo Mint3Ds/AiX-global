@@ -26,20 +26,32 @@ export const branches = pgTable("branches", {
     .references(() => businesses.id),
   name: text("name").notNull(),
   locationLabel: text("location_label").notNull(),
+  timezone: text("timezone").notNull().default("Asia/Kuala_Lumpur"),
   createdAt: time("created_at"),
 });
-export const employees = pgTable("employees", {
-  id: text("id").primaryKey(),
-  businessId: text("business_id")
-    .notNull()
-    .references(() => businesses.id),
-  branchId: text("branch_id")
-    .notNull()
-    .references(() => branches.id),
-  name: text("name").notNull(),
-  jobTitle: text("job_title").notNull(),
-  createdAt: time("created_at"),
-});
+export const employees = pgTable(
+  "employees",
+  {
+    id: text("id").primaryKey(),
+    businessId: text("business_id")
+      .notNull()
+      .references(() => businesses.id),
+    branchId: text("branch_id")
+      .notNull()
+      .references(() => branches.id),
+    name: text("name").notNull(),
+    jobTitle: text("job_title").notNull(),
+    orbyteStaffId: text("orbyte_staff_id").notNull(),
+    createdAt: time("created_at"),
+  },
+  (t) => [
+    uniqueIndex("employees_orbyte_staff_business_unique").on(
+      t.businessId,
+      t.orbyteStaffId,
+    ),
+    index("employees_business_idx").on(t.businessId),
+  ],
+);
 export const reviews = pgTable(
   "reviews",
   {
@@ -173,12 +185,17 @@ export const tasks = pgTable(
       .references(() => branches.id),
     title: text("title").notNull(),
     description: text("description").notNull(),
+    priority: text("priority").notNull().default("medium"),
+    // Snapshot the approved brief once; later owner edits remain separate.
+    originalTitle: text("original_title"),
+    originalDescription: text("original_description"),
     assigneeRole: text("assignee_role").notNull(),
     assigneeId: text("assignee_id").references(() => employees.id),
     dueAt: timestamp("due_at", { withTimezone: true }),
     employeeReport: text("employee_report"),
     reportVersion: integer("report_version").notNull().default(0),
     rejectionReason: text("rejection_reason"),
+    reworkInstructions: text("rework_instructions"),
     rejectedAt: timestamp("rejected_at", { withTimezone: true }),
     rejectedBy: text("rejected_by"),
     reportedAt: timestamp("reported_at", { withTimezone: true }),
@@ -193,19 +210,30 @@ export const tasks = pgTable(
     resolutionNote: text("resolution_note"),
     approver: text("approver"),
     approvalSnapshot: jsonb("approval_snapshot"),
+    taskVersion: integer("task_version").notNull().default(1),
   },
   (t) => [index("tasks_theme_idx").on(t.themeId)],
 );
-export const handoffs = pgTable("handoffs", {
-  id: text("id").primaryKey(),
-  approvedTaskId: text("approved_task_id")
-    .notNull()
-    .references(() => tasks.id)
-    .unique(),
-  payload: jsonb("payload").notNull(),
-  simulatedStatus: text("simulated_status").notNull(),
-  createdAt: time("created_at"),
-});
+export const handoffs = pgTable(
+  "handoffs",
+  {
+    id: text("id").primaryKey(),
+    approvedTaskId: text("approved_task_id")
+      .notNull()
+      .references(() => tasks.id),
+    approvedTaskVersion: integer("approved_task_version").notNull().default(1),
+    payload: jsonb("payload").notNull(),
+    simulatedStatus: text("simulated_status").notNull(),
+    createdAt: time("created_at"),
+  },
+  (t) => [
+    uniqueIndex("handoffs_task_version_unique").on(
+      t.approvedTaskId,
+      t.approvedTaskVersion,
+    ),
+    index("handoffs_task_idx").on(t.approvedTaskId),
+  ],
+);
 export const taskReportAttempts = pgTable(
   "task_report_attempts",
   {
@@ -219,6 +247,7 @@ export const taskReportAttempts = pgTable(
     reportedBy: text("reported_by").notNull(),
     decision: text("decision").notNull().default("pending"),
     decisionReason: text("decision_reason"),
+    decisionInstructions: text("decision_instructions"),
     decidedAt: timestamp("decided_at", { withTimezone: true }),
     decidedBy: text("decided_by"),
   },
@@ -234,6 +263,8 @@ export const taskReportAttachments = pgTable(
     name: text("name").notNull(),
     mediaType: text("media_type").notNull(),
     dataBase64: text("data_base64").notNull(),
+    uploadedBy: text("uploaded_by").notNull().default("staff"),
+    context: text("context").notNull().default("completion"),
     createdAt: time("created_at"),
   },
   (t) => [index("task_report_attachments_attempt_idx").on(t.reportAttemptId)],

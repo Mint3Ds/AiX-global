@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { WorkspaceMetrics } from "@/domain/metrics";
 import { PageHeading } from "./PageHeading";
+import { OrbyteHandoffDetails } from "./OrbyteHandoffDetails";
 import {
   activityKind,
   groupActivity,
@@ -184,6 +185,7 @@ type EventRowProps = {
   subject?: string;
   review?: ActivityReview;
   task?: ActivityTask;
+  handoff?: { payload: Record<string, unknown>; simulatedStatus: string; createdAt: string };
   branchName?: string;
   triageSeconds: number | null;
   onOpenTask?: (id: string) => void;
@@ -197,6 +199,7 @@ function EventRow({
   subject,
   review,
   task,
+  handoff,
   branchName,
   triageSeconds,
   onOpenTask,
@@ -326,6 +329,14 @@ function EventRow({
           {formatEventDescription(event.description)}
         </p>
 
+        {event.type === "handoff_simulated" && handoff && (
+          <OrbyteHandoffDetails
+            payload={handoff.payload}
+            recordStatus={handoff.simulatedStatus}
+            createdAt={handoff.createdAt}
+          />
+        )}
+
         <p className="activity-event-actor">Logged by {actor}</p>
 
         {/* Managerial Decision Details & Callouts */}
@@ -381,6 +392,7 @@ export function ActivityView({
   reviews,
   branches = [],
   replies,
+  handoffs = [],
   metrics,
   onOpenTask,
   onOpenReview,
@@ -392,6 +404,7 @@ export function ActivityView({
   reviews: ActivityReview[];
   branches?: ActivityBranch[];
   replies: ActivityReply[];
+  handoffs?: { id: string; approvedTaskId: string; approvedTaskVersion: number; payload: Record<string, unknown>; simulatedStatus: string; createdAt: string }[];
   metrics?: WorkspaceMetrics;
   onOpenTask: (id: string) => void;
   onOpenReview?: (id: string) => void;
@@ -428,6 +441,23 @@ export function ActivityView({
     () => new Map(branches.map((branch) => [branch.id, branch.name])),
     [branches],
   );
+
+  const handoffForEvent = (event: ActivityEvent, task?: ActivityTask) => {
+    const metadata =
+      event.metadata && typeof event.metadata === "object"
+        ? (event.metadata as Record<string, unknown>)
+        : {};
+    const handoffId = typeof metadata.handoffId === "string" ? metadata.handoffId : null;
+    const taskVersion = typeof metadata.taskVersion === "number" ? metadata.taskVersion : null;
+    return (
+      handoffs.find((record) => record.id === handoffId) ||
+      handoffs.find(
+        (record) =>
+          record.approvedTaskId === task?.id &&
+          (taskVersion === null || record.approvedTaskVersion === taskVersion),
+      )
+    );
+  };
 
   const reviewNames = useMemo(
     () =>
@@ -836,6 +866,7 @@ export function ActivityView({
                               }
                               review={linkedReview}
                               task={task}
+                              handoff={handoffForEvent(event, task)}
                               branchName={getBranchForEvent(event)}
                               triageSeconds={triageSecs}
                               onOpenTask={onOpenTask}
@@ -896,6 +927,7 @@ export function ActivityView({
                   subject={subject(event)}
                   review={rev}
                   task={tsk}
+                  handoff={handoffForEvent(event, tsk)}
                   branchName={getBranchForEvent(event)}
                   triageSeconds={triageSecs}
                   onOpenTask={onOpenTask}

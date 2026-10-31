@@ -24,7 +24,7 @@ export function BrandLoadingScreen({
   const [animationFinished, setAnimationFinished] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [noAnimationFallback, setNoAnimationFallback] = useState(false);
-  const [animationStarted, setAnimationStarted] = useState(false);
+  const animationStartedRef = useRef(false);
   const completedRef = useRef(false);
 
   const finishAndExit = useCallback(() => {
@@ -43,18 +43,15 @@ export function BrandLoadingScreen({
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      setNoAnimationFallback(true);
-      return;
+      const timer = window.setTimeout(() => setNoAnimationFallback(true), 0);
+      return () => window.clearTimeout(timer);
     }
 
     // Watchdog: If CSS animation hasn't started within 350ms, switch to logo loading fallback
     const watchdog = setTimeout(() => {
-      setAnimationStarted((started) => {
-        if (!started) {
-          setNoAnimationFallback(true);
-        }
-        return started;
-      });
+      if (!animationStartedRef.current) {
+        setNoAnimationFallback(true);
+      }
     }, 350);
     return () => clearTimeout(watchdog);
   }, []);
@@ -101,7 +98,9 @@ export function BrandLoadingScreen({
       <div className="brand-loading-lockup">
         <div
           className="brand-loading-symbol-wrap"
-          onAnimationStart={() => setAnimationStarted(true)}
+          onAnimationStart={() => {
+            animationStartedRef.current = true;
+          }}
         >
           <svg
             className="brand-loading-svg"

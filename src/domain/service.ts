@@ -58,6 +58,7 @@ import {
   partialReplyWarning,
 } from "./replies";
 import { calculateWorkspaceMetrics } from "./metrics";
+import { scrubPII } from "./privacy";
 
 export const aiMode = () => {
   if (process.env.AI_MODE !== "live" && process.env.AI_MODE !== "fixture")
@@ -322,6 +323,8 @@ export async function getState(businessId: string = defaultBusinessId) {
           reportAttemptId: taskReportAttachments.reportAttemptId,
           name: taskReportAttachments.name,
           mediaType: taskReportAttachments.mediaType,
+          uploadedBy: taskReportAttachments.uploadedBy,
+          context: taskReportAttachments.context,
           createdAt: taskReportAttachments.createdAt,
         })
         .from(taskReportAttachments)
@@ -367,6 +370,8 @@ export async function getState(businessId: string = defaultBusinessId) {
           id: attachment.id,
           name: attachment.name,
           mediaType: attachment.mediaType,
+          uploadedBy: attachment.uploadedBy,
+          context: attachment.context,
           createdAt: attachment.createdAt,
           url: "/api/task-attachments/" + attachment.id,
         }),
@@ -380,7 +385,11 @@ export async function getState(businessId: string = defaultBusinessId) {
   };
 }
 export async function intake(input: unknown) {
-  const data = intakeSchema.parse(input);
+  const parsed = intakeSchema.parse(input);
+  // Sanitize at the trust boundary so neither PostgreSQL nor later analysis
+  // stages receive raw identifiers from an intake request.
+  const { sanitizedText, redactionCount } = scrubPII(parsed.text);
+  const data = { ...parsed, text: sanitizedText };
   const [validBranch] = await db
     .select({ id: branches.id })
     .from(branches)
@@ -428,7 +437,7 @@ export async function intake(input: unknown) {
       rating: data.rating,
       reviewedAt: new Date(data.reviewedAt),
       originalText: data.text,
-      isSynthetic: true,
+      isSynthetic: data.isSynthetic,
       processingStatus: "pending",
       processingStage: "saved",
       language: detectReviewLanguage(data.text),
@@ -462,13 +471,18 @@ export async function intake(input: unknown) {
     "review_intake",
     "review",
     id,
-    "Synthetic review saved with original wording.",
+    "Review saved after in-flight privacy screening.",
     "demo user",
     "staff",
-    { branchId: data.branchId, source: data.source },
+    {
+      branchId: data.branchId,
+      source: data.source,
+      pii_sanitized: true,
+      pii_redaction_count: redactionCount,
+    },
     data.businessId,
   );
-  return { reviewId: id };
+  return { reviewId: id, piiRedactions: redactionCount };
 }
 
 /** Every route mutation validates the selected workspace before domain work begins. */
@@ -1011,10 +1025,7 @@ export async function manualClassify(
     if (serverDuration !== null) {
       reviewUpdate.triageDurationSeconds = serverDuration;
     }
-    await tx
-      .update(reviews)
-      .set(reviewUpdate)
-      .where(eq(reviews.id, reviewId));
+    await tx.update(reviews).set(reviewUpdate).where(eq(reviews.id, reviewId));
   });
   await event(
     "manual_classification",
@@ -1040,23 +1051,32 @@ export async function correctMembership(
     .from(observations)
     .where(eq(observations.id, observationId));
   if (!observation) throw new Error("Observation not found");
-  const [old] = await db
-    .select()
-    .from(memberships)
-    .where(eq(memberships.observationId, observationId));
-  if (destinationThemeId) {
-    const target = await oneTheme(destinationThemeId);
+  const review = await oneReview(observation.reviewId);
+  const destination = destinationThemeId
+    ? await oneTheme(destinationThemeId)
+    : null;
+  if (destination) {
     if (
-      target.branchId !== observation.branchId ||
-      target.type !== typeForKind(observation.kind)
+      destination.businessId !== review.businessId ||
+      destination.branchId !== observation.branchId ||
+      destination.type !== typeForKind(observation.kind) ||
+      destination.status === "dismissed"
     )
       throw new Error(
-        "Theme must match the observation branch and feedback kind.",
+        "Choose an active issue of the same feedback type at this property and business.",
       );
   }
-  if (old?.themeId === destinationThemeId) return;
+  let fromThemeIds: string[] = [];
   await db.transaction(async (tx) => {
-    if (old)
+    const oldMemberships = await tx
+      .select({ themeId: memberships.themeId })
+      .from(memberships)
+      .where(eq(memberships.observationId, observationId));
+    fromThemeIds = [...new Set(oldMemberships.map((item) => item.themeId))];
+    if (fromThemeIds.length === 1 && fromThemeIds[0] === destinationThemeId)
+      return;
+
+    if (oldMemberships.length)
       await tx
         .delete(memberships)
         .where(eq(memberships.observationId, observationId));
@@ -1067,20 +1087,115 @@ export async function correctMembership(
         source: "owner_correction",
         confirmation: "owner_confirmed",
       });
+
+    const affectedThemeIds = [
+      ...new Set(
+        [...fromThemeIds, destinationThemeId].filter((id): id is string =>
+          Boolean(id),
+        ),
+      ),
+    ];
+    if (affectedThemeIds.length) {
+      const affectedTasks = await tx
+        .select()
+        .from(tasks)
+        .where(inArray(tasks.themeId, affectedThemeIds));
+      for (const affectedTask of affectedTasks) {
+        await tx.execute(
+          sql`SELECT pg_advisory_xact_lock(hashtext(${affectedTask.id}))`,
+        );
+        if (
+          ![
+            "approved_open",
+            "in_progress",
+            "needs_rework",
+            "reported",
+          ].includes(affectedTask.status)
+        )
+          continue;
+        await tx
+          .update(handoffs)
+          .set({ simulatedStatus: "superseded" })
+          .where(
+            and(
+              eq(handoffs.approvedTaskId, affectedTask.id),
+              eq(handoffs.simulatedStatus, "recorded_locally_not_sent"),
+            ),
+          );
+        await tx
+          .update(tasks)
+          .set({
+            status: "proposed",
+            taskVersion: affectedTask.taskVersion + 1,
+            approvedAt: null,
+            approver: null,
+            approvalSnapshot: null,
+            employeeReport: null,
+            reportedAt: null,
+            reportedBy: null,
+            rejectionReason: null,
+            rejectedAt: null,
+            rejectedBy: null,
+            verifiedAt: null,
+            verifiedBy: null,
+            resolvedAt: null,
+            resolutionNote: null,
+          })
+          .where(eq(tasks.id, affectedTask.id));
+        await tx.insert(events).values({
+          id: randomUUID(),
+          actor: "demo owner",
+          role: "owner",
+          type: "task_edited",
+          entityType: "task",
+          entityId: affectedTask.id,
+          businessId: review.businessId,
+          description:
+            "Linked evidence changed. Previous simulated handoff was superseded and the task needs owner approval again.",
+          metadata: {
+            taskVersion: affectedTask.taskVersion + 1,
+            previousHandoffStatus: "superseded",
+            reason: "linked_evidence_changed",
+          },
+        });
+      }
+    }
+
+    const oldThemes = fromThemeIds.length
+      ? await tx
+          .select({ title: themes.title })
+          .from(themes)
+          .where(inArray(themes.id, fromThemeIds))
+      : [];
+    const fromTitles = oldThemes.map((theme) => theme.title);
+    const oldLabel = fromTitles.length ? fromTitles.join(", ") : "unassigned";
+    const newLabel = destination?.title || "unassigned";
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "membership_corrected",
+      entityType: "observation",
+      entityId: observationId,
+      businessId: review.businessId,
+      description: destinationThemeId
+        ? `Owner moved “${observation.summary}” from ${oldLabel} to ${newLabel}.`
+        : `Owner removed “${observation.summary}” from ${oldLabel}.`,
+      metadata: {
+        from: fromThemeIds[0] || null,
+        fromThemeIds,
+        to: destinationThemeId,
+        outcome: destinationThemeId ? "reassigned" : "unlinked",
+      },
+    });
   });
-  if (old) await refreshRecurrenceStatus(old.themeId);
-  if (destinationThemeId) await refreshRecurrenceStatus(destinationThemeId);
-  await event(
-    "membership_corrected",
-    "observation",
-    observationId,
-    destinationThemeId
-      ? "Owner moved evidence to another theme."
-      : "Owner removed evidence from a theme.",
-    "demo owner",
-    "owner",
-    { from: old?.themeId || null, to: destinationThemeId },
-  );
+  for (const themeId of new Set(
+    [...fromThemeIds, destinationThemeId].filter((themeId): themeId is string =>
+      Boolean(themeId),
+    ),
+  ))
+    await refreshRecurrenceStatus(themeId);
+  return { fromThemeIds, toThemeId: destinationThemeId };
 }
 export async function setThemeStatus(
   themeId: string,
@@ -1169,6 +1284,7 @@ export async function setThemeStatus(
     "demo owner",
     "owner",
   );
+  return { themeId, status };
 }
 export async function setSeverity(
   themeId: string,
@@ -1229,6 +1345,7 @@ export async function proposeTask(themeId: string, role: string) {
       branchId: theme.branchId,
       title: `Inspect ${theme.title.toLowerCase()}`,
       description: `Inspect the evidence for ${theme.title.toLowerCase()} and record what was actually done.`,
+      priority: theme.priority,
       assigneeRole: "floor manager",
       status: "proposed",
       recurrenceOfTaskId: existing?.status === "resolved" ? existing.id : null,
@@ -1252,6 +1369,7 @@ export async function editTask(
   input: {
     title: string;
     description: string;
+    priority?: string;
     assigneeRole: string;
     assigneeId?: string;
     dueAt?: string;
@@ -1259,12 +1377,25 @@ export async function editTask(
 ) {
   requireOwner(role);
   const task = await oneTask(taskId);
-  requireTransition(task.status, ["proposed", "deferred"], "edit");
+  requireTransition(
+    task.status,
+    [
+      "proposed",
+      "deferred",
+      "approved_open",
+      "in_progress",
+      "needs_rework",
+    ],
+    "edit",
+  );
   const title = input.title.trim(),
     description = input.description.trim(),
+    priority = (input.priority ?? task.priority).trim().toLowerCase(),
     assigneeRole = input.assigneeRole.trim();
   if (!title || !description || !assigneeRole)
     throw new Error("Task title, description, and assignee are required.");
+  if (!["urgent", "high", "medium", "low"].includes(priority))
+    throw new Error("Choose a valid task priority.");
   const employee = input.assigneeId
     ? (
         await db
@@ -1275,27 +1406,125 @@ export async function editTask(
     : null;
   if (input.assigneeId && (!employee || employee.branchId !== task.branchId))
     throw new Error("Select an employee from this property.");
+  if (
+    employee &&
+    employee.businessId !== (await oneTheme(task.themeId)).businessId
+  )
+    throw new Error("Select an employee from this business.");
   const dueAt = input.dueAt ? new Date(input.dueAt) : null;
   if (dueAt && Number.isNaN(dueAt.getTime()))
     throw new Error("Invalid due date.");
-  await db
-    .update(tasks)
-    .set({
-      title,
-      description,
-      assigneeRole,
-      assigneeId: employee?.id ?? null,
-      dueAt,
-    })
-    .where(eq(tasks.id, taskId));
-  await event(
-    "task_edited",
-    "task",
-    taskId,
-    "Owner edited the task proposal.",
-    "demo owner",
-    "owner",
-  );
+  const changed =
+    title !== task.title ||
+    description !== task.description ||
+    priority !== task.priority ||
+    assigneeRole !== task.assigneeRole ||
+    (employee?.id ?? null) !== task.assigneeId ||
+    (dueAt?.getTime() ?? null) !== (task.dueAt?.getTime() ?? null);
+  if (!changed) return task;
+  const invalidatesApproval = [
+    "approved_open",
+    "in_progress",
+    "needs_rework",
+  ].includes(task.status);
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${taskId}))`);
+    const current = await tx
+      .select({ taskVersion: tasks.taskVersion, status: tasks.status })
+      .from(tasks)
+      .where(eq(tasks.id, taskId));
+    if (
+      !current[0] ||
+      current[0].taskVersion !== task.taskVersion ||
+      current[0].status !== task.status
+    )
+      throw new Error(
+        "Task changed while you were editing. Refresh and try again.",
+      );
+    if (invalidatesApproval) {
+      await tx
+        .update(handoffs)
+        .set({ simulatedStatus: "superseded" })
+        .where(
+          and(
+            eq(handoffs.approvedTaskId, taskId),
+            eq(handoffs.simulatedStatus, "recorded_locally_not_sent"),
+          ),
+        );
+    }
+    const [updated] = await tx
+      .update(tasks)
+      .set({
+        title,
+        description,
+        priority,
+        assigneeRole,
+        assigneeId: employee?.id ?? null,
+        dueAt,
+        taskVersion: task.taskVersion + 1,
+        ...(invalidatesApproval
+          ? {
+              status: "proposed",
+              approvedAt: null,
+              approver: null,
+              approvalSnapshot: null,
+              employeeReport: null,
+              reportedAt: null,
+              reportedBy: null,
+              rejectionReason: null,
+              reworkInstructions: null,
+              rejectedAt: null,
+              rejectedBy: null,
+              verifiedAt: null,
+              verifiedBy: null,
+              resolvedAt: null,
+              resolutionNote: null,
+            }
+          : {}),
+      })
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          eq(tasks.taskVersion, task.taskVersion),
+          eq(tasks.status, task.status),
+        ),
+      )
+      .returning({ id: tasks.id });
+    if (!updated)
+      throw new Error("Task changed while you were editing. Refresh and try again.");
+    await tx.insert(events).values({
+      id: randomUUID(),
+      actor: "demo owner",
+      role: "owner",
+      type: "task_edited",
+      entityType: "task",
+      entityId: taskId,
+      businessId: (await oneTheme(task.themeId)).businessId,
+      description: invalidatesApproval
+        ? "Owner revised an approved task. Previous Orbyte handoff was superseded; approval is required again."
+        : "Owner edited the task proposal.",
+      metadata: {
+        taskVersion: task.taskVersion + 1,
+        previousHandoffStatus: invalidatesApproval ? "superseded" : null,
+        before: {
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          assigneeRole: task.assigneeRole,
+          assigneeId: task.assigneeId,
+          dueAt: task.dueAt?.toISOString() ?? null,
+        },
+        after: {
+          title,
+          description,
+          priority,
+          assigneeRole,
+          assigneeId: employee?.id ?? null,
+          dueAt: dueAt?.toISOString() ?? null,
+        },
+      },
+    });
+  });
   return await oneTask(taskId);
 }
 export async function decideTask(
@@ -1305,7 +1534,23 @@ export async function decideTask(
 ) {
   requireOwner(role);
   const task = await oneTask(taskId);
-  if (decision === "approve" && task.status === "approved_open") return task;
+  if (decision === "approve" && task.status === "approved_open") {
+    const [existing] = await db
+      .select({ id: handoffs.id })
+      .from(handoffs)
+      .where(
+        and(
+          eq(handoffs.approvedTaskId, taskId),
+          eq(handoffs.approvedTaskVersion, task.taskVersion),
+          eq(handoffs.simulatedStatus, "recorded_locally_not_sent"),
+        ),
+      );
+    if (!existing)
+      throw new Error(
+        "The approved task has no current handoff. Reopen and approve it again.",
+      );
+    return task;
+  }
   requireTransition(task.status, ["proposed", "deferred"], decision);
   if (decision !== "approve") {
     const status = decision === "reject" ? "rejected" : "deferred";
@@ -1321,6 +1566,8 @@ export async function decideTask(
     return await oneTask(taskId);
   }
   const theme = await oneTheme(task.themeId);
+  if (theme.branchId !== task.branchId)
+    throw new Error("Task and issue must belong to the same property.");
   const [business] = await db
     .select()
     .from(businesses)
@@ -1331,41 +1578,111 @@ export async function decideTask(
     .select()
     .from(employees)
     .where(eq(employees.id, task.assigneeId));
-  if (!employee || employee.branchId !== theme.branchId)
+  if (
+    !employee ||
+    employee.branchId !== theme.branchId ||
+    employee.businessId !== theme.businessId ||
+    !employee.orbyteStaffId
+  )
     throw new Error("Assigned employee is not at this property.");
+  const [branch] = await db
+    .select()
+    .from(branches)
+    .where(
+      and(
+        eq(branches.id, task.branchId),
+        eq(branches.businessId, theme.businessId),
+      ),
+    );
+  if (!branch)
+    throw new Error("Task property does not belong to this business.");
   const evidence = await db
     .select({
       reviewId: observations.reviewId,
-      quote: observations.evidenceQuote,
+      observationId: observations.id,
+      reviewBusinessId: reviews.businessId,
+      reviewBranchId: reviews.branchId,
+      observationBranchId: observations.branchId,
     })
     .from(memberships)
     .innerJoin(observations, eq(observations.id, memberships.observationId))
+    .innerJoin(reviews, eq(reviews.id, observations.reviewId))
     .where(eq(memberships.themeId, task.themeId));
+  if (
+    evidence.some(
+      (item) =>
+        item.reviewBusinessId !== theme.businessId ||
+        item.reviewBranchId !== task.branchId ||
+        item.observationBranchId !== task.branchId,
+    )
+  )
+    throw new Error(
+      "Task evidence must belong to the same business and property.",
+    );
+  const approvedAt = now().toISOString();
   const payload = {
-    business: business.name,
-    branch: theme.branchId,
-    title: task.title,
-    description: task.description,
-    assigneeRole: task.assigneeRole,
-    assignee: employee.name,
-    dueAt: task.dueAt?.toISOString() ?? null,
-    evidence,
-    approvedBy: "demo owner",
-    approvedAt: now().toISOString(),
+    businessId: business.id,
+    propertyId: branch.id,
+    orbyteStaffId: employee.orbyteStaffId,
+    taskId: task.id,
+    taskVersion: task.taskVersion,
+    dueDate: task.dueAt?.toISOString() ?? "",
+    timezone: branch.timezone,
+    approvedTask: { title: task.title, instructions: task.description, priority: task.priority },
+    linkedEvidence: {
+      reviewIds: [...new Set(evidence.map((item) => item.reviewId))],
+      observationIds: [...new Set(evidence.map((item) => item.observationId))],
+    },
+    approvedAt,
+    status: "recorded_locally_not_sent" as const,
   };
   const simulated = await localHandoff.simulate(payload);
-  await db.transaction(async (tx) => {
+  const handoffId = randomUUID();
+  const alreadyRecorded = await db.transaction(async (tx) => {
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${taskId}))`);
+    const [currentTask] = await tx
+      .select({ status: tasks.status, taskVersion: tasks.taskVersion })
+      .from(tasks)
+      .where(eq(tasks.id, taskId));
+    if (!currentTask) throw new Error("Task not found.");
+    const [priorHandoff] = await tx
+      .select({ id: handoffs.id })
+      .from(handoffs)
+      .where(
+        and(
+          eq(handoffs.approvedTaskId, taskId),
+          eq(handoffs.approvedTaskVersion, task.taskVersion),
+        ),
+      );
+    if (priorHandoff) {
+      if (
+        currentTask.status === "approved_open" &&
+        currentTask.taskVersion === task.taskVersion
+      )
+        return true;
+      throw new Error(
+        "A handoff already exists for this approved task version.",
+      );
+    }
+    if (
+      currentTask.taskVersion !== task.taskVersion ||
+      !["proposed", "deferred"].includes(currentTask.status)
+    )
+      throw new Error("Task has already changed state. Refresh and try again.");
     const [updated] = await tx
       .update(tasks)
       .set({
         status: "approved_open",
         approvedAt: now(),
         approver: "demo owner",
+        originalTitle: task.originalTitle ?? task.title,
+        originalDescription: task.originalDescription ?? task.description,
         approvalSnapshot: payload,
       })
       .where(
         and(
           eq(tasks.id, taskId),
+          eq(tasks.taskVersion, task.taskVersion),
           inArray(tasks.status, ["proposed", "deferred"]),
         ),
       )
@@ -1375,8 +1692,9 @@ export async function decideTask(
     await tx
       .insert(handoffs)
       .values({
-        id: randomUUID(),
+        id: handoffId,
         approvedTaskId: taskId,
+        approvedTaskVersion: task.taskVersion,
         payload: simulated.payload,
         simulatedStatus: simulated.status,
       })
@@ -1401,6 +1719,11 @@ export async function decideTask(
       entityId: taskId,
       businessId: theme.businessId,
       description: "Simulated Orbyte integration handoff saved locally.",
+      metadata: {
+        handoffId,
+        status: "recorded_locally_not_sent",
+        taskVersion: task.taskVersion,
+      },
     });
     const currentServerTime = now();
     const linked = await tx
@@ -1454,7 +1777,9 @@ export async function decideTask(
           .where(eq(reviews.id, rev.reviewId));
       }
     }
+    return false;
   });
+  if (alreadyRecorded) return await oneTask(taskId);
   return await oneTask(taskId);
 }
 export async function startTask(
@@ -1463,7 +1788,7 @@ export async function startTask(
   employeeId: string,
 ) {
   const task = await oneTask(taskId);
-  if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
+  if (role !== "staff" || task.assigneeId !== employeeId)
     throw new Error("Only the assigned employee can start this task.");
   requireTransition(
     task.status,
@@ -1479,10 +1804,80 @@ export async function startTask(
     "task",
     taskId,
     "Assigned employee started the work.",
-    role === "owner" ? "demo owner" : employeeId,
+    employeeId,
     role,
   );
 }
+const workEvidenceTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+  "text/plain",
+  "text/csv",
+]);
+type ParsedWorkAttachment = {
+  name: string;
+  mediaType: string;
+  dataBase64: string;
+  size: number;
+};
+function parseWorkAttachments(attachmentsInput: unknown): ParsedWorkAttachment[] {
+  if (!Array.isArray(attachmentsInput) || attachmentsInput.length > 5)
+    throw new WorkflowError("Attach up to five photos or files per report.");
+  const attachments = attachmentsInput.map((item) => {
+    if (!item || typeof item !== "object")
+      throw new WorkflowError("Each work attachment must be a photo or file.");
+    const value = item as {
+      name?: unknown;
+      mediaType?: unknown;
+      dataUrl?: unknown;
+    };
+    const name =
+      typeof value.name === "string"
+        ? value.name.replace(/[\\/\u0000-\u001f]/g, "").slice(0, 160)
+        : "work-evidence";
+    const mediaType = typeof value.mediaType === "string" ? value.mediaType : "";
+    const dataUrl = typeof value.dataUrl === "string" ? value.dataUrl : "";
+    if (!workEvidenceTypes.has(mediaType))
+      throw new WorkflowError("Use JPEG, PNG, WebP, PDF, TXT, or CSV evidence.");
+    const prefix = `data:${mediaType};base64,`;
+    const dataBase64 = dataUrl.startsWith(prefix)
+      ? dataUrl.slice(prefix.length)
+      : "";
+    if (!dataBase64 || !/^[A-Za-z0-9+/]+={0,2}$/.test(dataBase64))
+      throw new WorkflowError("A work attachment could not be read. Choose it again.");
+    const size = Buffer.from(dataBase64, "base64").byteLength;
+    if (!size || size > 2 * 1024 * 1024)
+      throw new WorkflowError("Each work attachment must be 2 MB or smaller.");
+    return { name: name || "work-evidence", mediaType, dataBase64, size };
+  });
+  if (attachments.reduce((sum, item) => sum + item.size, 0) > 6 * 1024 * 1024)
+    throw new WorkflowError("Keep total work evidence under 6 MB.");
+  return attachments;
+}
+
+function insertReportAttachments(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  reportAttemptId: string,
+  attachments: ParsedWorkAttachment[],
+  uploadedBy: "owner" | "staff",
+  context: "completion" | "owner_review",
+) {
+  if (!attachments.length) return Promise.resolve();
+  return tx.insert(taskReportAttachments).values(
+    attachments.map((attachment) => ({
+      id: randomUUID(),
+      reportAttemptId,
+      name: attachment.name,
+      mediaType: attachment.mediaType,
+      dataBase64: attachment.dataBase64,
+      uploadedBy,
+      context,
+    })),
+  );
+}
+
 export async function reportTask(
   taskId: string,
   role: string,
@@ -1500,43 +1895,8 @@ export async function reportTask(
   );
   if (note.trim().length < 10)
     throw new Error("A work report of at least 10 characters is required.");
-  if (!Array.isArray(attachmentsInput) || attachmentsInput.length > 5)
-    throw new WorkflowError("Attach up to five image files per work report.");
-  const attachments = attachmentsInput.map((item) => {
-    if (!item || typeof item !== "object")
-      throw new WorkflowError("Each work attachment must be an image.");
-    const value = item as {
-      name?: unknown;
-      mediaType?: unknown;
-      dataUrl?: unknown;
-    };
-    const name =
-      typeof value.name === "string"
-        ? value.name.replace(/[\\/\u0000-\u001f]/g, "").slice(0, 160)
-        : "work-evidence";
-    const mediaType =
-      typeof value.mediaType === "string" ? value.mediaType : "";
-    const dataUrl = typeof value.dataUrl === "string" ? value.dataUrl : "";
-    if (!["image/jpeg", "image/png", "image/webp"].includes(mediaType))
-      throw new WorkflowError(
-        "Work evidence must be a JPEG, PNG, or WebP image.",
-      );
-    const prefix = "data:" + mediaType + ";base64,";
-    const dataBase64 = dataUrl.startsWith(prefix)
-      ? dataUrl.slice(prefix.length)
-      : "";
-    if (!dataBase64 || !/^[A-Za-z0-9+/]+={0,2}$/.test(dataBase64))
-      throw new WorkflowError(
-        "A work image could not be read. Choose it again.",
-      );
-    const size = Buffer.from(dataBase64, "base64").byteLength;
-    if (!size || size > 2 * 1024 * 1024)
-      throw new WorkflowError("Each work image must be 2 MB or smaller.");
-    return { name: name || "work-evidence", mediaType, dataBase64, size };
-  });
-  if (attachments.reduce((sum, item) => sum + item.size, 0) > 6 * 1024 * 1024)
-    throw new WorkflowError("Keep the total image evidence under 6 MB.");
-  const actor = role === "owner" ? "demo owner" : employeeId;
+  const attachments = parseWorkAttachments(attachmentsInput);
+  const actor = employeeId;
   const businessId = (await oneTheme(task.themeId)).businessId;
   return db.transaction(async (tx) => {
     const timestamp = now();
@@ -1574,16 +1934,13 @@ export async function reportTask(
       reportedBy: actor,
       decision: "pending",
     });
-    if (attachments.length)
-      await tx.insert(taskReportAttachments).values(
-        attachments.map((attachment) => ({
-          id: randomUUID(),
-          reportAttemptId,
-          name: attachment.name,
-          mediaType: attachment.mediaType,
-          dataBase64: attachment.dataBase64,
-        })),
-      );
+    await insertReportAttachments(
+      tx,
+      reportAttemptId,
+      attachments,
+      "staff",
+      "completion",
+    );
     await tx.insert(events).values({
       id: randomUUID(),
       actor,
@@ -1610,6 +1967,7 @@ export async function verifyTask(
   role: string,
   note = "",
   reportVersion: number,
+  attachmentsInput: unknown = [],
 ) {
   requireOwner(role);
   const task = await oneTask(taskId);
@@ -1623,6 +1981,7 @@ export async function verifyTask(
     throw new Error(
       "Verification note must describe what the manager checked.",
     );
+  const attachments = parseWorkAttachments(attachmentsInput);
   const resolutionNote = note.trim() || task.employeeReport.trim();
   const businessId = (await oneTheme(task.themeId)).businessId;
   await db.transaction(async (tx) => {
@@ -1648,7 +2007,7 @@ export async function verifyTask(
       throw new WorkflowError(
         "This completion report has already been decided. Refresh and try again.",
       );
-    await tx
+    const [attempt] = await tx
       .update(taskReportAttempts)
       .set({
         decision: "approved",
@@ -1662,7 +2021,19 @@ export async function verifyTask(
           eq(taskReportAttempts.version, reportVersion),
           eq(taskReportAttempts.decision, "pending"),
         ),
+      )
+      .returning({ id: taskReportAttempts.id });
+    if (!attempt)
+      throw new WorkflowError(
+        "This completion report has already been decided. Refresh and try again.",
       );
+    await insertReportAttachments(
+      tx,
+      attempt.id,
+      attachments,
+      "owner",
+      "owner_review",
+    );
     await tx.insert(events).values({
       id: randomUUID(),
       actor: "demo owner",
@@ -1675,6 +2046,7 @@ export async function verifyTask(
       metadata: {
         reportVersion,
         verification: note.trim() || "Owner confirmation",
+        attachmentCount: attachments.length,
         outcome: "resolved",
       },
     });
@@ -1685,16 +2057,20 @@ export async function rejectTaskReport(
   taskId: string,
   role: string,
   reasonInput: string,
+  instructionsInput: string,
   reportVersion: number,
+  attachmentsInput: unknown = [],
 ) {
   requireOwner(role);
   const reason = decisionReason(reasonInput);
+  const instructions = decisionReason(instructionsInput);
   const task = await oneTask(taskId);
   requireTransition(task.status, ["reported"], "needs_rework");
   if (!Number.isInteger(reportVersion) || reportVersion !== task.reportVersion)
     throw new WorkflowError(
       "The completion report has changed. Review the latest report before deciding.",
     );
+  const attachments = parseWorkAttachments(attachmentsInput);
   const businessId = (await oneTheme(task.themeId)).businessId;
   await db.transaction(async (tx) => {
     const timestamp = now();
@@ -1703,6 +2079,7 @@ export async function rejectTaskReport(
       .set({
         status: "needs_rework",
         rejectionReason: reason,
+        reworkInstructions: instructions,
         rejectedAt: timestamp,
         rejectedBy: "demo owner",
         resolutionNote: null,
@@ -1722,11 +2099,12 @@ export async function rejectTaskReport(
       throw new WorkflowError(
         "This completion report has already been decided. Refresh and try again.",
       );
-    await tx
+    const [attempt] = await tx
       .update(taskReportAttempts)
       .set({
         decision: "rejected",
         decisionReason: reason,
+        decisionInstructions: instructions,
         decidedAt: timestamp,
         decidedBy: "demo owner",
       })
@@ -1736,7 +2114,19 @@ export async function rejectTaskReport(
           eq(taskReportAttempts.version, reportVersion),
           eq(taskReportAttempts.decision, "pending"),
         ),
+      )
+      .returning({ id: taskReportAttempts.id });
+    if (!attempt)
+      throw new WorkflowError(
+        "This completion report has already been decided. Refresh and try again.",
       );
+    await insertReportAttachments(
+      tx,
+      attempt.id,
+      attachments,
+      "owner",
+      "owner_review",
+    );
     await tx.insert(events).values({
       id: randomUUID(),
       actor: "demo owner",
@@ -1746,7 +2136,13 @@ export async function rejectTaskReport(
       entityId: taskId,
       businessId,
       description: "Owner returned the completion report for rework.",
-      metadata: { reason, reportVersion, outcome: "needs_rework" },
+      metadata: {
+        reason,
+        instructions,
+        reportVersion,
+        attachmentCount: attachments.length,
+        outcome: "needs_rework",
+      },
     });
   });
   return await oneTask(taskId);
@@ -1789,7 +2185,7 @@ export async function createReply(
     .limit(1);
   if (!linked.length)
     throw new Error("Review is not evidence for this resolved task.");
-  const unresolved = await unresolvedReviewComplaints(reviewId, task.themeId);
+  const unresolved = await unresolvedReviewComplaints(reviewId);
   const [business] = await db
     .select()
     .from(businesses)
@@ -1884,8 +2280,13 @@ export async function prepareReplies(taskId: string, role: string) {
 }
 async function unresolvedReviewComplaints(
   reviewId: string,
-  resolvedThemeId: string,
 ) {
+  const [review] = await db
+    .select({ createdAt: reviews.createdAt })
+    .from(reviews)
+    .where(eq(reviews.id, reviewId));
+  if (!review) throw new Error("Review not found.");
+
   const points = await db
     .select({
       id: observations.id,
@@ -1902,19 +2303,26 @@ async function unresolvedReviewComplaints(
     );
   const unresolved: string[] = [];
   for (const point of points) {
-    if (point.themeId === resolvedThemeId) continue;
     if (!point.themeId) {
       unresolved.push(point.summary);
       continue;
     }
-    const [fixed] = await db
-      .select({ id: tasks.id })
+    // A historical resolution does not resolve a complaint submitted later.
+    // This also applies to the task's own issue when the review arrived after
+    // the last successful verification (a recurrence).
+    const [latestResolution] = await db
+      .select({ resolvedAt: tasks.resolvedAt })
       .from(tasks)
       .where(
         and(eq(tasks.themeId, point.themeId), eq(tasks.status, "resolved")),
       )
+      .orderBy(desc(tasks.resolvedAt))
       .limit(1);
-    if (!fixed) unresolved.push(point.summary);
+    if (
+      !latestResolution ||
+      isPossibleRecurrence(review.createdAt, latestResolution.resolvedAt)
+    )
+      unresolved.push(point.summary);
   }
   return unresolved;
 }
@@ -1937,10 +2345,7 @@ export async function editReply(
     );
   if (text.trim().length < 10 || text.length > 1200)
     throw new Error("Reply must be 10–1200 characters.");
-  const unresolved = await unresolvedReviewComplaints(
-    reply.reviewId,
-    reply.themeId,
-  );
+  const unresolved = await unresolvedReviewComplaints(reply.reviewId);
   const businessId = (await oneReview(reply.reviewId)).businessId;
   await db.transaction(async (tx) => {
     const timestamp = now();
@@ -2027,10 +2432,7 @@ export async function approveReply(
   requireTransition(reply.status, ["draft"], "approved_ready");
   const task = await oneTask(reply.taskId);
   canDraftReply(task.status, task.resolutionNote);
-  const unresolved = await unresolvedReviewComplaints(
-    reply.reviewId,
-    reply.themeId,
-  );
+  const unresolved = await unresolvedReviewComplaints(reply.reviewId);
   if (unresolved.length && !reply.partialWarning) {
     await db
       .update(replies)

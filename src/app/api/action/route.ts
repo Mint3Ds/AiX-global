@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertDatabaseConfigured } from "@/data/db";
+import {
+  databaseErrorCode,
+  databaseErrorLocation,
+  isDatabaseOperationError,
+  isTransientDatabaseError,
+} from "@/data/database-retry";
 import { publicActionError, publicActionCode } from "@/domain/public-errors";
 import {
   intake,
@@ -30,9 +36,11 @@ import {
 } from "@/domain/service";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
+  let actionType = "unknown";
   try {
     assertDatabaseConfigured();
     const body = await request.json();
+    actionType = String(body.type || "unknown");
     const role = String(body.role || "staff");
     const businessId = String(body.businessId || "");
     await assertActionScope(businessId, body);
@@ -103,6 +111,7 @@ export async function POST(request: NextRequest) {
           role,
           String(body.note || ""),
           Number(body.reportVersion),
+          body.attachments || [],
         );
         break;
       case "reject_task_report":
@@ -110,7 +119,9 @@ export async function POST(request: NextRequest) {
           String(body.taskId),
           role,
           String(body.reason || ""),
+          String(body.instructions || ""),
           Number(body.reportVersion),
+          body.attachments || [],
         );
         break;
       case "draft_reply":
@@ -176,13 +187,34 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ ok: true, result });
   } catch (error) {
+    const databaseFailure = isDatabaseOperationError(error);
+    const transient = isTransientDatabaseError(error);
+    const notConfigured =
+      error instanceof Error && error.message.includes("DATABASE_URL is required");
+    if (databaseFailure || notConfigured) {
+      console.error("[api/action] Database-backed action failed", {
+        action: actionType,
+        code:
+          databaseErrorCode(error) ||
+          (notConfigured ? "DATABASE_NOT_CONFIGURED" : "UNKNOWN"),
+        transient,
+      });
+    }
     return NextResponse.json(
       {
         ok: false,
         error: publicActionError(error),
         code: publicActionCode(error),
+        ...(process.env.NODE_ENV !== "production" && databaseFailure
+          ? {
+              diagnosticCode: databaseErrorCode(error),
+              diagnosticLocation: databaseErrorLocation(error),
+            }
+          : {}),
       },
-      { status: 400 },
+      {
+        status: transient || notConfigured ? 503 : databaseFailure ? 500 : 400,
+      },
     );
   }
 }

@@ -17,6 +17,7 @@ export async function GET(
       .from(taskReportAttachments)
       .where(eq(taskReportAttachments.id, id));
     if (!attachment) return new NextResponse(null, { status: 404 });
+    const safeName = attachment.name.replace(/["\\\r\n]/g, "_");
     return new NextResponse(Buffer.from(attachment.dataBase64, "base64"), {
       headers: {
         "Content-Type": attachment.mediaType,
@@ -24,6 +25,7 @@ export async function GET(
           Buffer.byteLength(attachment.dataBase64, "base64"),
         ),
         "X-Content-Type-Options": "nosniff",
+        "Content-Disposition": `inline; filename="${safeName}"; filename*=UTF-8''${encodeURIComponent(attachment.name)}`,
         "Cache-Control": "private, no-store",
       },
     });

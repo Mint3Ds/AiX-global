@@ -54,6 +54,9 @@ try {
         businessId,
         name,
         locationLabel,
+        timezone:
+          businessConfigs.find((config) => config.businessId === businessId)
+            ?.timezone || "Asia/Kuala_Lumpur",
       })
       .onConflictDoNothing();
   for (const [id, businessId, branchId, name, jobTitle] of [
@@ -138,7 +141,14 @@ try {
   ] as const)
     await db
       .insert(employees)
-      .values({ id, businessId, branchId, name, jobTitle })
+      .values({
+        id,
+        businessId,
+        branchId,
+        name,
+        jobTitle,
+        orbyteStaffId: `ORB-${id.toUpperCase()}`,
+      })
       .onConflictDoNothing();
   for (const [id, t] of Object.entries(themeCatalog))
     await db

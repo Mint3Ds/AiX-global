@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { LITERATURE_BENCHMARKS } from "../src/domain/metrics";
+import {
+  LITERATURE_BENCHMARKS,
+  responseReadinessPercent,
+} from "../src/domain/metrics";
 
 describe("empirical metrics and statistical calculations", () => {
   it("holds accurate peer-reviewed academic literature benchmarks", () => {
@@ -65,33 +68,19 @@ describe("empirical metrics and statistical calculations", () => {
     expect(rate).toBe(100.0);
   });
 
-  it("measures response readiness strictly against verified resolved operational tasks", () => {
-    const tasks = [
-      { id: "t1", status: "resolved" },
-      { id: "t2", status: "resolved" },
-      { id: "t3", status: "approved_open" },
-    ];
-    const replies = [
-      { id: "rep1", status: "approved_ready" },
-      { id: "rep2", status: "simulated_published" },
-    ];
-
-    const resolvedTasks = tasks.filter((t) => t.status === "resolved").length;
-    const approvedReplies = replies.filter((r) =>
-      ["approved_ready", "simulated_published"].includes(r.status),
-    ).length;
-
-    const readinessPercent = Number(
-      ((approvedReplies / resolvedTasks) * 100).toFixed(1),
-    );
-    expect(readinessPercent).toBe(100.0);
+  it("measures verified reply coverage against all reviews and never exceeds 100%", () => {
+    const readinessPercent = responseReadinessPercent(206, 7);
+    expect(readinessPercent).toBe(3.4);
+    expect(responseReadinessPercent(2, 3)).toBe(100);
+    expect(responseReadinessPercent(0, 0)).toBeNull();
 
     const multiplier = Number(
       (
-        readinessPercent / LITERATURE_BENCHMARKS.INDUSTRY_RESPONSE_RATE_PERCENT
+        readinessPercent! /
+        LITERATURE_BENCHMARKS.INDUSTRY_RESPONSE_RATE_PERCENT
       ).toFixed(2),
     );
-    expect(multiplier).toBe(3.17); // 3.17x improvement over industry baseline
+    expect(multiplier).toBe(0.11);
   });
 
   it("calculates optimistic triage duration using lastViewedAt rather than firstViewedAt", () => {
