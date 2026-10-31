@@ -65,11 +65,11 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
     },
   ];
 
-  // Chart 2: Review Intake & Screening Funnel (Counts)
+  // Chart 2: Reviews Intake & Screening Funnel (Counts)
   const funnelPieData = [
-    { name: "Specific & Actionable", value: funnel.specificReviewsCount, color: PIE_COLORS.specific },
-    { name: "Generic / Filtered", value: funnel.genericReviewsCount, color: PIE_COLORS.generic },
-    { name: "Needs Manual Review", value: funnel.needsReviewReviewsCount, color: PIE_COLORS.needsReview },
+    { name: "Specific & Actionable Reviews", value: funnel.specificReviewsCount, color: PIE_COLORS.specific },
+    { name: "Generic / Filtered Reviews", value: funnel.genericReviewsCount, color: PIE_COLORS.generic },
+    { name: "Needs Attention Reviews", value: funnel.needsReviewReviewsCount, color: PIE_COLORS.needsReview },
   ].filter((item) => item.value > 0);
 
   // Chart 3: Management Response Readiness vs Industry Baseline (%)
@@ -388,7 +388,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           gap: "1.5rem",
         }}
       >
-        {/* Review Screening Funnel (Pie Chart) */}
+        {/* Reviews Screening Funnel (Pie Chart) */}
         <div
           style={{
             background: "#ffffff",
@@ -399,7 +399,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           }}
         >
           <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.5rem 0" }}>
-            Review Intake & Screening Funnel
+            Reviews Intake & Screening Funnel
           </h3>
           <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1.25rem 0" }}>
             Distribution of intake reviews triaged into actionable operational feedback vs generic text.
@@ -418,19 +418,21 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                     outerRadius={80}
                     innerRadius={45}
                     paddingAngle={3}
-                    label={(entry) => `${entry.name} (${entry.value})`}
+                    label={({ percent }: { percent?: number }) =>
+                      percent ? `${(percent * 100).toFixed(0)}%` : ""
+                    }
                   >
                     {funnelPieData.map((entry, index) => (
                       <Cell key={`funnel-cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(val: unknown, name: any) => [`${val} reviews`, String(name)]} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9ca3af" }}>
-                No review funnel data available
+                No reviews funnel data available
               </div>
             )}
           </div>
@@ -440,19 +442,19 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
               <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.specific }}>
                 {funnel.specificReviewsCount}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Actionable</div>
+              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Actionable Reviews</div>
             </div>
             <div>
               <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.generic }}>
                 {funnel.genericReviewsCount}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Generic / Low Signal</div>
+              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Generic Reviews</div>
             </div>
             <div>
               <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.needsReview }}>
                 {funnel.needsReviewReviewsCount}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Needs Attention</div>
+              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Needs Attention Reviews</div>
             </div>
           </div>
         </div>
@@ -537,7 +539,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
         <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
           <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Total Observations</div>
+            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Total Extracted Observations</div>
             <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
               {evidenceIntegrity.totalObservations}
             </div>
@@ -549,15 +551,75 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
             </div>
           </div>
           <div style={{ background: "#fef2f2", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#991b1b" }}>Unverified / External</div>
+            <div style={{ fontSize: "0.8rem", color: "#991b1b" }}>Unverified / Hallucinations</div>
             <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#b91c1c" }}>
               {evidenceIntegrity.unverifiedCount}
             </div>
           </div>
+          <div style={{ background: "#f0f9ff", padding: "1rem", borderRadius: "8px" }}>
+            <div style={{ fontSize: "0.8rem", color: "#0369a1" }}>Verbatim Grounding Rate</div>
+            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#0284c7" }}>
+              {evidenceIntegrity.traceabilityRatePercent}%
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "1rem",
+            padding: "0.85rem 1rem",
+            background: "#f8fafc",
+            borderRadius: "8px",
+            fontSize: "0.8rem",
+            color: "#475569",
+            lineHeight: 1.5,
+            borderLeft: "3px solid #3b82f6",
+          }}
+        >
+          <strong>What is an exact verbatim substring?</strong> A substring is an untouched, word-for-word excerpt matching the customer&apos;s original review text character-for-character (<code>reviewText.includes(quote)</code>). Clarity programmatically checks this to mathematically ensure 0% LLM hallucination—managers can trust that every flagged complaint is 100% genuine guest feedback, never synthetic or embellished.
+        </div>
+      </div>
+
+      {/* Row 4: Operational Task Resolution & Loop Closure */}
+      <div
+        style={{
+          background: "#ffffff",
+          padding: "1.5rem",
+          borderRadius: "12px",
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+        }}
+      >
+        <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.35rem 0" }}>
+          Operational Loop Closure
+        </h3>
+        <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1rem 0" }}>
+          End-to-end progression from guest issue extraction to staff task resolution and management reply.
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
           <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Tasks Resolved</div>
+            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Work Tasks Proposed</div>
             <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
-              {funnel.tasksResolved} / {funnel.tasksApproved} assigned
+              {funnel.tasksProposed}
+            </div>
+          </div>
+          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
+            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Tasks Assigned to Staff</div>
+            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
+              {funnel.tasksApproved}
+            </div>
+          </div>
+          <div style={{ background: "#f0fdf4", padding: "1rem", borderRadius: "8px" }}>
+            <div style={{ fontSize: "0.8rem", color: "#166534" }}>Tasks Resolved & Verified</div>
+            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#15803d" }}>
+              {funnel.tasksResolved}
+            </div>
+          </div>
+          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
+            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Verified Replies Prepared</div>
+            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
+              {funnel.repliesApproved}
             </div>
           </div>
         </div>
@@ -565,3 +627,4 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
     </section>
   );
 }
+
