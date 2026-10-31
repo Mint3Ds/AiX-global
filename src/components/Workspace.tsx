@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DashboardView } from "@/components/design/DashboardView";
 import { ActivityView } from "@/components/design/ActivityView";
+import { StatsView } from "@/components/design/StatsView";
 import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
 import { TaskReportHistory } from "@/components/design/TaskReportHistory";
 import { StaffDashboardView } from "@/components/design/StaffDashboardView";
@@ -11,6 +12,7 @@ import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
+import type { WorkspaceMetrics } from "@/domain/metrics";
 
 type Review = {
   id: string;
@@ -26,6 +28,10 @@ type Review = {
   processingStatus: string;
   processingStage: string | null;
   language: string;
+  firstViewedAt?: string | null;
+  lastViewedAt?: string | null;
+  triagedAt?: string | null;
+  triageDurationSeconds?: number | null;
 };
 type Observation = {
   id: string;
@@ -165,6 +171,7 @@ type State = {
     createdAt: string;
   }[];
   themeSupport: Record<string, number>;
+  metrics?: WorkspaceMetrics;
 };
 const date = (value: string | null) =>
   value
@@ -480,10 +487,14 @@ const isOwnerVisibleTheme = (theme: Theme, support: number) =>
     : support > 0 || theme.status === "owner_confirmed";
 
 /**
- * Workspace owns the shared snapshot, filters, and navigation for all seven tabs.
+ * Workspace owns the shared snapshot, filters, and navigation for all tabs.
  * For visual edits, start with tokens.css and the matching screen section below.
  */
-export function Workspace() {
+export function Workspace({
+  initialTab = "dashboard",
+}: {
+  initialTab?: Tab;
+} = {}) {
   // UI-only state. Server data is always refreshed from /api/state after actions.
   const [state, setState] = useState<State | null>(null);
   const [error, setError] = useState("");
@@ -492,7 +503,7 @@ export function Workspace() {
   );
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
-  const [tab, setTab] = useState<Tab>("dashboard");
+  const [tab, setTab] = useState<Tab>(initialTab);
   const navigateTab = useCallback(
     (nextTab: Tab, replace = false) => {
       if (typeof window !== "undefined" && (nextTab !== tab || replace)) {
@@ -631,6 +642,52 @@ export function Workspace() {
       .then((rows) => setPreparedReviews(Array.isArray(rows) ? rows : []))
       .catch(() => setPreparedReviews([]));
   }, [businessId]);
+
+  const activeReviewTimerRef = useRef<{
+    reviewId: string;
+    startTime: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (tab === "reviews" && selectedReview) {
+      activeReviewTimerRef.current = {
+        reviewId: selectedReview,
+        startTime: performance.now(),
+      };
+
+      void fetch("/api/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "track_view",
+          role,
+          businessId,
+          reviewId: selectedReview,
+        }),
+      }).catch(() => {});
+    }
+
+    return () => {
+      if (activeReviewTimerRef.current) {
+        const { reviewId, startTime } = activeReviewTimerRef.current;
+        const totalSeconds = Math.round((performance.now() - startTime) / 1000);
+        if (totalSeconds >= 1) {
+          void fetch("/api/action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "record_dwell",
+              role,
+              businessId,
+              reviewId,
+              durationSeconds: totalSeconds,
+            }),
+          }).catch(() => {});
+        }
+        activeReviewTimerRef.current = null;
+      }
+    };
+  }, [tab, selectedReview, role, businessId]);
   const act = useCallback(
     async (type: string, values: Record<string, unknown> = {}) => {
       setBusy(type);
@@ -3174,6 +3231,7 @@ export function Workspace() {
                 onOpenTask={openTask}
               />
             )}
+            {tab === "stats" && <StatsView metrics={state.metrics} />}
           </fieldset>
         </main>
       )}

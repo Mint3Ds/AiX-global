@@ -1,6 +1,13 @@
 import { BrandIdentity } from "./BrandIdentity";
 export type WorkspaceTab =
-  "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
+  | "dashboard"
+  | "reviews"
+  | "issues"
+  | "new"
+  | "tasks"
+  | "replies"
+  | "activity"
+  | "stats";
 type DemoRole = "owner" | "staff";
 const tabs: { id: WorkspaceTab; label: string }[] = [
   // Edit navigation labels here. IDs also control which workspace screen opens.
@@ -10,6 +17,7 @@ const tabs: { id: WorkspaceTab; label: string }[] = [
   { id: "tasks", label: "Tasks" },
   { id: "replies", label: "Replies" },
   { id: "activity", label: "Activity" },
+  { id: "stats", label: "Stats" },
   { id: "new", label: "New review" },
 ];
 

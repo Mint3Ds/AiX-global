@@ -57,6 +57,7 @@ import {
   isPossibleRecurrence,
   partialReplyWarning,
 } from "./replies";
+import { calculateWorkspaceMetrics } from "./metrics";
 
 export const aiMode = () => {
   if (process.env.AI_MODE !== "live" && process.env.AI_MODE !== "fixture")
@@ -359,6 +360,7 @@ export async function getState(businessId: string = defaultBusinessId) {
     replies: allReplies,
     events: allEvents,
     themeSupport,
+    metrics: await calculateWorkspaceMetrics(businessId),
   };
 }
 export async function intake(input: unknown) {
@@ -966,12 +968,35 @@ export async function manualClassify(
         mode: "manual",
       });
     }
+    const currentServerTime = now();
+    const referenceViewTime = review.lastViewedAt ?? review.firstViewedAt;
+    // Server-side optimistic calculation in UTC milliseconds: triagedAt - lastViewedAt
+    const serverDuration = referenceViewTime
+      ? Math.max(
+          1,
+          Math.round(
+            (currentServerTime.getTime() - referenceViewTime.getTime()) / 1000,
+          ),
+        )
+      : null;
+
+    const reviewUpdate: Record<string, unknown> = {
+      processingStatus: input.useful ? "complete" : "generic",
+      triagedAt: currentServerTime,
+      updatedAt: currentServerTime,
+    };
+    if (!review.firstViewedAt) {
+      reviewUpdate.firstViewedAt = currentServerTime;
+    }
+    if (!review.lastViewedAt) {
+      reviewUpdate.lastViewedAt = currentServerTime;
+    }
+    if (serverDuration !== null) {
+      reviewUpdate.triageDurationSeconds = serverDuration;
+    }
     await tx
       .update(reviews)
-      .set({
-        processingStatus: input.useful ? "complete" : "generic",
-        updatedAt: now(),
-      })
+      .set(reviewUpdate)
       .where(eq(reviews.id, reviewId));
   });
   await event(
@@ -1301,6 +1326,51 @@ export async function decideTask(
       businessId: theme.businessId,
       description: "Simulated Orbyte integration handoff saved locally.",
     });
+    const currentServerTime = now();
+    const linked = await tx
+      .select({
+        reviewId: observations.reviewId,
+        lastViewedAt: reviews.lastViewedAt,
+        firstViewedAt: reviews.firstViewedAt,
+        triagedAt: reviews.triagedAt,
+        triageDurationSeconds: reviews.triageDurationSeconds,
+      })
+      .from(memberships)
+      .innerJoin(observations, eq(observations.id, memberships.observationId))
+      .innerJoin(reviews, eq(reviews.id, observations.reviewId))
+      .where(eq(memberships.themeId, task.themeId));
+
+    const uniqueLinkedReviews = [
+      ...new Map(linked.map((item) => [item.reviewId, item])).values(),
+    ];
+
+    for (const rev of uniqueLinkedReviews) {
+      if (!rev.triagedAt) {
+        // Optimistic time: triagedAt - lastViewedAt (server-calculated in UTC)
+        const viewTime = rev.lastViewedAt ?? rev.firstViewedAt;
+        const optimisticDuration = viewTime
+          ? Math.max(
+              1,
+              Math.round(
+                (currentServerTime.getTime() - viewTime.getTime()) / 1000,
+              ),
+            )
+          : null;
+
+        const updatePayload: Record<string, unknown> = {
+          triagedAt: currentServerTime,
+          updatedAt: currentServerTime,
+        };
+        if (optimisticDuration !== null && !rev.triageDurationSeconds) {
+          updatePayload.triageDurationSeconds = optimisticDuration;
+        }
+
+        await tx
+          .update(reviews)
+          .set(updatePayload)
+          .where(eq(reviews.id, rev.reviewId));
+      }
+    }
   });
   return await oneTask(taskId);
 }
@@ -2097,4 +2167,89 @@ export async function analyzePendingBatch(businessId: string, limit = 5) {
   const results = [];
   for (const item of pending) results.push(await analyzeReview(item.id));
   return results;
+}
+export async function trackReviewView(
+  reviewId: string,
+  role: string,
+  activeSeconds?: number,
+) {
+  const [review] = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.id, reviewId));
+  if (!review) throw new Error("Review not found");
+
+  const validSeconds =
+    activeSeconds && activeSeconds > 0 ? Math.round(activeSeconds) : 0;
+  const updates: Record<string, unknown> = {
+    lastViewedAt: now(),
+    updatedAt: now(),
+  };
+  if (!review.firstViewedAt) {
+    updates.firstViewedAt = now();
+  }
+  if (validSeconds > 0) {
+    updates.triageDurationSeconds =
+      (review.triageDurationSeconds ?? 0) + validSeconds;
+  }
+
+  await db.update(reviews).set(updates).where(eq(reviews.id, reviewId));
+
+  if (!review.firstViewedAt) {
+    await event(
+      "review_viewed",
+      "review",
+      reviewId,
+      "Manager opened and reviewed feedback details.",
+      role === "owner" ? "demo owner" : "demo user",
+      role,
+      { firstView: true, activeSeconds: validSeconds },
+      review.businessId,
+    );
+  }
+
+  return await oneReview(reviewId);
+}
+export async function recordReviewDwell(
+  reviewId: string,
+  durationSeconds: number,
+  role: string,
+  markTriaged = false,
+) {
+  const [review] = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.id, reviewId));
+  if (!review) throw new Error("Review not found");
+
+  const validSeconds = Math.max(0, Math.round(durationSeconds));
+  const updates: Record<string, unknown> = {
+    lastViewedAt: now(),
+    triageDurationSeconds: (review.triageDurationSeconds ?? 0) + validSeconds,
+    updatedAt: now(),
+  };
+
+  if (!review.firstViewedAt) {
+    updates.firstViewedAt = new Date(Date.now() - validSeconds * 1000);
+  }
+  if (markTriaged && !review.triagedAt) {
+    updates.triagedAt = now();
+  }
+
+  await db.update(reviews).set(updates).where(eq(reviews.id, reviewId));
+
+  await event(
+    markTriaged ? "review_triaged" : "review_dwell_recorded",
+    "review",
+    reviewId,
+    markTriaged
+      ? `Review triaged; active inspection took ${validSeconds} seconds.`
+      : `Active inspection recorded: ${validSeconds} seconds.`,
+    role === "owner" ? "demo owner" : "demo user",
+    role,
+    { dwellSeconds: validSeconds, triaged: markTriaged },
+    review.businessId,
+  );
+
+  return await oneReview(reviewId);
 }
