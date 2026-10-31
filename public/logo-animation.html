@@ -430,19 +430,6 @@
     body.compact-mode .brand-lockup {
       transform: scale(0.42);
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      .is-playing .logo-mark-wrap,
-      .is-playing .wordmark-mask,
-      .is-playing .wordmark-track,
-      .is-playing .wordmark-title span,
-      .is-playing .wordmark-sub,
-      .is-playing .logo-svg .path-left,
-      .is-playing .logo-svg .path-right {
-        animation-duration: 0.01s !important;
-        animation-delay: 0s !important;
-      }
-    }
   </style>
 </head>
 <body class="is-playing">
@@ -456,7 +443,6 @@
     <div class="toolbar-actions">
       <button type="button" class="btn" id="scaleBtn">Scale: Hero (1x)</button>
       <button type="button" class="btn" id="themeBtn">Theme: Dark</button>
-      <button type="button" class="btn btn-primary" id="replayBtn">↻ Replay Animation</button>
     </div>
   </header>
 
@@ -511,7 +497,6 @@
 
   <script>
     const body = document.body;
-    const replayBtn = document.getElementById("replayBtn");
     const themeBtn = document.getElementById("themeBtn");
     const scaleBtn = document.getElementById("scaleBtn");
     const html = document.documentElement;
@@ -521,8 +506,6 @@
       void body.offsetWidth; // Force reflow to restart CSS animations cleanly
       body.classList.add("is-playing");
     }
-
-    replayBtn.addEventListener("click", replayAnimation);
 
     themeBtn.addEventListener("click", () => {
       const isDark = html.getAttribute("data-theme") === "dark";

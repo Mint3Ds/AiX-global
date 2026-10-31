@@ -3,7 +3,6 @@ import { useState } from "react";
 
 /**
  * Standalone Clarity Logo Intro Animation component.
- * Not attached to the main workspace yet — import and render when ready.
  *
  * Choreography:
  * 1. Logo mark fades in and draws its strokes in the center at a zoomed-in scale.
@@ -18,7 +17,7 @@ export function LogoAnimationPreview({
   compact?: boolean;
   onComplete?: () => void;
 }) {
-  const [playKey, setPlayKey] = useState(0);
+  const [playKey] = useState(0);
 
   return (
     <div
@@ -68,14 +67,6 @@ export function LogoAnimationPreview({
           </div>
         </div>
       </div>
-
-      <button
-        type="button"
-        className="clarity-replay-trigger"
-        onClick={() => setPlayKey((k) => k + 1)}
-      >
-        Replay
-      </button>
 
       <style jsx>{`
         .clarity-logo-intro {
@@ -181,16 +172,6 @@ export function LogoAnimationPreview({
           width: 20px;
           height: 1.5px;
           background: var(--accent, #496b86);
-        }
-        .clarity-replay-trigger {
-          padding: 6px 14px;
-          border: 1px solid var(--line-strong, #aabac7);
-          border-radius: 2px;
-          background: var(--paper-light, #fdfefe);
-          color: var(--ink, #17232d);
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
         }
         @keyframes claritySymbolZoomPull {
           0% {
