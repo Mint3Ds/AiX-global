@@ -46,9 +46,9 @@ export function OrbyteHandoffDetails({
         <span className="orbyte-handoff-mark" aria-hidden="true">O</span>
         <span className="orbyte-handoff-summary-copy">
           <strong>Simulated Orbyte Handoff</strong>
+          <span className="orbyte-handoff-sep" aria-hidden="true">·</span>
           <small>{status}</small>
         </span>
-        <span className="orbyte-handoff-toggle" aria-hidden="true" />
       </summary>
       <div className="orbyte-handoff-content">
         {recordStatus !== "superseded" && recordStatus !== "invalidated" && (

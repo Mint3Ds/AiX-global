@@ -1190,12 +1190,156 @@ main .issue-category-tabs button:hover:not(.review-row) {
   margin-top: 20px;
 }
 .tasks-page .staff-work-update {
-  border-color: var(--line);
+  margin-top: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--surface-alt);
+  padding: 20px 24px;
 }
-.tasks-page .staff-work-update label,
-.tasks-page .staff-assignment-note {
+.tasks-page .staff-work-update label {
   color: var(--muted);
+}
+.tasks-page .staff-work-report {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.tasks-page .staff-work-report:has(textarea) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+.tasks-page .staff-assignment-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Orbyte Handoff disclosure styling in task detail */
+.orbyte-handoff {
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+.orbyte-handoff:hover {
+  border-color: var(--line-strong);
+}
+.orbyte-handoff > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+  list-style: none;
+}
+.orbyte-handoff > summary::-webkit-details-marker {
+  display: none;
+}
+.orbyte-handoff > summary::marker {
+  content: "";
+  display: none;
+}
+.orbyte-handoff > summary::before {
+  content: "▸";
+  font-size: 11px;
+  color: var(--muted);
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+.orbyte-handoff[open] > summary::before {
+  transform: rotate(90deg);
+}
+.orbyte-handoff-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--action);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.orbyte-handoff-summary-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.orbyte-handoff-summary-copy strong {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.orbyte-handoff-summary-copy small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.orbyte-handoff-summary-copy .orbyte-handoff-sep {
+  color: var(--line-strong);
+  font-size: 12px;
+}
+.orbyte-handoff-content {
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-light);
+  font-size: 13px;
+}
+.orbyte-handoff-snapshot-note {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.orbyte-handoff-task {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+}
+.orbyte-handoff-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px 20px;
+  margin: 14px 0 10px;
+  padding: 12px 16px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.orbyte-handoff-facts dt {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.orbyte-handoff-facts dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-weight: 550;
+  font-size: 13px;
+}
+.orbyte-handoff-recorded {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 11px;
 }
 .staff-dashboard .page-heading,
 .tasks-page .page-heading {

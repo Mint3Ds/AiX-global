@@ -3049,7 +3049,24 @@ export function Workspace({
                       ? "Assign work, review staff reports, and verify what has been resolved."
                       : "Review your assignments, submit completion reports, and respond to owner feedback."
                   }
-                />
+                >
+                  {!owner && (
+                    <label className="staff-header-picker">
+                      Staff profile
+                      <CustomDropdown
+                        ariaLabel="Staff profile"
+                        sectionLabel="Staff Profile"
+                        value={effectiveEmployeeId}
+                        options={state.employees.map((employee) => ({
+                          value: employee.id,
+                          label: `${employee.name} · ${employee.jobTitle}`,
+                        }))}
+                        onChange={(value) => changeEmployee(value)}
+                        align="right"
+                      />
+                    </label>
+                  )}
+                </PageHeading>
                 <div className="split">
                   <div className="task-lists">
                     {owner && (
