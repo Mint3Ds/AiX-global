@@ -160,6 +160,14 @@ integration("persisted rejection and rework gates", () => {
       (await action("decide_task", { taskId, decision: "approve" })).body.result
         .status,
     ).toBe("approved_open");
+    const ownerCannotSubmitReport = await action("report_task", {
+      taskId,
+      employeeId: "hotel-employee-1",
+      note: "Owner cannot submit a staff completion report.",
+    });
+    expect(ownerCannotSubmitReport.status).toBe(400);
+    expect(ownerCannotSubmitReport.body.code).toBe("INVALID_WORKFLOW_STATE");
+    expect(taskFrom(await state(), taskId).reportVersion).toBe(0);
     expect(
       (
         await action(

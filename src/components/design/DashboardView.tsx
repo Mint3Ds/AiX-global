@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { getSimulatedAttendance } from "@/integrations/orbyte/attendance";
 import { ChoiceMenu } from "./ChoiceMenu";
 import { PageHeading } from "./PageHeading";
+import { useScrollFade } from "./useScrollFade";
 
 type Destination = "reviews" | "issues" | "tasks" | "replies" | "activity";
 type MetricItem = {
@@ -76,7 +77,8 @@ export function DashboardView({
   onApproveTask: (task: WorkItem, assigneeId: string, dueAt: string) => void;
   busy: string;
 }) {
-  const headlineMetrics = ["Total reviews", "Issues needing attention", "Open approved tasks", "Replies to approve"]
+  const workScrollRef = useScrollFade<HTMLElement>();
+  const headlineMetrics = ["Issues needing attention", "Replies to approve", "Open approved tasks", "Total reviews"]
     .map((title) => metrics.find((metric) => metric.title === title))
     .filter((metric): metric is MetricItem => !!metric);
   const newToday = metrics.find((metric) => metric.title === "New today");
@@ -157,7 +159,7 @@ export function DashboardView({
           )}
         </section>
 
-        <section className="work-panel" aria-labelledby="active-work-heading">
+        <section className="work-panel scroll-fade" ref={workScrollRef} aria-labelledby="active-work-heading" tabIndex={0}>
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Owner queue</p>

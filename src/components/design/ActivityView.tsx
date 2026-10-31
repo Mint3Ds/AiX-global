@@ -330,25 +330,34 @@ export function ActivityView({
                       View task
                     </button>
                   </header>
-                  <ol
-                    className="activity-thread-events"
-                    aria-label={`History for ${task.title}`}
+                  <details
+                    className="activity-history"
+                    open={task.status !== "resolved"}
                   >
-                    {threadEvents.map((event) => (
-                      <li key={event.id}>
-                        <EventRow
-                          event={event}
-                          actor={actorName(event)}
-                          handoff={handoffFor(event)}
-                          subject={
-                            event.entityType === "reply"
-                              ? subject(event)
-                              : undefined
-                          }
-                        />
-                      </li>
-                    ))}
-                  </ol>
+                    <summary>
+                      <span>Activity history</span>
+                      <span>{threadEvents.length} updates</span>
+                    </summary>
+                    <ol
+                      className="activity-thread-events"
+                      aria-label={`History for ${task.title}`}
+                    >
+                      {threadEvents.map((event) => (
+                        <li key={event.id}>
+                          <EventRow
+                            event={event}
+                            actor={actorName(event)}
+                            handoff={handoffFor(event)}
+                            subject={
+                              event.entityType === "reply"
+                                ? subject(event)
+                                : undefined
+                            }
+                          />
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
                 </section>
               ))}
           </div>

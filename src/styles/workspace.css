@@ -5,7 +5,7 @@
   border-radius: 2px;
   padding: 12px 15px;
   background: var(--paper-light);
-  font-weight: 500;
+  font-weight: 600;
 }
 .notice.error {
   border-color: #f1c4c0;
@@ -17,7 +17,7 @@
 }
 .field-error {
   color: var(--error);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.4;
 }
@@ -40,8 +40,8 @@
   flex-direction: column;
   gap: 7px;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 550;
+  font-size: 14px;
+  font-weight: 650;
 }
 input,
 textarea,
@@ -112,7 +112,7 @@ textarea::placeholder {
 .new-review-form-footer span {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .new-review-form textarea {
   min-height: 220px;
@@ -124,7 +124,7 @@ textarea::placeholder {
   max-width: 72ch;
   margin-top: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.5;
 }
 .new-review-form-footer {
@@ -150,7 +150,7 @@ textarea::placeholder {
   background: var(--surface-alt);
 }
 .new-review-sample small {
-  font-size: 11px;
+  font-size: 14px;
 }
 .new-review-sample > span {
   display: -webkit-box;
@@ -158,12 +158,12 @@ textarea::placeholder {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .new-review-all-link {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .split {
   display: grid;
@@ -203,11 +203,11 @@ main .reply-navigation button.secondary:hover {
 }
 .task-status-note {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
 }
 .task-status-note span {
   margin-left: 8px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .completed-tasks {
   margin-top: 32px;
@@ -256,7 +256,7 @@ main .issue-category-tabs button:not(.review-row) {
   border-radius: 2px;
   background: var(--paper-light);
   color: var(--ink);
-  font-size: 13px;
+  font-size: 16px;
 }
 main .issue-category-tabs button.active:not(.review-row) {
   border-color: var(--action);
@@ -278,7 +278,7 @@ main .issue-category-tabs button span {
   gap: 10px;
   margin-top: 14px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .issue-list-footer {
   min-height: 46px;
@@ -302,7 +302,7 @@ main .issue-category-tabs button span {
 .review-list > div > h3 {
   margin: 22px 0 11px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
 }
 .review-list > div:first-child > h3 {
@@ -346,7 +346,7 @@ main .issue-category-tabs button span {
 }
 .issue-row-meta {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .priority-badge {
   display: inline-flex;
@@ -355,7 +355,7 @@ main .issue-category-tabs button span {
   min-height: 24px;
   padding: 3px 9px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.2;
   text-transform: capitalize;
@@ -385,7 +385,7 @@ main .issue-category-tabs button span {
 }
 .detail > h4 {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
 }
 .issue-detail-heading {
@@ -407,7 +407,7 @@ main .issue-category-tabs button span {
   gap: 10px;
   margin-top: 12px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
 }
 .priority-rationale {
   margin-top: 9px;
@@ -416,7 +416,7 @@ main .issue-category-tabs button span {
   width: max-content;
   list-style: none;
   color: var(--action);
-  font-size: 12px;
+  font-size: 15px;
   cursor: pointer;
 }
 .priority-rationale summary::marker {
@@ -431,7 +431,7 @@ main .issue-category-tabs button span {
   padding-left: 10px;
   border-left: 2px solid var(--line-strong);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.55;
 }
 .observation-issue-control {
@@ -451,7 +451,7 @@ main .issue-category-tabs button span {
 .observation-issue-panel > p {
   margin: 0 0 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.45;
 }
 .observation-issue-panel .observation-issue-search {
@@ -461,11 +461,11 @@ main .issue-category-tabs button span {
   padding: 7px 9px;
   border: 1px solid var(--line);
   background: var(--paper-light);
-  font-size: 12px;
+  font-size: 15px;
 }
 .observation-issue-panel .observation-issue-count {
   margin: 7px 0 0;
-  font-size: 10px;
+  font-size: 13px;
 }
 .observation-issue-panel ul {
   display: grid;
@@ -495,13 +495,13 @@ main .issue-category-tabs button span {
 }
 .observation-issue-panel li button span {
   min-width: 0;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.4;
 }
 .observation-issue-panel li button small {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .observation-issue-panel .observation-issue-empty {
   margin: 0;
@@ -519,7 +519,7 @@ main .issue-category-tabs button span {
 .observation-issue-actions .link {
   min-height: 32px;
   margin: 0;
-  font-size: 11px;
+  font-size: 14px;
 }
 .evidence-reassign {
   margin: 8px 0 12px;
@@ -531,7 +531,7 @@ main .issue-category-tabs button span {
   min-height: 38px;
   align-items: center;
   color: var(--action);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   list-style: none;
@@ -567,7 +567,7 @@ main .issue-category-tabs button span {
 .evidence-reassign > ul > li > span {
   min-width: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.45;
 }
 .evidence-reassign .observation-issue-control { margin: 0; }
@@ -596,7 +596,7 @@ main .issue-category-tabs button span {
 }
 .issue-decision-header p {
   margin: 5px 0 0;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.45;
 }
 .issue-decision-label {
@@ -611,8 +611,8 @@ main .issue-category-tabs button span {
   flex-direction: column;
   gap: 6px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 15px;
+  font-weight: 650;
 }
 .issue-decision-actions {
   display: flex;
@@ -638,11 +638,11 @@ main .issue-category-tabs button span {
   align-items: center;
   gap: 8px;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 16px;
 }
 .evidence-group-header span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .detail blockquote.evidence-quote {
   margin: 12px 0;
@@ -651,7 +651,7 @@ main .issue-category-tabs button span {
   border-radius: 0;
   background: transparent;
   font-size: 16px;
-  font-weight: 550;
+  font-weight: 650;
   line-height: 1.55;
 }
 .evidence-review-list {
@@ -664,7 +664,7 @@ main .issue-category-tabs button span {
 .evidence-review-list li {
   display: block;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .evidence-review-reply summary {
   display: flex;
@@ -688,21 +688,21 @@ main .issue-category-tabs button span {
 }
 .evidence-reply-hint {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .evidence-reply-content {
   margin: 4px 0 8px 2px;
   padding: 10px 12px;
   border-left: 2px solid var(--line);
   color: var(--ink);
-  font-size: 13px;
+  font-size: 16px;
 }
 .evidence-reply-content p {
   margin: 5px 0 8px;
   line-height: 1.5;
 }
 .evidence-view-review {
-  font-size: 12px;
+  font-size: 15px;
 }
 .evidence-more {
   margin-top: 12px;
@@ -714,8 +714,8 @@ main .issue-category-tabs button span {
   align-items: center;
   cursor: pointer;
   color: var(--action);
-  font-size: 13px;
-  font-weight: 550;
+  font-size: 16px;
+  font-weight: 650;
 }
 .review-meta {
   display: flex;
@@ -724,7 +724,7 @@ main .issue-category-tabs button span {
   gap: 10px 18px;
   margin: 2px 0 28px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
 }
 .rating-stars {
   display: inline-flex;
@@ -742,7 +742,7 @@ main .issue-category-tabs button span {
   padding: 4px 10px;
   background: var(--paper-deep);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 15px;
 }
 .review-detail > h3 {
   margin: 0 0 12px;
@@ -755,7 +755,7 @@ main .issue-category-tabs button span {
   border-radius: 0 2px 2px 0;
   background: var(--surface-alt);
   white-space: pre-wrap;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
@@ -770,7 +770,7 @@ main .issue-category-tabs button span {
 .reply-status {
   margin: -16px 0 28px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
 }
 .complaint-card {
   margin: 14px 0;
@@ -785,7 +785,7 @@ main .issue-category-tabs button span {
   align-items: center;
   gap: 8px 12px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .complaint-card-heading > span:first-child {
   color: var(--ink);
@@ -801,12 +801,12 @@ main .issue-category-tabs button span {
   border: 0;
   background: transparent;
   font-size: 16px;
-  font-weight: 550;
+  font-weight: 650;
 }
 .complaint-summary {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
 }
 .empty-complaints {
@@ -817,12 +817,12 @@ main .issue-category-tabs button span {
   padding: 12px 0 2px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .empty-complaints b {
   flex: 0 0 auto;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 560;
 }
 .empty-complaints p {
@@ -842,7 +842,7 @@ main .issue-category-tabs button span {
 }
 .observation blockquote {
   margin: 11px 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 .provider {
   margin: 16px 0;
@@ -899,7 +899,7 @@ main .issue-category-tabs button span {
 }
 .reply-batch-actions p {
   margin: 0;
-  font-size: 12px;
+  font-size: 15px;
 }
 .reply-scope {
   margin: 4px 0;
@@ -907,7 +907,7 @@ main .issue-category-tabs button span {
 .reply-progress {
   margin: 0 0 10px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
 }
 .reply-card-heading {
@@ -923,13 +923,13 @@ main .issue-category-tabs button span {
   padding: 4px 9px;
   border-radius: 2px;
   background: var(--paper-deep);
-  font-size: 12px;
+  font-size: 15px;
   text-transform: capitalize;
 }
 .reply-review-meta {
   margin: 8px 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
 }
 .reply-warning {
   margin-top: 12px;
@@ -944,14 +944,14 @@ main .issue-category-tabs button span {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 16px;
   color: #5f481e;
 }
 .reply-warning-copy {
   max-width: 64ch;
   margin: 8px 0 0 25px;
   color: #665c4b;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .reply-warning-icon {
@@ -962,7 +962,7 @@ main .issue-category-tabs button span {
   border-radius: 50%;
   background: #87601f;
   color: #fff;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
 }
 .reply-warning-count {
@@ -974,14 +974,14 @@ main .issue-category-tabs button span {
   border-radius: 2px;
   background: #eee4ce;
   color: #5f481e;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
 }
 .reply-warning ul {
   margin: 8px 0 0;
   padding-left: 24px;
   color: #665c4b;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .reply-warning li + li {
@@ -1004,7 +1004,7 @@ main .issue-category-tabs button span {
 .tasks-page .task-lists h3,
 .tasks-page .task-lists h3:not(:first-child) {
   margin: 0 0 3px;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: -0.02em;
 }
 .tasks-page .task-lists h3:not(:first-child) {
@@ -1021,14 +1021,14 @@ main .issue-category-tabs button span {
 }
 .tasks-page .review-row b {
   max-width: 100%;
-  font-size: 13px;
+  font-size: 16px;
   overflow-wrap: anywhere;
 }
 .tasks-page .review-row span,
 .task-list-empty {
   max-width: 100%;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
@@ -1070,7 +1070,7 @@ main .issue-category-tabs button span {
   display: grid;
   gap: 7px;
   color: #666963;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
 }
 .tasks-page .staff-employee-picker {
@@ -1107,7 +1107,7 @@ main .issue-category-tabs button span {
 .tasks-page .staff-assignment-note {
   margin: 0;
   color: #777a78;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
@@ -1145,12 +1145,12 @@ main .issue-category-tabs button span {
 .replies-page .reply blockquote {
   margin: 0;
   padding: 14px 16px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.55;
 }
 .replies-page .reply-compose label {
   flex: 1;
-  font-size: 12px;
+  font-size: 15px;
 }
 .replies-page .reply textarea {
   flex: 1;
@@ -1178,7 +1178,7 @@ main .issue-category-tabs button span {
 .event time,
 .event small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .event p {
   margin: 5px 0;
@@ -1187,5 +1187,5 @@ footer {
   border-top: 1px solid var(--line);
   padding: 20px 0 30px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }

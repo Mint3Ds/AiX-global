@@ -19,7 +19,7 @@
 }
 .launch-page-back {
   color: var(--action);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 650;
   text-decoration: none;
   text-underline-offset: 4px;
@@ -61,7 +61,7 @@
   gap: 16px;
   padding-top: 16px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .launch-film-footer p {
   margin: 0;

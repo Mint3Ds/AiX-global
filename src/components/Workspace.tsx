@@ -8,6 +8,7 @@ import { TaskReportHistory } from "@/components/design/TaskReportHistory";
 import { TaskEditHistory } from "@/components/design/TaskEditHistory";
 import { OrbyteHandoffDetails } from "@/components/design/OrbyteHandoffDetails";
 import { ChoiceMenu } from "@/components/design/ChoiceMenu";
+import { useScrollFade } from "@/components/design/useScrollFade";
 import {
   ReportAttachmentPicker,
   evidenceMediaType,
@@ -671,6 +672,7 @@ export function Workspace({
 }: {
   initialTab?: Tab;
 } = {}) {
+  const dialogScrollRef = useScrollFade<HTMLElement>();
   // UI-only state. Server data is always refreshed from /api/state after actions.
   const [state, setState] = useState<State | null>(null);
   const [error, setError] = useState("");
@@ -1425,7 +1427,7 @@ export function Workspace({
           (state.themeSupport[b.id] || 0) - (state.themeSupport[a.id] || 0)
         );
       })
-      .slice(0, 3) || [];
+      .slice(0, 4) || [];
   const spotlight = priorityIssues[0];
   const spotlightEvidence =
     spotlight && state
@@ -3083,29 +3085,34 @@ export function Workspace({
                           : "No active work assigned to this staff profile"}
                       </p>
                     )}
-                    <div className="completed-tasks">
-                      <h3>Completed work tasks</h3>
-                      {completedTasks.map((item) => (
-                        <button
-                          key={item.id}
-                          className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
-                          onClick={() => openTask(item.id)}
-                        >
-                          <b>{item.title}</b>
-                          <span>
-                            {
-                              state.employees.find(
-                                (employee) => employee.id === item.assigneeId,
-                              )?.name
-                            }{" "}
-                            · Completed — Verified by Owner {date(item.verifiedAt)}
-                          </span>
-                        </button>
-                      ))}
-                      {completedTasks.length === 0 && (
-                        <p className="task-list-empty">No completed work yet</p>
-                      )}
-                    </div>
+                    <details className="completed-tasks">
+                      <summary>
+                        Completed work
+                        <span>{completedTasks.length}</span>
+                      </summary>
+                      <div className="completed-tasks-list">
+                        {completedTasks.map((item) => (
+                          <button
+                            key={item.id}
+                            className={`review-row ${task?.id === item.id ? "chosen" : ""}`}
+                            onClick={() => openTask(item.id)}
+                          >
+                            <b>{item.title}</b>
+                            <span>
+                              {
+                                state.employees.find(
+                                  (employee) => employee.id === item.assigneeId,
+                                )?.name
+                              }{" "}
+                              · Verified by owner {date(item.verifiedAt)}
+                            </span>
+                          </button>
+                        ))}
+                        {completedTasks.length === 0 && (
+                          <p className="task-list-empty">No completed work yet</p>
+                        )}
+                      </div>
+                    </details>
                   </div>
                   <div className="card detail task-detail">
                     {task ? (
@@ -3143,6 +3150,7 @@ export function Workspace({
                                         : label(task.status)}
                             </span>
                           </div>
+                          <p className="task-detail-description">{task.description}</p>
                         </header>
                         {task.rejectionReason &&
                           ["needs_rework", "in_progress", "reported"].includes(
@@ -3162,17 +3170,6 @@ export function Workspace({
                               )}
                             </div>
                           )}
-                        <section className="task-brief" aria-label="Original task brief">
-                          <p className="eyebrow">01&nbsp;&nbsp;Original task brief</p>
-                          {task.originalTitle && task.originalTitle !== task.title && <h3>{task.originalTitle}</h3>}
-                          <p>{task.originalDescription || task.description}</p>
-                        </section>
-                        {task.originalDescription && task.description !== task.originalDescription && (
-                          <section className="task-brief task-current-brief" aria-label="Current task brief">
-                            <p className="eyebrow">Current approved instructions</p>
-                            <p>{task.description}</p>
-                          </section>
-                        )}
                         <TaskEditHistory
                           events={state.events.filter((item) => item.entityType === "task" && item.entityId === task.id)}
                           employees={state.employees}
@@ -3783,7 +3780,8 @@ export function Workspace({
             aria-modal="true"
             aria-labelledby="decision-title"
             aria-describedby="decision-description"
-            className="decision-dialog"
+            className="decision-dialog scroll-fade"
+            ref={dialogScrollRef}
             onKeyDown={(event) => {
               if (event.key === "Escape" && !busy) setDecision(null);
               if (event.key !== "Tab") return;

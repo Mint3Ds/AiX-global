@@ -99,7 +99,7 @@ export function TaskReportHistory({ attempts }: { attempts: ReportAttempt[] }) {
       >
         <header className="task-report-history-heading">
           <div>
-            <p className="eyebrow">03&nbsp;&nbsp;Submission record</p>
+            <p className="eyebrow">Submission record</p>
             <h3>Employee work reports</h3>
           </div>
           <span className="task-rejection-count">
@@ -153,7 +153,7 @@ export function TaskReportHistory({ attempts }: { attempts: ReportAttempt[] }) {
         >
           <header className="task-report-history-heading">
             <div>
-              <p className="eyebrow">04&nbsp;&nbsp;Rework guidance</p>
+              <p className="eyebrow">Rework guidance</p>
               <h3>Owner rejection feedback</h3>
             </div>
             <span className="task-rejection-count">
@@ -211,7 +211,7 @@ export function TaskReportHistory({ attempts }: { attempts: ReportAttempt[] }) {
         >
           <header className="task-report-history-heading">
             <div>
-              <p className="eyebrow">05&nbsp;&nbsp;Final decision</p>
+              <p className="eyebrow">Final decision</p>
               <h3>Verification history</h3>
             </div>
           </header>

@@ -136,7 +136,7 @@
   display: flex;
   font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(48px, 5.5vw, 74px);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.14;
   letter-spacing: -0.045em;
   color: #000;
@@ -178,7 +178,7 @@
 }
 
 .brand-loading-sub-text {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -192,7 +192,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted, #586978);
@@ -207,7 +207,7 @@
   border-radius: 2px;
   color: var(--muted, #586978);
   font-family: inherit;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -232,7 +232,7 @@
   border: 1px solid var(--line-strong, #aabac7);
   padding: 10px 18px;
   border-radius: 2px;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--ink, #17232d);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
@@ -244,7 +244,7 @@
   border: none;
   border-radius: 2px;
   padding: 5px 12px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -260,7 +260,7 @@
   border: none;
   padding: 0;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.055em;
   color: var(--muted, #586978);
   cursor: pointer;

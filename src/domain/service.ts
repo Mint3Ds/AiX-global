@@ -1803,8 +1803,8 @@ export async function reportTask(
   attachmentsInput: unknown = [],
 ) {
   const task = await oneTask(taskId);
-  if (role !== "owner" && (role !== "staff" || task.assigneeId !== employeeId))
-    throw new Error("Only the assigned employee can report on this task.");
+  if (role !== "staff" || task.assigneeId !== employeeId)
+    throw new WorkflowError("Only the assigned employee can report on this task.");
   requireTransition(
     task.status,
     ["approved_open", "in_progress", "needs_rework"],

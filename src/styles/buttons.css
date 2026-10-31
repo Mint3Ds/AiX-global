@@ -13,8 +13,8 @@ main button:where(:not(.link):not(.review-row):not(.register-review-button)),
   border-radius: var(--radius);
   background: #1a1f1c;
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   line-height: 1.35;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -51,8 +51,17 @@ button:disabled,
 select:disabled,
 input:disabled,
 textarea:disabled {
-  opacity: 0.45;
+  opacity: 0.68;
   cursor: not-allowed;
+}
+
+/* Published replies remain readable even when the editor is locked. */
+main textarea:disabled,
+main input:disabled[readonly] {
+  opacity: 1;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  background: var(--paper-light);
 }
 
 /* 2. Secondary Action: Clean bordered white pill button */
@@ -70,8 +79,8 @@ main .reply-navigation button.secondary,
   border-radius: var(--radius) !important;
   background: #ffffff !important;
   color: #222b24 !important;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
@@ -101,8 +110,8 @@ button.button-destructive {
   border-radius: var(--radius) !important;
   background: #ffffff !important;
   color: #be123c !important;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
@@ -125,7 +134,7 @@ button.link {
   border-radius: 0;
   background: none;
   color: var(--action);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   text-align: left;
   text-decoration: none;

@@ -7,7 +7,7 @@
   --surface: #ffffff;
   --surface-alt: #edf3f7;
   --ink: #17232d;
-  --muted: #586978;
+  --muted: #405362;
   --line: #d4e0e8;
   --line-strong: #aabac7;
   --action: #243d52;
@@ -37,15 +37,16 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --motion-fast: 140ms;
   --motion-medium: 220ms;
-  /* Typography: change this stack to change both workspace and launch page. */
+  /* Typography: readable defaults for the workspace and launch page. */
   --font-ui: "Avenir Next", Inter, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   --type-page-heading: clamp(29px, 3vw, 40px);
   --type-section-heading: 22px;
-  --type-body: 14px;
-  --type-label: 10px;
+  --type-body: 16px;
+  --type-label: 13px;
   font-family: var(--font-ui);
   font-size: var(--type-body);
+  font-weight: 500;
   color: var(--ink);
   background: var(--paper);
   font-synthesis: none;

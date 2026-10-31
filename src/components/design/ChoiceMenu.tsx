@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useScrollFade } from "./useScrollFade";
 
 export type ChoiceOption = {
   value: string;
@@ -25,6 +26,7 @@ export function ChoiceMenu({
   className?: string;
 }) {
   const details = useRef<HTMLDetailsElement>(null);
+  const optionsScrollRef = useScrollFade<HTMLDivElement>();
   const selected = options.find((option) => option.value === value);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export function ChoiceMenu({
           <span className="choice-menu-current">{selected?.label || "Choose"}</span>
           <span className="choice-menu-caret" aria-hidden="true" />
         </summary>
-        <div className="choice-menu-options" role="listbox" aria-label={label}>
+        <div className="choice-menu-options scroll-fade" ref={optionsScrollRef} role="listbox" aria-label={label}>
           {options.map((option) => (
             <button
               type="button"

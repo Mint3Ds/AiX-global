@@ -4,7 +4,7 @@
     padding: 0 28px;
   }
   .top {
-    gap: 28px;
+    gap: 16px 28px;
     flex-wrap: wrap;
     padding-top: 20px;
   }
@@ -21,7 +21,7 @@
     max-width: 230px;
   }
   .dashboard-grid {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(360px, 0.85fr);
     gap: 28px;
   }
   .review-workspace {
@@ -39,6 +39,31 @@
   }
   .dashboard-summary {
     align-items: flex-start;
+  }
+}
+@media (max-width: 1180px) {
+  .dashboard-overview {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(150px, auto)) minmax(190px, auto);
+  }
+  main .dashboard button.dashboard-overview-item:last-child {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+    grid-template-rows: auto auto auto;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .dashboard-overview-item:last-child > span,
+  .dashboard-overview-item:last-child strong,
+  .dashboard-overview-item:last-child small {
+    grid-column: 1;
+  }
+  .dashboard-overview-item:last-child .review-mix-graphic {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    align-self: center;
+    margin: 0;
   }
 }
 @media (max-width: 900px) {
@@ -59,20 +84,33 @@
   }
   .dashboard-overview {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto auto;
   }
   main .dashboard button.dashboard-overview-item {
-    min-height: 94px;
-    padding: 13px 15px;
-    border-bottom: 1px solid var(--line);
+    padding: 22px 24px;
+    border-bottom: 0;
   }
   main .dashboard button.dashboard-overview-item:first-child {
-    padding-left: 0;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    min-height: 250px;
+    padding: 25px 27px;
   }
-  main .dashboard button.dashboard-overview-item:nth-child(even) {
-    border-right: 0;
+  main .dashboard button.dashboard-overview-item:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 190px;
+    border-right: 1px solid var(--line);
   }
-  main .dashboard button.dashboard-overview-item:nth-last-child(-n + 2) {
-    border-bottom: 0;
+  main .dashboard button.dashboard-overview-item:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    border-top: 0;
+  }
+  main .dashboard button.dashboard-overview-item:last-child {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    min-height: 205px;
   }
   .dashboard .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -93,7 +131,16 @@
     gap: 12px;
   }
   .dashboard-grid {
-    gap: 22px;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .dashboard-grid > .work-panel {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    border-left: 0;
+    background: transparent;
   }
   .panel-heading {
     align-items: flex-start;
@@ -201,6 +248,47 @@
   }
 }
 @media (max-width: 640px) {
+  main .dashboard button.dashboard-overview-item:nth-child(2),
+  main .dashboard button.dashboard-overview-item:nth-child(3) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    min-height: 194px;
+    padding: 18px 15px;
+  }
+  .dashboard-overview-item:nth-child(2) > span,
+  .dashboard-overview-item:nth-child(3) > span,
+  .dashboard-overview-item:nth-child(2) strong,
+  .dashboard-overview-item:nth-child(3) strong,
+  .dashboard-overview-item:nth-child(2) small,
+  .dashboard-overview-item:nth-child(3) small {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dashboard-overview-item:nth-child(2) strong,
+  .dashboard-overview-item:nth-child(3) strong {
+    margin: 13px 0 7px;
+    font-size: clamp(60px, 15vw, 72px);
+  }
+  .dashboard-overview-item:nth-child(2) strong {
+    font-size: clamp(66px, 16vw, 78px);
+  }
+  main .dashboard button.dashboard-overview-item:last-child {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr;
+    min-height: 255px;
+    padding: 22px 24px;
+  }
+  .dashboard-overview-item:last-child > span,
+  .dashboard-overview-item:last-child strong,
+  .dashboard-overview-item:last-child small,
+  .dashboard-overview-item:last-child .review-mix-graphic {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dashboard-overview-item:last-child .review-mix-graphic {
+    align-self: end;
+    margin-top: 18px;
+  }
   .orbyte-handoff-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .orbyte-handoff > summary { align-items: flex-start; }
   .orbyte-handoff-summary-copy small { line-height: 1.4; }
@@ -235,21 +323,31 @@
     font-size: 22px;
   }
   .brand-name > span {
-    font-size: 9px;
+    font-size: 13px;
   }
   .workspace-controls {
     gap: 10px;
+    flex-basis: 100%;
+    justify-content: space-between;
+    margin-left: 0;
   }
   .workspace-control > span {
-    font-size: 8px;
+    font-size: 14px;
+  }
+  .workspace-control .choice-menu {
+    max-width: 215px;
+    font-size: 16px;
   }
   .workspace-control select {
     max-width: 160px;
     min-height: 30px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .role-switcher {
     padding-left: 10px;
+  }
+  .role-switcher .choice-menu {
+    width: 110px;
   }
   .role-switcher select {
     width: 76px;
@@ -259,7 +357,7 @@
     gap: 24px;
   }
   .main-nav button {
-    font-size: 12px;
+    font-size: 16px;
   }
   .workspace-main {
     padding: 30px 0 45px;
@@ -277,20 +375,20 @@
   }
   .page-description {
     margin-top: 12px;
-    font-size: 13px;
+    font-size: 17px;
   }
   .page-heading-actions {
     flex-wrap: wrap;
     padding: 0;
   }
   .eyebrow {
-    font-size: 9px;
+    font-size: 15px;
   }
   .page-count strong {
     font-size: 25px;
   }
   .dashboard-context {
-    font-size: 9px;
+    font-size: 13px;
   }
   .dashboard-context > span:last-child {
     display: none;
@@ -307,7 +405,7 @@
     font-size: 29px;
   }
   .metric .metric-hint {
-    font-size: 10px;
+    font-size: 13px;
   }
   .dashboard-summary {
     margin-bottom: 30px;
@@ -364,13 +462,13 @@
     padding: 6px 9px;
   }
   .review-primary-filters label {
-    font-size: 10px;
+    font-size: 13px;
   }
   .review-primary-filters .review-search {
     grid-column: 1 / -1;
   }
   .review-sort-menu {
-    width: 132px;
+    width: 180px;
   }
   .review-sort-menu .choice-menu-options {
     min-width: 0;
@@ -390,7 +488,7 @@
   }
   main .review-quick-filters button {
     min-height: 43px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .review-view-controls > .link {
     padding-bottom: 8px;
@@ -399,7 +497,7 @@
     align-items: center;
   }
   .review-register th {
-    font-size: 8px;
+    font-size: 13px;
     padding: 12px 7px;
   }
   .review-register td {
@@ -412,7 +510,7 @@
     width: 79px;
   }
   .review-register .status-badge {
-    font-size: 10px;
+    font-size: 13px;
   }
   .register-review-button {
     min-height: 133px;
@@ -420,17 +518,17 @@
     gap: 8px;
   }
   .register-excerpt {
-    font-size: 12px;
+    font-size: 15px;
   }
   .register-date,
   .register-property {
-    font-size: 9px;
+    font-size: 13px;
   }
   .register-rating {
-    font-size: 12px;
+    font-size: 15px;
   }
   .register-rating > span {
-    font-size: 10px;
+    font-size: 13px;
   }
   .review-register-panel > .page-controls {
     gap: 8px;
@@ -445,7 +543,7 @@
     font-size: 23px;
   }
   .review-detail .review-original {
-    font-size: 15px;
+    font-size: 17px;
   }
   .review-meta {
     gap: 8px;
@@ -454,7 +552,7 @@
     gap: 11px;
   }
   .review-finding h4 {
-    font-size: 13px;
+    font-size: 16px;
   }
   .split,
   .tasks-page .split,
@@ -517,7 +615,7 @@
     font-size: 25px;
   }
   .staff-dashboard-summary span {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.4;
   }
   .staff-dashboard-queue li > button {
@@ -615,7 +713,7 @@
   }
   .notice {
     align-items: flex-start;
-    font-size: 12px;
+    font-size: 15px;
   }
 }
 @media (max-width: 960px) {
@@ -647,9 +745,15 @@
   .workspace-controls {
     gap: 8px;
   }
+  .workspace-controls > .workspace-control:first-child {
+    width: 215px;
+  }
+  .workspace-controls > .workspace-control:first-child .choice-menu {
+    width: 100%;
+  }
   .workspace-control select {
     max-width: 139px;
-    font-size: 10px;
+    font-size: 13px;
     padding-right: 12px;
   }
   .role-switcher {
@@ -657,6 +761,24 @@
   }
   .role-switcher select {
     width: 70px;
+  }
+}
+@media (max-width: 360px) {
+  .workspace-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .workspace-controls > .workspace-control:first-child {
+    width: 100%;
+  }
+  .workspace-control .choice-menu,
+  .role-switcher .choice-menu {
+    width: 100%;
+    max-width: none;
+  }
+  .role-switcher {
+    padding-left: 0;
+    border-left: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -12,11 +12,13 @@
   display: flex;
   align-items: center;
   gap: 38px;
-  min-height: 60px;
+  min-height: 72px;
+  padding-top: 10px;
 }
 .brand-lockup {
   display: flex;
   align-items: center;
+  align-self: flex-end;
   gap: 9px;
   flex-shrink: 0;
   padding: 0;
@@ -28,26 +30,28 @@
 }
 .brand-mark {
   display: block;
-  width: 31px;
-  height: 31px;
+  width: 34px;
+  height: 34px;
 }
 .brand-name {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 24px;
-  font-weight: 400;
+  font-size: 25px;
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.045em;
+  color: #000;
 }
 .brand-name > span {
   display: block;
   margin-top: 5px;
   color: var(--muted);
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 .main-nav {
   display: flex;
+  align-items: flex-end;
   align-self: stretch;
   flex: 1;
   gap: 22px;
@@ -64,13 +68,13 @@
   align-items: center;
   flex-shrink: 0;
   min-height: 44px;
-  padding: 0;
+  padding: 10px 0 0;
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 550;
+  font-size: 17px;
+  font-weight: 650;
   white-space: nowrap;
   transition: color var(--motion-fast);
 }
@@ -108,16 +112,16 @@
 }
 .workspace-control > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 .workspace-control .choice-menu {
   min-height: 28px;
-  max-width: 180px;
+  max-width: 230px;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 .workspace-control .choice-menu > summary {
@@ -136,7 +140,7 @@
   border-left: 1px solid var(--line);
 }
 .role-switcher .choice-menu {
-  width: 80px;
+  width: 110px;
 }
 .skip-link {
   position: absolute;
@@ -196,12 +200,12 @@
   align-items: baseline;
   gap: 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 .page-count strong {
   color: var(--ink);
   font-size: 29px;
-  font-weight: 550;
+  font-weight: 650;
   letter-spacing: -0.05em;
   font-variant-numeric: tabular-nums;
 }
@@ -228,7 +232,7 @@ h3 {
 }
 h4 {
   margin: 20px 0 10px;
-  font-size: 15px;
+  font-size: 17px;
 }
 p {
   line-height: 1.6;
@@ -250,17 +254,17 @@ p {
   padding: 18px 0 22px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .workspace-footer-brand {
   color: var(--ink);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 650;
   letter-spacing: -0.02em;
 }
 .workspace-footer-purpose {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .loading-workspace {
   min-height: 70vh;
@@ -305,4 +309,21 @@ p {
 
 #workspace-main:focus {
   outline: none;
+}
+
+/* Scrollable regions feather only toward content that is still off-screen. */
+.scroll-fade {
+  --scroll-fade-size: 42px;
+}
+.scroll-fade[data-fade-top="false"][data-fade-bottom="true"] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - var(--scroll-fade-size)), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - var(--scroll-fade-size)), transparent 100%);
+}
+.scroll-fade[data-fade-top="true"][data-fade-bottom="true"] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--scroll-fade-size), #000 calc(100% - var(--scroll-fade-size)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--scroll-fade-size), #000 calc(100% - var(--scroll-fade-size)), transparent 100%);
+}
+.scroll-fade[data-fade-top="true"][data-fade-bottom="false"] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--scroll-fade-size), #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--scroll-fade-size), #000 100%);
 }

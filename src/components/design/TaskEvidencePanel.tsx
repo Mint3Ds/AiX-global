@@ -106,7 +106,7 @@ export function TaskEvidencePanel({
     >
       <header className="task-evidence-heading">
         <div>
-          <p className="eyebrow">02&nbsp;&nbsp;Source evidence</p>
+          <p className="eyebrow">Source evidence</p>
           <h3 id={`task-evidence-${taskId}`}>What guests reported</h3>
           <p>
             {evidence.length} source reviews · {excerptCount} exact excerpts

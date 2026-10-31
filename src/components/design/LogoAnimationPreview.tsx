@@ -143,7 +143,7 @@ export function LogoAnimationPreview({
           display: flex;
           font-family: Arial, Helvetica, sans-serif;
           font-size: 68px;
-          font-weight: 400;
+          font-weight: 700;
           line-height: 1.14;
           letter-spacing: -0.045em;
           color: #000;
