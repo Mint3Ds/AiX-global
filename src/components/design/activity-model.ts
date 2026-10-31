@@ -2,6 +2,7 @@
 export type ActivityEvent = {
   id: string;
   actor: string;
+  role?: string;
   type: string;
   entityType: string;
   entityId: string;
@@ -16,8 +17,26 @@ export type ActivityTask = {
   title: string;
   status: string;
   themeId: string;
+  branchId?: string;
 };
 export type ActivityReply = { id: string; reviewId: string; taskId: string };
+export type ActivityReview = {
+  id: string;
+  originalText: string;
+  rating?: number;
+  source?: string;
+  branchId?: string;
+  triagedAt?: string | null;
+  triageDurationSeconds?: number | null;
+  firstViewedAt?: string | null;
+  lastViewedAt?: string | null;
+  processingStatus?: string;
+};
+export type ActivityBranch = {
+  id: string;
+  name: string;
+  businessId?: string;
+};
 export type TaskThread = { task: ActivityTask; events: ActivityEvent[] };
 
 export function activityKind(event: ActivityEvent): ActivityKind {

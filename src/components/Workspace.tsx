@@ -3276,8 +3276,11 @@ export function Workspace({
                 tasks={state.tasks}
                 themes={state.themes}
                 reviews={state.reviews}
+                branches={state.branches}
                 replies={state.replies}
+                metrics={state.metrics}
                 onOpenTask={openTask}
+                onOpenReview={openReview}
               />
             )}
             {tab === "stats" && <StatsView metrics={state.metrics} />}

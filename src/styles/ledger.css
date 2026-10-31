@@ -1502,13 +1502,134 @@ main .issue-category-tabs button:hover:not(.review-row) {
   max-width: 1120px;
   margin-inline: auto;
 }
+
+/* Operational KPI Summary Banner */
+.activity-summary-banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0 0 28px;
+}
+.activity-summary-item {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+.activity-summary-item.highlight-dwell {
+  border-color: var(--accent);
+  background: var(--action-tint);
+}
+.summary-eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.activity-summary-item.highlight-dwell .summary-eyebrow {
+  color: var(--action);
+}
+.summary-metric {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.activity-summary-item.highlight-dwell .summary-metric {
+  color: var(--action);
+}
+.summary-caption {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Interactive Controls Bar */
+.activity-controls-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 0 34px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.activity-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.activity-search-input {
+  flex: 1;
+  min-width: 220px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.activity-search-input:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.activity-role-select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  font-size: 12px;
+  color: var(--ink);
+}
+.activity-role-select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.activity-triage-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+.activity-triage-toggle:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+.activity-triage-toggle.active {
+  border-color: var(--action);
+  background: var(--action-tint);
+  color: var(--action);
+}
+
 .activity-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 0 0 34px;
-  padding: 0 0 20px;
-  border-bottom: 1px solid var(--line);
+  margin: 0;
+  padding: 0;
+  border-bottom: 0;
 }
 main .activity-filters button:not(.link) {
   min-height: 38px;
@@ -1660,6 +1781,12 @@ main .activity-filters button:not(.link):hover {
   justify-content: space-between;
   gap: 16px;
 }
+.activity-event-title-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .activity-event-topline strong {
   font-size: 14px;
   font-weight: 650;
@@ -1670,12 +1797,157 @@ main .activity-filters button:not(.link):hover {
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
+
+/* Event Audit Badges */
+.activity-event-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.activity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+.badge-id {
+  font-family: monospace;
+  background: var(--surface-alt);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.badge-role-owner {
+  background: #ede9fe;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+}
+.badge-role-staff {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-role-system {
+  background: var(--metric-sage);
+  color: var(--action);
+  border: 1px solid var(--metric-sage-line);
+}
+.badge-role-adapter {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+.badge-branch {
+  background: var(--paper-deep);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.badge-rating {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fef3c7;
+}
+.badge-rating .rating-numeric {
+  font-weight: 700;
+  color: var(--ink);
+}
+.badge-source {
+  background: var(--surface-alt);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.badge-status {
+  background: var(--action-tint);
+  color: var(--action);
+  border: 1px solid var(--line-strong);
+}
+
+/* Standout Triage Dwell Telemetry Callout */
+.activity-triage-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 0 8px;
+  padding: 8px 12px;
+  border: 1px solid #bdd5e7;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: #f0f6fa;
+}
+.triage-callout-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink);
+}
+.triage-callout-icon {
+  font-size: 13px;
+}
+.triage-callout-label {
+  color: var(--muted);
+  font-weight: 550;
+}
+.triage-callout-duration {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--action);
+  font-variant-numeric: tabular-nums;
+}
+.triage-callout-comparison {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.comparison-pct {
+  font-weight: 700;
+  color: #1e704a;
+}
+.comparison-note {
+  color: var(--muted);
+}
+
+.activity-event-subject-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 0 0;
+}
 .activity-event-subject {
-  margin: 3px 0 0;
+  margin: 0;
   color: var(--action);
   font-size: 11px;
   line-height: 1.5;
   overflow-wrap: anywhere;
+}
+.activity-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--action);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.activity-action-btn:hover {
+  color: var(--action-hover);
 }
 .activity-event-description {
   margin: 5px 0 0;
@@ -1689,8 +1961,8 @@ main .activity-filters button:not(.link):hover {
   font-size: 11px;
 }
 .activity-event-decision {
-  margin: 12px 0 0;
-  padding: 10px 12px;
+  margin: 10px 0 0;
+  padding: 9px 12px;
   border-left: 2px solid var(--warning-ink);
   background: var(--warning);
   color: var(--ink);
@@ -1701,11 +1973,50 @@ main .activity-filters button:not(.link):hover {
 .activity-event-decision strong {
   margin-right: 5px;
 }
+.decision-reason {
+  border-left-color: var(--warning-ink);
+  background: var(--warning);
+}
+.decision-verification {
+  border-left-color: #2e7d5b;
+  background: #f0fdf4;
+}
+.decision-report {
+  border-left-color: var(--accent);
+  background: #f4f8fb;
+}
+.activity-event-meta-stat {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.activity-event-meta-stat strong {
+  color: var(--ink);
+}
 .activity-event-outcome {
   margin: 8px 0 0;
   color: var(--action);
   font-size: 11px;
   font-weight: 600;
+}
+.activity-empty-state {
+  padding: 36px 20px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-top: 24px;
+}
+.activity-empty-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.activity-empty-desc {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--muted);
 }
 .activity-other-section {
   padding-top: 24px;

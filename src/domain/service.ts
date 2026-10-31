@@ -938,6 +938,7 @@ export async function manualClassify(
   if (observation)
     observation = verifyEvidence(review.originalText, [observation])[0];
   const runId = randomUUID();
+  let serverDuration: number | null = null;
   await db.transaction(async (tx) => {
     await tx.insert(analysisRuns).values({
       id: runId,
@@ -971,7 +972,7 @@ export async function manualClassify(
     const currentServerTime = now();
     const referenceViewTime = review.lastViewedAt ?? review.firstViewedAt;
     // Server-side optimistic calculation in UTC milliseconds: triagedAt - lastViewedAt
-    const serverDuration = referenceViewTime
+    serverDuration = referenceViewTime
       ? Math.max(
           1,
           Math.round(
@@ -1006,6 +1007,10 @@ export async function manualClassify(
     `Owner classified review as ${input.useful ? "specific" : "generic"}.`,
     "demo owner",
     "owner",
+    serverDuration !== null
+      ? { dwellSeconds: serverDuration, useful: input.useful, triaged: true }
+      : { useful: input.useful, triaged: true },
+    review.businessId,
   );
 }
 export async function correctMembership(
