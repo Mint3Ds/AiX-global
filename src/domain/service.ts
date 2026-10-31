@@ -1082,6 +1082,54 @@ export async function setThemeStatus(
     .update(themes)
     .set({ status, updatedAt: now() })
     .where(eq(themes.id, themeId));
+
+  if (status === "owner_confirmed") {
+    const currentServerTime = now();
+    const linked = await db
+      .select({
+        reviewId: observations.reviewId,
+        lastViewedAt: reviews.lastViewedAt,
+        firstViewedAt: reviews.firstViewedAt,
+        triagedAt: reviews.triagedAt,
+        triageDurationSeconds: reviews.triageDurationSeconds,
+      })
+      .from(memberships)
+      .innerJoin(observations, eq(observations.id, memberships.observationId))
+      .innerJoin(reviews, eq(reviews.id, observations.reviewId))
+      .where(eq(memberships.themeId, themeId));
+
+    const uniqueLinkedReviews = [
+      ...new Map(linked.map((item) => [item.reviewId, item])).values(),
+    ];
+
+    for (const rev of uniqueLinkedReviews) {
+      if (!rev.triagedAt) {
+        const viewTime = rev.lastViewedAt ?? rev.firstViewedAt;
+        const optimisticDuration = viewTime
+          ? Math.max(
+              1,
+              Math.round(
+                (currentServerTime.getTime() - viewTime.getTime()) / 1000,
+              ),
+            )
+          : null;
+
+        const updatePayload: Record<string, unknown> = {
+          triagedAt: currentServerTime,
+          updatedAt: currentServerTime,
+        };
+        if (optimisticDuration !== null && !rev.triageDurationSeconds) {
+          updatePayload.triageDurationSeconds = optimisticDuration;
+        }
+
+        await db
+          .update(reviews)
+          .set(updatePayload)
+          .where(eq(reviews.id, rev.reviewId));
+      }
+    }
+  }
+
   await event(
     status === "dismissed"
       ? "theme_dismissed"
