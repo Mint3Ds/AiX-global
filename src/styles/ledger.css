@@ -949,6 +949,36 @@ main .issue-category-tabs button:hover:not(.review-row) {
 .tasks-page .task-detail .form > label:nth-child(2) {
   grid-column: 1 / -1;
 }
+.tasks-page .task-detail .attendance-warning {
+  grid-column: 1 / -1;
+}
+.attendance-context {
+  display: grid;
+  gap: 3px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--ink);
+  font-size: 12px;
+}
+.attendance-context small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.attendance-context.attendance-on_shift {
+  border-left-color: #55745f;
+}
+.attendance-context.attendance-on_leave,
+.attendance-context.attendance-off_shift {
+  border-left-color: var(--warning-ink);
+}
+.attendance-warning {
+  margin: -4px 0 0;
+  color: var(--warning-ink);
+  font-size: 11px;
+}
 /* A task reads like a concise work record; source reviews are grouped without an inner scroller. */
 .tasks-page .task-detail {
   border-top: 2px solid var(--accent);

@@ -4115,32 +4115,6 @@ function TaskEditor({
           fullWidth
         />
       </label>
-      <div
-        className={`attendance-context attendance-${attendance.state}`}
-        role="status"
-        aria-live="polite"
-      >
-        <div>
-          <strong>{selectedEmployee?.name || "No employee"} · {attendance.label}</strong>
-          <span>{attendance.detail}</span>
-        </div>
-        <small>{attendance.source}</small>
-      </div>
-      {!['on_shift', 'unknown'].includes(attendance.state) && (
-        <p className="attendance-warning">
-          This employee is not scheduled for the selected date. You can still assign the task.
-        </p>
-      )}
-      <label>
-        Due date
-        <input
-          type="datetime-local"
-          aria-label="Due date"
-          aria-describedby={!dueAt ? "task-due-hint" : undefined}
-          value={dueAt}
-          onChange={(event) => setDueAt(event.target.value)}
-        />
-      </label>
       {isFirefox ? (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>
           <label>
@@ -4190,6 +4164,26 @@ function TaskEditor({
             </span>
           )}
         </label>
+      )}
+      <div
+        className={`attendance-context attendance-${attendance.state}`}
+        role="status"
+        aria-live="polite"
+      >
+        <div>
+          <strong>
+            {selectedEmployee?.name || "No employee"} · {attendance.label}
+          </strong>
+          {attendance.detail ? (
+            <span className="attendance-detail"> — {attendance.detail}</span>
+          ) : null}
+        </div>
+        <small>{attendance.source}</small>
+      </div>
+      {!['on_shift', 'unknown'].includes(attendance.state) && (
+        <p className="attendance-warning">
+          This employee is not scheduled for the selected date. You can still assign the task.
+        </p>
       )}
       <div className="controls">
         <button className="secondary" onClick={() => save(data())}>
