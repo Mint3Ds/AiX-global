@@ -79,7 +79,6 @@ const titles: Record<string, string> = {
   reply_publish_denied: "Posting blocked",
   handoff_simulated: "Simulated handoff recorded",
   reply_simulated_published: "Simulated published",
-  dataset_seeded: "Dataset initialized",
 };
 
 const taskStatuses: Record<string, string> = {
