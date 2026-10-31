@@ -629,15 +629,25 @@ main .issue-category-tabs button span {
   line-height: 1.5;
 }
 .empty-complaints {
-  margin-top: 12px;
-  padding: 18px;
-  border-radius: 2px;
-  background: var(--surface-alt);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 0 2px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.empty-complaints b {
+  flex: 0 0 auto;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 560;
 }
 .empty-complaints p {
-  margin: 5px 0 0;
+  margin: 0;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 .observation {
   margin: 16px 0;
