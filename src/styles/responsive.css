@@ -102,11 +102,14 @@
     font-size: 20px;
   }
   .review-primary-filters {
-    grid-template-columns: minmax(0, 1fr) minmax(130px, 0.35fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.75fr) auto;
     gap: 12px;
   }
   .review-search {
     grid-column: 1 / -1;
+  }
+  .review-primary-filters .filter-toggle {
+    align-self: end;
   }
   .review-advanced-filters {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -351,11 +354,11 @@
     padding-bottom: 16px;
   }
   .review-primary-filters {
-    grid-template-columns: minmax(0, 1fr) minmax(105px, 0.6fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 8px;
   }
   .review-primary-filters .filter-toggle {
-    grid-column: auto;
+    grid-column: 1 / -1;
     justify-self: stretch;
     min-height: 36px;
     padding: 6px 9px;
@@ -365,6 +368,12 @@
   }
   .review-primary-filters .review-search {
     grid-column: 1 / -1;
+  }
+  .review-sort-menu {
+    width: 132px;
+  }
+  .review-sort-menu .choice-menu-options {
+    min-width: 0;
   }
   .review-advanced-filters {
     grid-template-columns: 1fr;

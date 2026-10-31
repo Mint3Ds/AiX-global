@@ -67,11 +67,9 @@ export function BrandLoadingScreen({
     <div
       className={`brand-loading-screen ${isExiting ? "is-exiting" : ""}`}
       role="status"
-      aria-label="Loading Clarity review workspace"
+      aria-label="Loading Clarity"
       aria-live="polite"
     >
-      <div className="brand-loading-backdrop" aria-hidden="true" />
-      <div className="brand-loading-halo" aria-hidden="true" />
 
       <div className="brand-loading-lockup">
         <div className="brand-loading-symbol-wrap">
@@ -103,10 +101,6 @@ export function BrandLoadingScreen({
               <span>i</span>
               <span>t</span>
               <span>y</span>
-            </div>
-            <div className="brand-loading-sub">
-              <span className="brand-loading-sub-line" aria-hidden="true" />
-              <span className="brand-loading-sub-text">Review workspace</span>
             </div>
           </div>
         </div>

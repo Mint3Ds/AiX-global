@@ -9,7 +9,6 @@ import { useState } from "react";
  * 1. Logo mark fades in and draws its strokes in the center at a zoomed-in scale.
  * 2. Logo smoothly zooms out and glides left, towing "Clarity" out in its wake
  *    with a mathematically locked clearance and slightly elevated optical alignment.
- * 3. Subtitle ("Review workspace") settles in underneath.
  */
 export function LogoAnimationPreview({
   compact = false,
@@ -25,12 +24,12 @@ export function LogoAnimationPreview({
       key={playKey}
       className={`clarity-logo-intro ${compact ? "clarity-logo-intro-compact" : ""}`}
       onAnimationEnd={(e) => {
-        if (e.animationName === "claritySubtitleSettle") {
+        if (e.animationName === "clarityPullMask") {
           onComplete?.();
         }
       }}
     >
-      <div className="clarity-logo-lockup" aria-label="Clarity Review workspace">
+      <div className="clarity-logo-lockup" aria-label="Clarity">
         <div className="clarity-symbol-stage">
           <svg
             className="clarity-symbol-svg"
@@ -60,10 +59,6 @@ export function LogoAnimationPreview({
                   {char}
                 </span>
               ))}
-            </span>
-            <span className="clarity-wordmark-subtitle">
-              <i aria-hidden="true" />
-              Review workspace
             </span>
           </div>
         </div>
@@ -146,11 +141,12 @@ export function LogoAnimationPreview({
         }
         .clarity-wordmark-title {
           display: flex;
+          font-family: Arial, Helvetica, sans-serif;
           font-size: 68px;
-          font-weight: 720;
+          font-weight: 400;
           line-height: 1.14;
-          letter-spacing: -0.055em;
-          color: var(--ink, #17232d);
+          letter-spacing: -0.045em;
+          color: #000;
         }
         .clarity-wordmark-title span {
           display: inline-block;

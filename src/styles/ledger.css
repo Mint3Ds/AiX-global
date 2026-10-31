@@ -488,10 +488,9 @@ textarea {
 }
 .review-primary-filters {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) minmax(145px, 0.32fr) auto;
-  gap: 12px;
-  align-items: end;
+  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) minmax(135px, 0.65fr) auto;
+  gap: 16px;
+  align-items: start;
 }
 .review-primary-filters > .choice-menu-field,
 .review-advanced-filters > .choice-menu-field { width: 100%; }
@@ -526,6 +525,11 @@ main .filter-toggle {
   border-radius: var(--radius);
   background: var(--surface-alt);
   animation: page-enter var(--motion-medium) var(--ease-out) both;
+}
+.reviews-page .choice-menu[open] .choice-menu-options {
+  position: static;
+  margin-top: 5px;
+  max-height: 240px;
 }
 .review-view-controls {
   display: flex;
@@ -577,7 +581,26 @@ main .review-quick-filters button:hover {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin: 8px 0 12px;
+  margin: 16px 0 12px;
+}
+.review-sort-menu {
+  width: 145px;
+  flex: 0 0 auto;
+}
+.review-sort-menu .choice-menu-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.review-sort-menu .choice-menu > summary {
+  min-height: 34px;
+  border-radius: 5px;
+  box-shadow: 0 1px 4px #17232d0a;
+}
+.review-sort-menu .choice-menu-options {
+  min-width: 170px;
 }
 .review-results p {
   margin: 0;
@@ -753,6 +776,32 @@ main .review-quick-filters button:hover {
   line-height: 1.75;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+.review-linked-work {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.review-linked-task {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 44px;
+  padding: 9px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+.review-linked-task:hover {
+  color: var(--action);
+}
+.review-linked-task small {
+  flex: 0 0 auto;
+  color: var(--muted);
 }
 .review-provenance {
   margin: 21px 0;

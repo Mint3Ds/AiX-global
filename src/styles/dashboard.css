@@ -1,7 +1,7 @@
 /* DASHBOARD: metrics, evidence, activity, and work previews. */
 /* Shared colors, typography, and motion are defined in tokens.css. */
 .dashboard .page-heading {
-  margin-bottom: 28px;
+  margin-bottom: 42px;
 }
 .dashboard .page-heading h1 {
   max-width: 780px;
@@ -448,7 +448,15 @@ main .dashboard button.work-preview:hover {
   font-size: 12px;
 }
 .dashboard-focused .page-heading {
-  margin-bottom: 30px;
+  margin-bottom: 42px;
+}
+.dashboard-scope {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 .dashboard-focused .panel-heading {
   align-items: flex-end;
@@ -456,18 +464,18 @@ main .dashboard button.work-preview:hover {
 .dashboard-overview {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 34px;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
+  margin-bottom: 0;
+  border: 1px solid #e8edf0;
+  box-shadow: 0 2px 6px #17232d08;
 }
 main .dashboard button.dashboard-overview-item {
   display: grid;
   min-width: 0;
-  min-height: 190px;
+  min-height: 148px;
   grid-template-rows: auto auto auto 1fr;
   align-content: stretch;
   justify-items: start;
-  padding: 15px 20px 13px;
+  padding: 20px 23px 15px;
   border: 0;
   border-right: 1px solid var(--line);
   border-radius: 0;
@@ -476,11 +484,11 @@ main .dashboard button.dashboard-overview-item {
   text-align: left;
 }
 main .dashboard button.dashboard-overview-item:first-child {
-  padding-left: 0;
+  padding-left: 23px;
 }
 main .dashboard button.dashboard-overview-item:last-child {
   border-right: 0;
-  padding-right: 0;
+  padding-right: 23px;
 }
 main .dashboard button.dashboard-overview-item:hover {
   background: var(--surface-alt);
@@ -491,8 +499,8 @@ main .dashboard button.dashboard-overview-item:hover {
   font-weight: 550;
 }
 .dashboard-overview-item strong {
-  margin: 6px 0 3px;
-  font-size: 29px;
+  margin: 12px 0 4px;
+  font-size: 35px;
   font-weight: 560;
   line-height: 1;
   letter-spacing: -0.045em;
@@ -505,9 +513,59 @@ main .dashboard button.dashboard-overview-item:hover {
 .dashboard-graphic {
   width: 100%;
   min-width: 0;
-  height: 58px;
+  height: 18px;
   align-self: end;
-  margin-top: 12px;
+  margin-top: 9px;
+}
+.dashboard-overview .review-mix-graphic {
+  width: 124px;
+  gap: 4px;
+}
+.dashboard-overview .review-mix-column {
+  grid-template-rows: 18px;
+}
+.dashboard-overview .review-mix-value,
+.dashboard-overview .review-mix-column small,
+.dashboard-overview .dashboard-graphic-legend {
+  display: none;
+}
+.dashboard-overview .review-mix-bar {
+  height: 18px;
+}
+.dashboard-overview .review-mix-bar i {
+  width: 100%;
+  max-height: 16px;
+  background: #839cac;
+  box-shadow: none;
+}
+.dashboard-overview .review-mix-bar i::before,
+.dashboard-overview .review-mix-bar i::after {
+  display: none;
+}
+.dashboard-overview .priority-meter-graphic {
+  width: 122px;
+}
+.dashboard-overview .priority-meter-track {
+  height: 5px;
+  gap: 3px;
+  background: transparent;
+}
+.dashboard-overview .priority-meter-segment {
+  border-radius: 2px;
+}
+.dashboard-summary {
+  margin: 20px 0 38px;
+  padding-bottom: 21px;
+}
+.dashboard-summary > div {
+  gap: 20px;
+}
+main .dashboard button.summary-metric {
+  border-bottom: 1px solid var(--line);
+}
+.dashboard-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 4vw, 64px);
 }
 .review-mix-graphic {
   display: grid;

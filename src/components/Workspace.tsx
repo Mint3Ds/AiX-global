@@ -1284,7 +1284,7 @@ export function Workspace({
     currentReviewPage * 8 + 8,
   );
   const selected =
-    filtered.find((review) => review.id === selectedReview) ||
+    visibleReviews.find((review) => review.id === selectedReview) ||
     visibleReviews[0];
   const changeReviewFilter = (update: () => void) => {
     update();
@@ -1317,6 +1317,18 @@ export function Workspace({
     selected && state
       ? state.observations.filter((point) => point.reviewId === selected.id)
       : [];
+  const reviewThemeIds = new Set(
+    state?.memberships
+      .filter((membership) =>
+        reviewPoints.some((point) => point.id === membership.observationId),
+      )
+      .map((membership) => membership.themeId) || [],
+  );
+  const reviewTasks = (state?.tasks || [])
+    .filter((item) => reviewThemeIds.has(item.themeId))
+    .sort((a, b) =>
+      Number(b.status !== "resolved") - Number(a.status !== "resolved"),
+    );
   const categories = reviewCategoryOptions(
     (state?.observations || []).map((observation) => observation.category),
   );
@@ -2171,39 +2183,6 @@ export function Workspace({
                       />
                     </label>
                     <ChoiceMenu
-                      label="Sort"
-                      value={reviewSort}
-                      options={[
-                        { value: "newest", label: "Newest" },
-                        { value: "oldest", label: "Oldest" },
-                        { value: "lowest", label: "Lowest rating" },
-                        { value: "highest", label: "Highest rating" },
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setReviewSort(value))
-                      }
-                    />
-                    <button
-                      className="secondary filter-toggle"
-                      aria-expanded={showReviewFilters}
-                      aria-controls="advanced-review-filters"
-                      onClick={() => setShowReviewFilters(!showReviewFilters)}
-                    >
-                      Filters
-                      {advancedFilterCount
-                        ? ` (${advancedFilterCount})`
-                        : ""}{" "}
-                      <span aria-hidden="true">
-                        {showReviewFilters ? "−" : "+"}
-                      </span>
-                    </button>
-                  </div>
-                  <div
-                    id="advanced-review-filters"
-                    className="review-advanced-filters"
-                    hidden={!showReviewFilters}
-                  >
-                    <ChoiceMenu
                       label="Property"
                       value={branch}
                       options={[
@@ -2231,6 +2210,26 @@ export function Workspace({
                         changeReviewFilter(() => setRating(value))
                       }
                     />
+                    <button
+                      className="secondary filter-toggle"
+                      aria-expanded={showReviewFilters}
+                      aria-controls="advanced-review-filters"
+                      onClick={() => setShowReviewFilters(!showReviewFilters)}
+                    >
+                      Filters
+                      {advancedFilterCount
+                        ? ` (${advancedFilterCount})`
+                        : ""}{" "}
+                      <span aria-hidden="true">
+                        {showReviewFilters ? "−" : "+"}
+                      </span>
+                    </button>
+                  </div>
+                  <div
+                    id="advanced-review-filters"
+                    className="review-advanced-filters"
+                    hidden={!showReviewFilters}
+                  >
                     <ChoiceMenu
                       label="Category"
                       value={category}
@@ -2344,6 +2343,18 @@ export function Workspace({
                       : "No matching"}{" "}
                     reviews
                   </p>
+                  <ChoiceMenu
+                    label="Sort reviews"
+                    value={reviewSort}
+                    options={[
+                      { value: "newest", label: "Newest first" },
+                      { value: "oldest", label: "Oldest first" },
+                      { value: "lowest", label: "Lowest rating" },
+                      { value: "highest", label: "Highest rating" },
+                    ]}
+                    onChange={(value) => changeReviewFilter(() => setReviewSort(value))}
+                    className="review-sort-menu"
+                  />
                 </div>
                 <div className="review-workspace">
                   <div className="review-register-panel">
@@ -2570,6 +2581,24 @@ export function Workspace({
                                     : "This review contains general feedback without a specific observation."}
                             </p>
                           </div>
+                        )}
+                        {reviewTasks.length > 0 && (
+                          <section className="review-linked-work" aria-label="Work linked to this review">
+                            <div className="findings-heading">
+                              <h4>Linked work</h4>
+                              <span>{reviewTasks.length} {reviewTasks.length === 1 ? "task" : "tasks"}</span>
+                            </div>
+                            {reviewTasks.map((item) => (
+                              <button
+                                className="review-linked-task"
+                                key={item.id}
+                                onClick={() => openTask(item.id)}
+                              >
+                                <span>{item.title}</span>
+                                <small>{issueWorkLabel(item.status)}</small>
+                              </button>
+                            ))}
+                          </section>
                         )}
                         {["pending", "failed", "needs_review"].includes(
                           selected.processingStatus,

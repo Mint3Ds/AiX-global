@@ -76,16 +76,20 @@ export function DashboardView({
   onApproveTask: (task: WorkItem, assigneeId: string, dueAt: string) => void;
   busy: string;
 }) {
-  const headlineMetrics = ["Total reviews", "New today", "Issues needing attention", "Open approved tasks"]
+  const headlineMetrics = ["Total reviews", "Issues needing attention", "Open approved tasks", "Replies to approve"]
     .map((title) => metrics.find((metric) => metric.title === title))
     .filter((metric): metric is MetricItem => !!metric);
+  const newToday = metrics.find((metric) => metric.title === "New today");
+  const specificFeedback = metrics.find((metric) => metric.title === "Specific feedback");
+  const attentionCount = metrics.find((metric) => metric.title === "Issues needing attention")?.value ?? 0;
 
   return (
     <section className="dashboard dashboard-focused">
-      <PageHeading title="Dashboard" description="Urgent feedback and work awaiting your decision.">
+      <PageHeading title="Your workspace" description="Guest feedback, the evidence behind it, and the work that follows.">
         <button onClick={onNewReview}>Add a review</button>
       </PageHeading>
 
+      <p className="dashboard-scope eyebrow">Across all properties</p>
       <nav className="dashboard-overview" aria-label="Workspace overview">
         {headlineMetrics.map((metric) => {
           const visual = metric.visual as MetricGraphic | undefined;
@@ -98,11 +102,21 @@ export function DashboardView({
               <span>{metric.title}</span>
               <strong>{metric.value.toLocaleString()}</strong>
               <small>{metric.hint}</small>
-              {visual && <DashboardMetricGraphic visual={visual} title={metric.title} />}
+              {visual && ["Total reviews", "Issues needing attention"].includes(metric.title) && (
+                <DashboardMetricGraphic visual={visual} title={metric.title} />
+              )}
             </button>
           );
         })}
       </nav>
+
+      <div className="dashboard-summary">
+        <p><span className="summary-dot" aria-hidden="true" /><strong>{attentionCount} {attentionCount === 1 ? "issue needs" : "issues need"} attention.</strong> Review the original evidence before deciding.</p>
+        <div>
+          {newToday && <button className="summary-metric" onClick={() => onNavigate(newToday.destination, newToday.title)}><strong>{newToday.value.toLocaleString()}</strong> New today</button>}
+          {specificFeedback && <button className="summary-metric" onClick={() => onNavigate(specificFeedback.destination, specificFeedback.title)}><strong>{specificFeedback.value.toLocaleString()}</strong> Specific feedback</button>}
+        </div>
+      </div>
 
       <div className="dashboard-grid">
         <section className="priority-panel" aria-labelledby="urgent-review-heading">
@@ -137,8 +151,8 @@ export function DashboardView({
             </div>
           ) : (
             <div className="dashboard-empty">
-              <h4>No urgent reviews</h4>
-              <p>New urgent feedback will appear here for review.</p>
+              <h4>No issues need attention</h4>
+              <p>New issues needing review will appear here.</p>
             </div>
           )}
         </section>
