@@ -23,6 +23,8 @@ export function BrandLoadingScreen({
 }: BrandLoadingScreenProps) {
   const [animationFinished, setAnimationFinished] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [noAnimationFallback, setNoAnimationFallback] = useState(false);
+  const animationStartedRef = useRef(false);
   const completedRef = useRef(false);
 
   const finishAndExit = useCallback(() => {
@@ -35,13 +37,33 @@ export function BrandLoadingScreen({
     return () => clearTimeout(exitTimer);
   }, [onComplete]);
 
-  // Set animationFinished after minDurationMs so the full intro is appreciated
+  // Detect if no animation is playing (e.g. reduced-motion or suppressed keyframes)
   useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      const timer = window.setTimeout(() => setNoAnimationFallback(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    // Watchdog: If CSS animation hasn't started within 350ms, switch to logo loading fallback
+    const watchdog = setTimeout(() => {
+      if (!animationStartedRef.current) {
+        setNoAnimationFallback(true);
+      }
+    }, 350);
+    return () => clearTimeout(watchdog);
+  }, []);
+
+  // Set animationFinished after duration so the intro or loading state is appreciated
+  useEffect(() => {
+    const duration = noAnimationFallback ? 700 : minDurationMs;
     const timer = setTimeout(() => {
       setAnimationFinished(true);
-    }, minDurationMs);
+    }, duration);
     return () => clearTimeout(timer);
-  }, [minDurationMs]);
+  }, [minDurationMs, noAnimationFallback]);
 
   // When animation has finished AND backend data is ready (and no blocking error), smoothly exit
   useEffect(() => {
@@ -65,16 +87,21 @@ export function BrandLoadingScreen({
 
   return (
     <div
-      className={`brand-loading-screen ${isExiting ? "is-exiting" : ""}`}
+      className={`brand-loading-screen ${isExiting ? "is-exiting" : ""} ${noAnimationFallback ? "no-animation" : ""}`}
       role="status"
-      aria-label="Loading Clarity review workspace"
+      aria-label="Loading Clarity"
       aria-live="polite"
     >
       <div className="brand-loading-backdrop" aria-hidden="true" />
       <div className="brand-loading-halo" aria-hidden="true" />
 
       <div className="brand-loading-lockup">
-        <div className="brand-loading-symbol-wrap">
+        <div
+          className="brand-loading-symbol-wrap"
+          onAnimationStart={() => {
+            animationStartedRef.current = true;
+          }}
+        >
           <svg
             className="brand-loading-svg"
             viewBox="0 0 64 64"
@@ -82,13 +109,29 @@ export function BrandLoadingScreen({
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
+            <defs>
+              <mask id="brand-loading-mask-left">
+                <path
+                  className="path-left"
+                  d="M 27.5 9.2 C 18.52 12.51, 10.91 22.95, 7.2 31.5 C 8.96 40.13, 17.18 48.6, 25.25 52.8 C 34.03 49.79, 41.56 40.34, 44.5 32.0 C 43.26 28.03, 40.87 24.64, 36.0 17.5"
+                />
+              </mask>
+              <mask id="brand-loading-mask-right">
+                <path
+                  className="path-right"
+                  d="M 36.5 54.8 C 45.48 51.49, 53.09 41.05, 56.8 32.5 C 55.04 23.87, 46.82 15.4, 38.75 11.2 C 29.97 14.21, 22.44 23.66, 19.5 32.0 C 20.74 35.97, 23.13 39.36, 28.0 46.5"
+                />
+              </mask>
+            </defs>
             <path
-              className="path-left"
-              d="M26 8C17 14 9 24 5 32c4 10 12 19 22 25l11-10c-7-5-13-11-16-15 4-8 9.5-15.5 17.5-21.5"
+              mask="url(#brand-loading-mask-left)"
+              fillRule="evenodd"
+              d="M 24.75 8.75 C 25.08 8.75, 25.83 8.71, 26.50 9.00 C 27.17 9.29, 29.83 9.12, 28.75 10.50 C 27.67 11.88, 22.17 15.42, 20.00 17.25 C 17.83 19.08, 16.88 20.25, 15.75 21.50 C 14.62 22.75, 14.08 23.54, 13.25 24.75 C 12.42 25.96, 11.17 28.00, 10.75 28.75 C 10.33 29.50, 10.96 28.83, 10.75 29.25 C 10.54 29.67, 9.71 30.67, 9.50 31.25 C 9.29 31.83, 9.42 32.42, 9.50 32.75 C 9.58 33.08, 9.54 32.42, 10.00 33.25 C 10.46 34.08, 11.17 36.08, 12.25 37.75 C 13.33 39.42, 15.25 41.79, 16.50 43.25 C 17.75 44.71, 18.46 45.38, 19.75 46.50 C 21.04 47.62, 23.38 49.33, 24.25 50.00 C 25.12 50.67, 24.62 50.46, 25.00 50.50 C 25.38 50.54, 25.54 50.79, 26.50 50.25 C 27.46 49.71, 29.25 48.50, 30.75 47.25 C 32.25 46.00, 34.17 44.17, 35.50 42.75 C 36.83 41.33, 37.67 40.38, 38.75 38.75 C 39.83 37.12, 41.42 34.17, 42.00 33.00 C 42.58 31.83, 42.54 32.62, 42.25 31.75 C 41.96 30.88, 41.12 29.21, 40.25 27.75 C 39.38 26.29, 37.96 24.25, 37.00 23.00 C 36.04 21.75, 34.62 20.96, 34.50 20.25 C 34.38 19.54, 35.71 19.17, 36.25 18.75 C 36.79 18.33, 37.42 17.92, 37.75 17.75 C 38.08 17.58, 37.42 16.79, 38.25 17.75 C 39.08 18.71, 41.33 21.25, 42.75 23.50 C 44.17 25.75, 46.08 29.71, 46.75 31.25 C 47.42 32.79, 46.92 32.08, 46.75 32.75 C 46.58 33.42, 46.04 34.67, 45.75 35.25 C 45.46 35.83, 45.12 36.00, 45.00 36.25 C 44.88 36.50, 45.54 35.79, 45.00 36.75 C 44.46 37.71, 42.75 40.54, 41.75 42.00 C 40.75 43.46, 40.42 44.00, 39.00 45.50 C 37.58 47.00, 34.88 49.62, 33.25 51.00 C 31.62 52.38, 30.42 53.04, 29.25 53.75 C 28.08 54.46, 27.12 55.04, 26.25 55.25 C 25.38 55.46, 25.29 55.67, 24.00 55.00 C 22.71 54.33, 20.38 52.79, 18.50 51.25 C 16.62 49.71, 14.42 47.62, 12.75 45.75 C 11.08 43.88, 9.79 42.08, 8.50 40.00 C 7.21 37.92, 5.58 34.79, 5.00 33.25 C 4.42 31.71, 4.79 31.54, 5.00 30.75 C 5.21 29.96, 6.04 28.96, 6.25 28.50 C 6.46 28.04, 5.88 28.75, 6.25 28.00 C 6.62 27.25, 7.62 25.38, 8.50 24.00 C 9.38 22.62, 9.88 21.58, 11.50 19.75 C 13.12 17.92, 16.50 14.58, 18.25 13.00 C 20.00 11.42, 21.04 10.92, 22.00 10.25 C 22.96 9.58, 23.58 9.21, 24.00 9.00 C 24.42 8.79, 24.38 9.04, 24.50 9.00 C 24.62 8.96, 24.42 8.75, 24.75 8.75 Z"
             />
             <path
-              className="path-right"
-              d="M38 56c9-6 17-16 21-24-4-10-12-19-22-25L26 17c7 5 13 11 16 15-4 8-9.5 15.5-17.5 21.5"
+              mask="url(#brand-loading-mask-right)"
+              fillRule="evenodd"
+              d="M 39.25 55.25 C 38.92 55.25, 38.17 55.29, 37.50 55.00 C 36.83 54.71, 34.17 54.88, 35.25 53.50 C 36.33 52.12, 41.83 48.58, 44.00 46.75 C 46.17 44.92, 47.12 43.75, 48.25 42.50 C 49.38 41.25, 49.92 40.46, 50.75 39.25 C 51.58 38.04, 52.83 36.00, 53.25 35.25 C 53.67 34.50, 53.04 35.17, 53.25 34.75 C 53.46 34.33, 54.29 33.33, 54.50 32.75 C 54.71 32.17, 54.58 31.58, 54.50 31.25 C 54.42 30.92, 54.46 31.58, 54.00 30.75 C 53.54 29.92, 52.83 27.92, 51.75 26.25 C 50.67 24.58, 48.75 22.21, 47.50 20.75 C 46.25 19.29, 45.54 18.62, 44.25 17.50 C 42.96 16.38, 40.62 14.67, 39.75 14.00 C 38.88 13.33, 39.38 13.54, 39.00 13.50 C 38.62 13.46, 38.46 13.21, 37.50 13.75 C 36.54 14.29, 34.75 15.50, 33.25 16.75 C 31.75 18.00, 29.83 19.83, 28.50 21.25 C 27.17 22.67, 26.33 23.62, 25.25 25.25 C 24.17 26.88, 22.58 29.83, 22.00 31.00 C 21.42 32.17, 21.46 31.38, 21.75 32.25 C 22.04 33.12, 22.88 34.79, 23.75 36.25 C 24.62 37.71, 26.04 39.75, 27.00 41.00 C 27.96 42.25, 29.38 43.04, 29.50 43.75 C 29.62 44.46, 28.29 44.83, 27.75 45.25 C 27.21 45.67, 26.58 46.08, 26.25 46.25 C 25.92 46.42, 26.58 47.21, 25.75 46.25 C 24.92 45.29, 22.67 42.75, 21.25 40.50 C 19.83 38.25, 17.92 34.29, 17.25 32.75 C 16.58 31.21, 17.08 31.92, 17.25 31.25 C 17.42 30.58, 17.96 29.33, 18.25 28.75 C 18.54 28.17, 18.88 28.00, 19.00 27.75 C 19.12 27.50, 18.46 28.21, 19.00 27.25 C 19.54 26.29, 21.25 23.46, 22.25 22.00 C 23.25 20.54, 23.58 20.00, 25.00 18.50 C 26.42 17.00, 29.12 14.38, 30.75 13.00 C 32.38 11.62, 33.58 10.96, 34.75 10.25 C 35.92 9.54, 36.88 8.96, 37.75 8.75 C 38.62 8.54, 38.71 8.33, 40.00 9.00 C 41.29 9.67, 43.62 11.21, 45.50 12.75 C 47.38 14.29, 49.58 16.38, 51.25 18.25 C 52.92 20.12, 54.21 21.92, 55.50 24.00 C 56.79 26.08, 58.42 29.21, 59.00 30.75 C 59.58 32.29, 59.21 32.46, 59.00 33.25 C 58.79 34.04, 57.96 35.04, 57.75 35.50 C 57.54 35.96, 58.12 35.25, 57.75 36.00 C 57.38 36.75, 56.38 38.62, 55.50 40.00 C 54.62 41.38, 54.12 42.42, 52.50 44.25 C 50.88 46.08, 47.50 49.42, 45.75 51.00 C 44.00 52.58, 42.96 53.08, 42.00 53.75 C 41.04 54.42, 40.42 54.79, 40.00 55.00 C 39.58 55.21, 39.62 54.96, 39.50 55.00 C 39.38 55.04, 39.58 55.25, 39.25 55.25 Z"
             />
           </svg>
         </div>
@@ -103,10 +146,6 @@ export function BrandLoadingScreen({
               <span>i</span>
               <span>t</span>
               <span>y</span>
-            </div>
-            <div className="brand-loading-sub">
-              <span className="brand-loading-sub-line" aria-hidden="true" />
-              <span className="brand-loading-sub-text">Review workspace</span>
             </div>
           </div>
         </div>

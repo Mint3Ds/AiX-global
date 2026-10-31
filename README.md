@@ -47,6 +47,16 @@ SEED_LEGACY_REVIEWS=yes npm run db:seed
 npm run dev
 ```
 
+> [!NOTE]
+> **Database migrations for new columns:** If you or your AI agents pull new commits with updated database schema columns (such as review triage dwell tracking), rerun migrations to update your local tables:
+>
+> ```sh
+> npm run db:migrate
+> npm run db:seed
+> ```
+>
+> Or use `npm run db:reset` to completely recreate and reseed your local database.
+
 Open `http://localhost:3000`. The default `AI_MODE=fixture` needs no AI keys. Each teammate runs their own database and migration/seed; GitHub shares code and JSON fixtures, not local PostgreSQL rows. `db:migrate` and `db:seed` are repeatable and do not reset owner work. Ordinary `db:seed` adds businesses, properties, employees, and themes. `SEED_LEGACY_REVIEWS=yes npm run db:seed` also loads the historical synthetic reviews and labelled analyses where missing. The separate demo review is never seeded. Do not commit `.env.local`.
 
 For a fresh local PostgreSQL installation on macOS, the previous setup still applies: install/start `postgresql@16`, create a `visit2value` role and database, then use the URL in `.env.example`. Replit requires a provisioned PostgreSQL database and `DATABASE_URL` Secret. Import this repository, run the same migration/seed commands, and set `AI_MODE=fixture` as a Secret. If publishing a Replit App, check its published database and Secrets separately.

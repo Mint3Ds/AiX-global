@@ -12,18 +12,17 @@
   font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   overflow: hidden;
   opacity: 1;
-  filter: blur(0px);
-  transform: scale(1);
-  transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
-              filter 0.48s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, filter, transform;
+  transform: translateZ(0) scale(1);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .brand-loading-screen.is-exiting {
   opacity: 0;
-  filter: blur(8px);
-  transform: scale(1.02);
+  transform: translateZ(0) scale(1.02);
   pointer-events: none;
 }
 
@@ -39,6 +38,7 @@
   opacity: 0.35;
   mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
   -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
+  transform: translateZ(0);
 }
 
 /* Ambient halo behind logo during initial zoom-in */
@@ -49,9 +49,12 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(73, 107, 134, 0.16) 0%, transparent 70%);
   opacity: 0;
-  transform: scale(0.7);
+  transform: translateZ(0) scale(0.7);
   pointer-events: none;
   animation: brandHaloPulse 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Brand lockup container */
@@ -61,12 +64,15 @@
   display: flex;
   align-items: center;
   gap: 22px;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /*
  * 1. Logo Mark Wrapper (84px × 84px)
  * Optical elevation: -8px along Y-axis relative to the text cap height.
- * Starts centered at translateX(132px) translateY(-8px) scale(2.05).
+ * Hardware-accelerated GPU layer with 100% compositor-driven transforms.
  */
 .brand-loading-symbol-wrap {
   position: relative;
@@ -78,8 +84,9 @@
   justify-content: center;
   opacity: 0;
   transform: translate3d(132px, -8px, 0) scale(2.05);
-  filter: blur(6px);
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: brandLogoFadeAndZoomPull 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
@@ -87,23 +94,31 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+  transform: translateZ(0);
 }
 
-.brand-loading-svg path {
-  stroke: var(--ink, #17232d);
-  stroke-width: 5.2;
+.brand-loading-svg > path {
+  fill: var(--ink, #17232d);
+  stroke: none;
+}
+
+.brand-loading-svg mask path {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 8.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 160;
   stroke-dashoffset: 160;
+  will-change: stroke-dashoffset;
 }
 
 .brand-loading-svg .path-left {
-  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.06s forwards;
+  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.04s forwards;
 }
 
 .brand-loading-svg .path-right {
-  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.18s forwards;
+  animation: brandStrokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.16s forwards;
 }
 
 /*
@@ -118,6 +133,8 @@
   transform: translate3d(163.5px, 0, 0);
   clip-path: inset(0 100% 0 0);
   will-change: transform, clip-path;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: brandWordmarkTowAndUnmask 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
 }
 
@@ -129,6 +146,8 @@
   transform: translate3d(-22px, 0, 0);
   transform-origin: left center;
   will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: brandWordmarkPullOut 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
 }
 
@@ -145,8 +164,9 @@
   display: inline-block;
   opacity: 0;
   transform: translate3d(-10px, 0, 0);
-  filter: blur(3px);
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: brandLetterSettle 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
@@ -168,6 +188,9 @@
   opacity: 0;
   transform: translate3d(0, 6px, 0);
   animation: brandSubFadeIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.95s forwards;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .brand-loading-sub-line {
@@ -197,6 +220,7 @@
   color: var(--muted, #586978);
   opacity: 0;
   animation: brandMetaFade 0.6s ease 2.2s forwards;
+  will-change: opacity;
 }
 
 .brand-loading-skip-btn {
@@ -252,46 +276,21 @@
   background: var(--action-hover, #172f42);
 }
 
-/* Replay intro link in workspace footer */
-.replay-intro-link {
-  appearance: none;
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 0.055em;
-  color: var(--muted, #586978);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--line-strong, #aabac7);
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
-}
-
-.replay-intro-link:hover {
-  color: var(--ink, #17232d);
-  text-decoration-color: var(--accent, #496b86);
-}
-
-/* Keyframes */
+/* Keyframes — 100% GPU-accelerated compositing without re-rasterization */
 @keyframes brandLogoFadeAndZoomPull {
   0% {
     opacity: 0;
     transform: translate3d(132px, -8px, 0) scale(2.05);
-    filter: blur(6px);
     animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   }
   32% {
     opacity: 1;
     transform: translate3d(132px, -8px, 0) scale(1.75);
-    filter: blur(0px);
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
   100% {
     opacity: 1;
     transform: translate3d(0px, -8px, 0) scale(1);
-    filter: blur(0px);
   }
 }
 
@@ -333,12 +332,10 @@
   0% {
     opacity: 0;
     transform: translate3d(-10px, 0, 0);
-    filter: blur(3px);
   }
   100% {
     opacity: 1;
     transform: translate3d(0px, 0, 0);
-    filter: blur(0px);
   }
 }
 
@@ -356,15 +353,15 @@
 @keyframes brandHaloPulse {
   0% {
     opacity: 0;
-    transform: scale(0.7);
+    transform: translateZ(0) scale(0.7);
   }
   32% {
     opacity: 1;
-    transform: scale(1.12);
+    transform: translateZ(0) scale(1.12);
   }
   100% {
     opacity: 0.35;
-    transform: scale(0.95);
+    transform: translateZ(0) scale(0.95);
   }
 }
 
@@ -374,15 +371,112 @@
   }
 }
 
+/*
+ * Logo loading state:
+ * Displayed when no animation is running or prefers-reduced-motion is active.
+ * Shows the full logo lockup centered with an ambient breathing pulse while workspace data loads.
+ */
+.brand-loading-screen.no-animation .brand-loading-symbol-wrap {
+  opacity: 1 !important;
+  transform: translate3d(0, -8px, 0) scale(1) !important;
+  animation: brandFallbackLogoPulse 2.4s ease-in-out infinite !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-svg path {
+  stroke-dashoffset: 0 !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-wordmark-mask {
+  transform: translate3d(0, 0, 0) !important;
+  clip-path: inset(0 0% 0 0) !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-wordmark-track {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-title span {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-sub {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-halo {
+  opacity: 0.25 !important;
+  transform: translateZ(0) scale(0.95) !important;
+  animation: none !important;
+}
+
+.brand-loading-screen.no-animation .brand-loading-meta {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .brand-loading-symbol-wrap,
-  .brand-loading-wordmark-mask,
-  .brand-loading-wordmark-track,
-  .brand-loading-title span,
-  .brand-loading-sub,
-  .brand-loading-svg .path-left,
-  .brand-loading-svg .path-right {
-    animation-duration: 0.01s !important;
-    animation-delay: 0s !important;
+  .brand-loading-symbol-wrap {
+    opacity: 1 !important;
+    transform: translate3d(0, -8px, 0) scale(1) !important;
+    animation: brandFallbackLogoPulse 2.4s ease-in-out infinite !important;
+  }
+
+  .brand-loading-svg path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  .brand-loading-wordmark-mask {
+    transform: translate3d(0, 0, 0) !important;
+    clip-path: inset(0 0% 0 0) !important;
+    animation: none !important;
+  }
+
+  .brand-loading-wordmark-track {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+
+  .brand-loading-title span {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+
+  .brand-loading-sub {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+
+  .brand-loading-halo {
+    opacity: 0.25 !important;
+    transform: translateZ(0) scale(0.95) !important;
+    animation: none !important;
+  }
+
+  .brand-loading-meta {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
+@keyframes brandFallbackLogoPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate3d(0, -8px, 0) scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translate3d(0, -8px, 0) scale(0.96);
   }
 }

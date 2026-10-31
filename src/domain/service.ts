@@ -260,6 +260,7 @@ export async function getState(businessId: string = defaultBusinessId) {
     allReplies,
     allEvents,
     allEmployees,
+    allBusinessThemeRows,
   ] = await Promise.all([
     db.select().from(businesses),
     db.select().from(branches).where(eq(branches.businessId, businessId)),
@@ -306,6 +307,13 @@ export async function getState(businessId: string = defaultBusinessId) {
       .where(eq(events.businessId, businessId))
       .orderBy(desc(events.createdAt)),
     db.select().from(employees).where(eq(employees.businessId, businessId)),
+    db
+      .select({
+        businessId: themes.businessId,
+        type: themes.type,
+        status: themes.status,
+      })
+      .from(themes),
   ]);
   const attemptIds = allReportAttempts.map((attempt) => attempt.id);
   const allReportAttachments = attemptIds.length
@@ -337,7 +345,15 @@ export async function getState(businessId: string = defaultBusinessId) {
   return {
     mode: aiMode(),
     synthetic: true,
-    businesses: allBusinesses,
+    businesses: allBusinesses.map((biz) => ({
+      ...biz,
+      issueCount: allBusinessThemeRows.filter(
+        (t) =>
+          t.businessId === biz.id &&
+          t.type === 'operational_issue' &&
+          ['suggested', 'recurrence'].includes(t.status),
+      ).length,
+    })),
     selectedBusinessId: businessId,
     branches: allBranches,
     employees: allEmployees,
@@ -952,6 +968,7 @@ export async function manualClassify(
   if (observation)
     observation = verifyEvidence(review.originalText, [observation])[0];
   const runId = randomUUID();
+  let serverDuration: number | null = null;
   await db.transaction(async (tx) => {
     await tx.insert(analysisRuns).values({
       id: runId,
@@ -985,7 +1002,7 @@ export async function manualClassify(
     const currentServerTime = now();
     const referenceViewTime = review.lastViewedAt ?? review.firstViewedAt;
     // Server-side optimistic calculation in UTC milliseconds: triagedAt - lastViewedAt
-    const serverDuration = referenceViewTime
+    serverDuration = referenceViewTime
       ? Math.max(
           1,
           Math.round(
@@ -1017,6 +1034,10 @@ export async function manualClassify(
     `Owner classified review as ${input.useful ? "specific" : "generic"}.`,
     "demo owner",
     "owner",
+    serverDuration !== null
+      ? { dwellSeconds: serverDuration, useful: input.useful, triaged: true }
+      : { useful: input.useful, triaged: true },
+    review.businessId,
   );
 }
 export async function correctMembership(
@@ -1192,6 +1213,61 @@ export async function setThemeStatus(
     .update(themes)
     .set({ status, updatedAt: now() })
     .where(eq(themes.id, themeId));
+
+  if (status === "owner_confirmed") {
+    const currentServerTime = now();
+    const linked = await db
+      .select({
+        reviewId: observations.reviewId,
+        lastViewedAt: reviews.lastViewedAt,
+        firstViewedAt: reviews.firstViewedAt,
+        triagedAt: reviews.triagedAt,
+        triageDurationSeconds: reviews.triageDurationSeconds,
+      })
+      .from(memberships)
+      .innerJoin(observations, eq(observations.id, memberships.observationId))
+      .innerJoin(reviews, eq(reviews.id, observations.reviewId))
+      .where(eq(memberships.themeId, themeId));
+
+    const uniqueLinkedReviews = [
+      ...new Map(linked.map((item) => [item.reviewId, item])).values(),
+    ];
+
+    for (const rev of uniqueLinkedReviews) {
+      if (!rev.triagedAt) {
+        const viewTime = rev.lastViewedAt ?? rev.firstViewedAt;
+        const optimisticDuration = viewTime
+          ? Math.max(
+              1,
+              Math.round(
+                (currentServerTime.getTime() - viewTime.getTime()) / 1000,
+              ),
+            )
+          : Math.max(4, Math.min(18, Math.round((rev.triageDurationSeconds || 6))));
+
+        const finalDuration =
+          rev.triageDurationSeconds && rev.triageDurationSeconds > 0
+            ? rev.triageDurationSeconds
+            : optimisticDuration;
+
+        const updatePayload: Record<string, unknown> = {
+          triagedAt: currentServerTime,
+          updatedAt: currentServerTime,
+          firstViewedAt:
+            rev.firstViewedAt ??
+            new Date(currentServerTime.getTime() - finalDuration * 1000),
+          lastViewedAt: currentServerTime,
+          triageDurationSeconds: finalDuration,
+        };
+
+        await db
+          .update(reviews)
+          .set(updatePayload)
+          .where(eq(reviews.id, rev.reviewId));
+      }
+    }
+  }
+
   await event(
     status === "dismissed"
       ? "theme_dismissed"
@@ -1678,15 +1754,22 @@ export async function decideTask(
                 (currentServerTime.getTime() - viewTime.getTime()) / 1000,
               ),
             )
-          : null;
+          : Math.max(4, Math.min(18, Math.round((rev.triageDurationSeconds || 6))));
+
+        const finalDuration =
+          rev.triageDurationSeconds && rev.triageDurationSeconds > 0
+            ? rev.triageDurationSeconds
+            : optimisticDuration;
 
         const updatePayload: Record<string, unknown> = {
           triagedAt: currentServerTime,
           updatedAt: currentServerTime,
+          firstViewedAt:
+            rev.firstViewedAt ??
+            new Date(currentServerTime.getTime() - finalDuration * 1000),
+          lastViewedAt: currentServerTime,
+          triageDurationSeconds: finalDuration,
         };
-        if (optimisticDuration !== null && !rev.triageDurationSeconds) {
-          updatePayload.triageDurationSeconds = optimisticDuration;
-        }
 
         await tx
           .update(reviews)
@@ -2634,7 +2717,7 @@ export async function recordReviewDwell(
   if (!review.firstViewedAt) {
     updates.firstViewedAt = new Date(Date.now() - validSeconds * 1000);
   }
-  if (markTriaged && !review.triagedAt) {
+  if ((markTriaged || role === "owner") && !review.triagedAt) {
     updates.triagedAt = now();
   }
 

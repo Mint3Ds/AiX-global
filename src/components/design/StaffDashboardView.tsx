@@ -1,5 +1,5 @@
 import { PageHeading } from "./PageHeading";
-import { ChoiceMenu } from "./ChoiceMenu";
+import { CustomDropdown } from "./CustomDropdown";
 
 type StaffTask = {
   id: string;
@@ -41,10 +41,10 @@ export function StaffDashboardView({
       ? "Assigned · Needs rework"
       : status === "reported"
         ? "Pending Owner Approval"
-        : status === "resolved"
-          ? "Completed · Verified by Owner"
-          : status === "approved_open"
-            ? "Assigned"
+        : status === "approved_open"
+          ? "Assigned"
+          : status === "resolved"
+            ? "Completed · Verified by Owner"
             : "In progress";
   const dueLabel = (value: string | null) =>
     value
@@ -63,17 +63,20 @@ export function StaffDashboardView({
         title="Know what needs doing."
         description="See your assignments, owner feedback, and submitted reports in one place."
       >
-        <ChoiceMenu
-          className="staff-dashboard-profile"
-          label="Working as"
-          value={employeeId}
-          options={employees.map((employee) => ({
-            value: employee.id,
-            label: employee.name,
-            description: employee.jobTitle,
-          }))}
-          onChange={onEmployeeChange}
-        />
+        <div className="staff-dashboard-profile">
+          <span>Working as</span>
+          <CustomDropdown
+            ariaLabel="Working as"
+            sectionLabel="Staff Profile"
+            value={employeeId}
+            options={employees.map((employee) => ({
+              value: employee.id,
+              label: `${employee.name} · ${employee.jobTitle}`,
+            }))}
+            onChange={onEmployeeChange}
+            align="right"
+          />
+        </div>
       </PageHeading>
 
       <div className="staff-dashboard-summary" aria-label="Task summary">
@@ -91,10 +94,7 @@ export function StaffDashboardView({
         </div>
       </div>
 
-      <section
-        className="staff-dashboard-queue"
-        aria-labelledby="staff-queue-title"
-      >
+      <section className="staff-dashboard-queue" aria-labelledby="staff-queue-title">
         <header className="panel-heading">
           <div>
             <p className="eyebrow">02&nbsp;&nbsp;Assigned to you</p>
@@ -113,33 +113,21 @@ export function StaffDashboardView({
               >
                 <button type="button" onClick={() => onOpenTask(task.id)}>
                   <span className="staff-queue-main">
-                    <span className="staff-queue-title-row">
-                      <strong>{task.title}</strong>
-                      <span
-                        className={`priority-badge priority-${task.priority}`}
-                      >
-                        {task.priority} priority
-                      </span>
+                    <strong>{task.title}</strong>
+                    <span className="staff-queue-description">{task.description}</span>
+                    <span className="staff-queue-context">
+                      {task.relatedIssue} · {task.sourceReviewCount} source {task.sourceReviewCount === 1 ? "review" : "reviews"}
                     </span>
-                    <span className="staff-queue-description">
-                      {task.description}
-                    </span>
-                    <small className="staff-queue-source">
-                      Issue · {task.relatedIssue} · {task.sourceReviewCount}{" "}
-                      source{" "}
-                      {task.sourceReviewCount === 1 ? "review" : "reviews"}
-                    </small>
                     {task.status === "needs_rework" && task.rejectionReason && (
                       <span className="staff-queue-reason">
-                        <strong>Owner’s reason:</strong> {task.rejectionReason}
+                        <strong>Owner feedback</strong> {task.rejectionReason}
                       </span>
                     )}
-                    {task.status === "needs_rework" &&
-                      task.reworkInstructions && (
-                        <span className="staff-queue-reason staff-queue-instructions">
-                          <strong>Next steps:</strong> {task.reworkInstructions}
-                        </span>
-                      )}
+                    {task.status === "needs_rework" && task.reworkInstructions && (
+                      <span className="staff-queue-reason">
+                        <strong>What to fix</strong> {task.reworkInstructions}
+                      </span>
+                    )}
                   </span>
                   <span className="staff-queue-meta">
                     <span
@@ -151,6 +139,9 @@ export function StaffDashboardView({
                       {task.rejections > 0
                         ? " · " + task.rejections + " returns"
                         : ""}
+                    </span>
+                    <span className={`priority-chip priority-chip-${task.priority}`}>
+                      {task.priority}
                     </span>
                     <small>{dueLabel(task.dueAt)}</small>
                   </span>
@@ -165,10 +156,7 @@ export function StaffDashboardView({
         )}
       </section>
       {completed.length > 0 && (
-        <section
-          className="staff-dashboard-queue staff-dashboard-completed"
-          aria-labelledby="staff-completed-title"
-        >
+        <section className="staff-dashboard-queue staff-dashboard-completed" aria-labelledby="staff-completed-title">
           <header className="panel-heading">
             <div>
               <p className="eyebrow">03&nbsp;&nbsp;Verified work</p>
@@ -181,13 +169,9 @@ export function StaffDashboardView({
                 <button type="button" onClick={() => onOpenTask(task.id)}>
                   <span className="staff-queue-main">
                     <strong>{task.title}</strong>
+                    <span className="staff-queue-context">{statusLabel(task.status)}</span>
                   </span>
-                  <span className="staff-queue-meta">
-                    <span className="task-detail-state task-detail-state-resolved">
-                      Completed · Verified by Owner
-                    </span>
-                    <small>{dueLabel(task.dueAt)}</small>
-                  </span>
+                  <small>{dueLabel(task.dueAt)}</small>
                 </button>
               </li>
             ))}

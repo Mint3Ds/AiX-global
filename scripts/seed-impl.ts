@@ -282,22 +282,99 @@ try {
         status: "proposed",
       })
       .onConflictDoNothing();
-  if (seedLegacyReviews)
-    await db
-      .insert(events)
-      .values({
-        id: "event-seed-v1",
-        actor: "seed process",
+  if (seedLegacyReviews) {
+for (const config of businessConfigs) {
+      const reviewCount = [
+        ...seedReviews,
+        ...hotelSeedReviews,
+        ...salonSeedReviews,
+      ].filter((review) => review.businessId === config.businessId).length;
+      await db
+        .insert(events)
+        .values({
+          id:
+            config.businessId === restaurantConfig.businessId
+              ? "event-seed-v1"
+              : `event-seed-v1-${config.businessId}`,
+          actor: "seed process",
+          role: "system",
+          type: "dataset_seeded",
+          entityType: "business",
+          entityId: config.businessId,
+          description: `${reviewCount} historical synthetic reviews are available with labelled fixture analyses. This entry records dataset setup, not customer or staff activity.`,
+          businessId: config.businessId,
+          metadata: { reviewCount },
+        })
+        .onConflictDoNothing();
+    }
+
+    const seedEvents: (typeof events.$inferInsert)[] = [];
+
+    const recentHotel = [...hotelSeedReviews]
+      .sort(
+        (a, b) =>
+          new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime(),
+      )
+      .slice(0, 15);
+
+    for (const rev of recentHotel) {
+      const revTime = new Date(rev.reviewedAt);
+      seedEvents.push({
+        id: `event-intake-${rev.id}`,
+        actor: "demo user",
+        role: "staff",
+        type: "review_intake",
+        entityType: "review",
+        entityId: rev.id,
+        description: "Synthetic review saved with original wording.",
+        businessId: rev.businessId,
+        metadata: { branchId: rev.branchId, source: rev.source },
+        createdAt: revTime,
+      });
+      seedEvents.push({
+        id: `event-analysis-${rev.id}`,
+        actor: "system",
         role: "system",
-        type: "dataset_seeded",
-        entityType: "business",
-        entityId: "nusa-table",
+        type: "analysis_completed",
+        entityType: "review",
+        entityId: rev.id,
         description:
-          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-        businessId: restaurantConfig.businessId,
-        metadata: { reviewCount: seedReviews.length },
-      })
-      .onConflictDoNothing();
+          "Review specific feedback; screening by fixture, extraction by fixture, matching by fixture.",
+        businessId: rev.businessId,
+        metadata: { mode: "fixture", provider: "fixture" },
+        createdAt: new Date(revTime.getTime() + 1500),
+      });
+    }
+
+    seedEvents.push(
+      {
+        id: "event-confirm-hotel-ac",
+        actor: "demo owner",
+        role: "owner",
+        type: "theme_confirmed",
+        entityType: "theme",
+        entityId: "hotel-central-ac",
+        description: "Owner confirmed the suggested theme.",
+        businessId: "harbour-house",
+        createdAt: new Date("2026-10-25T14:00:00+08:00"),
+      },
+      {
+        id: "event-confirm-hotel-insects",
+        actor: "demo owner",
+        role: "owner",
+        type: "theme_confirmed",
+        entityType: "theme",
+        entityId: "hotel-central-insects",
+        description: "Owner confirmed the suggested theme.",
+        businessId: "harbour-house",
+        createdAt: new Date("2026-10-26T10:00:00+08:00"),
+      },
+    );
+
+    for (const evt of seedEvents) {
+      await db.insert(events).values(evt).onConflictDoNothing();
+    }
+  }
   console.log(
     seedLegacyReviews
       ? `Seed ready: ${seedReviews.length} restaurant, ${hotelSeedReviews.length} hotel, ${salonSeedReviews.length} salon reviews; separate demo reviews were not inserted.`

@@ -1,7 +1,7 @@
 /* Shared controls: Standardized button hierarchy across all views */
 
 /* 1. Primary Action: Crisp solid near-black pill button */
-main button:where(:not(.link):not(.review-row):not(.register-review-button)),
+main button:where(:not(.link):not(.review-row):not(.register-review-button):not(.clarity-dropdown-trigger):not(.clarity-dropdown-item)),
 .notice button,
 .create-task-button,
 .issue-confirm-button,
@@ -32,7 +32,7 @@ summary {
     transform var(--motion-fast) var(--ease-out);
 }
 
-main button:where(:not(.link):not(.review-row):not(.register-review-button)):hover,
+main button:where(:not(.link):not(.review-row):not(.register-review-button):not(.clarity-dropdown-trigger):not(.clarity-dropdown-item)):hover,
 .notice button:hover,
 .create-task-button:hover,
 .issue-confirm-button:hover,
@@ -43,7 +43,7 @@ main button:where(:not(.link):not(.review-row):not(.register-review-button)):hov
   color: #ffffff;
 }
 
-button:active:not(:disabled) {
+button:active:not(:disabled):not(.clarity-dropdown-trigger):not(.clarity-dropdown-item) {
   transform: translateY(1px);
 }
 

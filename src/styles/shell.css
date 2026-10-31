@@ -6,13 +6,17 @@
   padding: 0 44px;
 }
 .workspace-header {
+  position: relative;
+  z-index: 90;
   border-bottom: 1px solid var(--line);
 }
 .top {
   display: flex;
   align-items: center;
   gap: 38px;
-  min-height: 60px;
+  min-height: 70px;
+  max-width: 1150px;
+  margin: 0 auto;
 }
 .brand-lockup {
   display: flex;
@@ -28,13 +32,16 @@
 }
 .brand-mark {
   display: block;
-  width: 31px;
-  height: 31px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 .brand-name {
   font-size: 24px;
   font-weight: 720;
-  line-height: 1.1;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
   letter-spacing: -0.055em;
 }
 .brand-name > span {
@@ -94,49 +101,299 @@
 .main-nav button:hover {
   color: var(--action);
 }
+
+/* Navbar Switchers: Two distinct, cohesive pill buttons with 8px (gap-2) between them */
 .workspace-controls {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
   flex-shrink: 0;
 }
 .workspace-control {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  align-items: center;
   min-width: 0;
 }
-.workspace-control > span {
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-.workspace-control .choice-menu {
-  min-height: 28px;
-  max-width: 180px;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-}
-.workspace-control .choice-menu > summary {
-  min-height: 30px;
-  padding: 4px 7px;
-  border-color: transparent;
-  background: transparent;
-}
-.workspace-control .choice-menu[open] > summary,
-.workspace-control .choice-menu > summary:hover {
-  border-color: var(--line);
-  background: var(--paper-light);
-}
 .role-switcher {
-  padding-left: 16px;
-  border-left: 1px solid var(--line);
+  padding-left: 0;
+  border-left: 0;
 }
-.role-switcher .choice-menu {
-  width: 80px;
+
+/* Bespoke Clarity Dropdown Component (.clarity-dropdown) */
+.clarity-dropdown {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  text-transform: none;
+  letter-spacing: normal;
 }
+.clarity-dropdown.is-open {
+  z-index: 1000;
+}
+.review-filters,
+.review-primary-filters,
+.review-advanced-filters,
+.review-results,
+.page-heading,
+.issue-decision,
+.issue-decision-header,
+.staff-work-update,
+.form {
+  position: relative;
+}
+.review-filters {
+  z-index: 40;
+}
+.review-primary-filters {
+  z-index: 45;
+}
+.review-advanced-filters {
+  z-index: 42;
+}
+.review-results {
+  z-index: 35;
+}
+.workspace-header:has(.clarity-dropdown.is-open),
+.review-filters:has(.clarity-dropdown.is-open),
+.review-primary-filters:has(.clarity-dropdown.is-open),
+.review-advanced-filters:has(.clarity-dropdown.is-open),
+.review-results:has(.clarity-dropdown.is-open),
+.page-heading:has(.clarity-dropdown.is-open),
+.issue-decision:has(.clarity-dropdown.is-open),
+.issue-decision-header:has(.clarity-dropdown.is-open),
+.staff-work-update:has(.clarity-dropdown.is-open),
+.form:has(.clarity-dropdown.is-open),
+label:has(.clarity-dropdown.is-open) {
+  position: relative;
+  z-index: 950;
+}
+.clarity-dropdown-full {
+  display: flex;
+  width: 100%;
+}
+.clarity-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition:
+    background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.clarity-dropdown-full .clarity-dropdown-trigger {
+  width: 100%;
+}
+.review-filters .clarity-dropdown-trigger,
+.form .clarity-dropdown-trigger,
+.staff-dashboard-profile .clarity-dropdown-trigger {
+  min-height: 42px;
+}
+.clarity-dropdown-trigger:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background-color: rgba(248, 250, 252, 0.6);
+  color: #0f172a;
+}
+.clarity-dropdown-trigger:focus-visible,
+.clarity-dropdown-trigger.is-open {
+  outline: none;
+  border-color: #cbd5e1;
+  background-color: #ffffff;
+  box-shadow:
+    0 1px 2px 0 rgba(15, 23, 42, 0.04),
+    0 0 0 2px rgba(15, 23, 42, 0.05);
+}
+.clarity-dropdown-trigger-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clarity-dropdown-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f172a;
+  font-weight: 500;
+}
+.clarity-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.clarity-dropdown-chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #94a3b8;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms ease;
+}
+.clarity-dropdown-trigger:hover .clarity-dropdown-chevron,
+.clarity-dropdown-trigger.is-open .clarity-dropdown-chevron {
+  color: #64748b;
+}
+.clarity-dropdown-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Open Popover Container */
+.clarity-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  min-width: 220px;
+  max-width: min(340px, calc(100vw - 24px));
+  padding: 6px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow:
+    0 10px 15px -3px rgba(15, 23, 42, 0.05),
+    0 4px 6px -4px rgba(15, 23, 42, 0.05),
+    0 1px 2px 0 rgba(15, 23, 42, 0.03);
+  transform-origin: top right;
+  animation: clarityDropdownEnter 100ms ease-out forwards;
+}
+.clarity-dropdown-menu-left,
+.clarity-dropdown-align-left {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+.clarity-dropdown-full .clarity-dropdown-menu {
+  min-width: max(100%, 220px);
+}
+@keyframes clarityDropdownEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Section Micro-Header */
+.clarity-dropdown-header {
+  padding: 6px 12px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* Menu Items */
+.clarity-dropdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.clarity-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+.clarity-dropdown-item:hover {
+  background-color: rgba(241, 245, 249, 0.7);
+  color: #0f172a;
+}
+.clarity-dropdown-item.is-selected {
+  background-color: rgba(241, 245, 249, 0.8);
+  color: #0f172a;
+  font-weight: 500;
+}
+.clarity-dropdown-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.clarity-dropdown-item-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.clarity-dropdown-item-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  padding: 1px 7px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 999px;
+  background-color: #f8fafc;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.clarity-dropdown-item.is-selected .clarity-dropdown-item-meta {
+  background-color: #ffffff;
+  color: #64748b;
+}
+.clarity-dropdown-check {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #0f172a;
+}
+
 .skip-link {
   position: absolute;
   z-index: 20;
@@ -304,4 +561,12 @@ p {
 
 #workspace-main:focus {
   outline: none;
+}
+
+.control-label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

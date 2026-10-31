@@ -7,7 +7,6 @@ import { TaskEvidencePanel } from "@/components/design/TaskEvidencePanel";
 import { TaskReportHistory } from "@/components/design/TaskReportHistory";
 import { TaskEditHistory } from "@/components/design/TaskEditHistory";
 import { OrbyteHandoffDetails } from "@/components/design/OrbyteHandoffDetails";
-import { ChoiceMenu } from "@/components/design/ChoiceMenu";
 import {
   ReportAttachmentPicker,
   evidenceMediaType,
@@ -20,6 +19,7 @@ import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
+import { CustomDropdown } from "@/components/design/CustomDropdown";
 import type { WorkspaceMetrics } from "@/domain/metrics";
 import {
   reviewCategoryGroup,
@@ -173,13 +173,8 @@ type State = {
   mode: string;
   synthetic: boolean;
   selectedBusinessId: string;
-  businesses: { id: string; name: string; businessType: string }[];
-  branches: {
-    id: string;
-    businessId: string;
-    name: string;
-    timezone: string;
-  }[];
+  businesses: { id: string; name: string; businessType: string; issueCount?: number }[];
+  branches: { id: string; businessId: string; name: string; timezone: string }[];
   employees: {
     id: string;
     businessId: string;
@@ -886,12 +881,14 @@ export function Workspace({
               reviewId,
               durationSeconds: totalSeconds,
             }),
-          }).catch(() => {});
+          })
+            .then(() => void refresh())
+            .catch(() => {});
         }
         activeReviewTimerRef.current = null;
       }
     };
-  }, [tab, selectedReview, role, businessId]);
+  }, [tab, selectedReview, role, businessId, refresh]);
   const act = useCallback(
     async (type: string, values: Record<string, unknown> = {}) => {
       setBusy(type);
@@ -1540,7 +1537,7 @@ export function Workspace({
           state?.businesses ||
           (cachedBusinesses.length
             ? cachedBusinesses
-            : [{ id: "harbour-house", name: "Harbour House Hotel" }])
+            : [{ id: "harbour-house", name: "Harbour House Hotel", issueCount: 11 }])
         }
         businessId={businessId}
         onBusinessChange={(id) => {
@@ -1856,9 +1853,16 @@ export function Workspace({
                     support: state.themeSupport[item.id] || 0,
                     status: item.status === "recurrence" ? "Recurring" : "New issue",
                     evidenceQuote:
-                      item.id === spotlight?.id
+                      state.observations.find((point) =>
+                        state.memberships.some(
+                          (m) =>
+                            m.themeId === item.id &&
+                            m.observationId === point.id,
+                        ),
+                      )?.evidenceQuote ||
+                      (item.id === spotlight?.id
                         ? spotlightEvidence?.evidenceQuote
-                        : undefined,
+                        : undefined),
                   }))}
                   work={state.tasks
                     .filter((task) =>
@@ -2008,24 +2012,39 @@ export function Workspace({
                       <h3>Review details</h3>
                       <p>Review text is screened for personal identifiers before it enters the workspace.</p>
                     </div>
-                    <ChoiceMenu
-                      label="Property or branch"
-                      value={newBranch}
-                      options={state.branches.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                      onChange={setNewBranch}
-                    />
-                    <ChoiceMenu
-                      label="Rating"
-                      value={String(newRating)}
-                      options={[1, 2, 3, 4, 5].map((value) => ({
-                        value: String(value),
-                        label: `${"★".repeat(value)}${"☆".repeat(5 - value)}`,
-                      }))}
-                      onChange={(value) => setNewRating(Number(value))}
-                    />
+
+                    <label>
+                      Property or branch
+                      <CustomDropdown
+                        ariaLabel="Property or branch"
+                        sectionLabel="Select Property"
+                        value={newBranch}
+                        options={state.branches.map((item) => ({
+                          value: item.id,
+                          label: item.name,
+                        }))}
+                        onChange={(value) => setNewBranch(value)}
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+                    <label>
+                      Rating
+                      <CustomDropdown
+                        ariaLabel="Rating"
+                        sectionLabel="Guest Rating"
+                        value={String(newRating)}
+                        options={[1, 2, 3, 4, 5].map((value) => ({
+                          value: String(value),
+                          label: `${"★".repeat(value)}${"☆".repeat(5 - value)}`,
+                          meta: `${value}/5`,
+                        }))}
+                        onChange={(value) => setNewRating(Number(value))}
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+
                     <label className="wide" htmlFor="new-review-text">
                       Original review text
                       <textarea
@@ -2170,19 +2189,48 @@ export function Workspace({
                         }
                       />
                     </label>
-                    <ChoiceMenu
-                      label="Sort"
-                      value={reviewSort}
-                      options={[
-                        { value: "newest", label: "Newest" },
-                        { value: "oldest", label: "Oldest" },
-                        { value: "lowest", label: "Lowest rating" },
-                        { value: "highest", label: "Highest rating" },
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setReviewSort(value))
-                      }
-                    />
+
+                    <label>
+                      Property
+                      <CustomDropdown
+                        ariaLabel="Property"
+                        sectionLabel="Filter by Property"
+                        value={branch}
+                        options={[
+                          { value: "all", label: "All properties" },
+                          ...state.branches.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setBranch(value))
+                        }
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+                    <label>
+                      Rating
+                      <CustomDropdown
+                        ariaLabel="Rating"
+                        sectionLabel="Filter by Rating"
+                        value={String(rating)}
+                        options={[
+                          { value: "all", label: "All ratings" },
+                          ...[1, 2, 3, 4, 5].map((value) => ({
+                            value: String(value),
+                            label: `${value} ${value === 1 ? "star" : "stars"}`,
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setRating(value))
+                        }
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+
                     <button
                       className="secondary filter-toggle"
                       aria-expanded={showReviewFilters}
@@ -2203,78 +2251,73 @@ export function Workspace({
                     className="review-advanced-filters"
                     hidden={!showReviewFilters}
                   >
-                    <ChoiceMenu
-                      label="Property"
-                      value={branch}
-                      options={[
-                        { value: "all", label: "All properties" },
-                        ...state.branches.map((item) => ({
-                          value: item.id,
-                          label: item.name,
-                        })),
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setBranch(value))
-                      }
-                    />
-                    <ChoiceMenu
-                      label="Rating"
-                      value={rating}
-                      options={[
-                        { value: "all", label: "All ratings" },
-                        ...[1, 2, 3, 4, 5].map((value) => ({
-                          value: String(value),
-                          label: `${value} ${value === 1 ? "star" : "stars"}`,
-                        })),
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setRating(value))
-                      }
-                    />
-                    <ChoiceMenu
-                      label="Category"
-                      value={category}
-                      options={[
-                        { value: "all", label: "All categories" },
-                        ...categories.map((item) => ({
-                          value: item.key,
-                          label: item.name,
-                        })),
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setCategory(value))
-                      }
-                    />
-                    <ChoiceMenu
-                      label="Screening status"
-                      value={status}
-                      options={[
-                        { value: "all", label: "All statuses" },
-                        { value: "attention", label: "Needs attention" },
-                        ...[
-                          "pending",
-                          "processing",
-                          "complete",
-                          "generic",
-                          "needs_review",
-                          "failed",
-                        ].map((value) => ({ value, label: label(value) })),
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setStatus(value))
-                      }
-                    />
-                    <ChoiceMenu
-                      label="Received"
-                      value={received}
-                      options={[
-                        { value: "all", label: "All dates" },
-                        { value: "today", label: "Today" },
-                      ]}
-                      onChange={(value) =>
-                        changeReviewFilter(() => setReceived(value))
-                      }
-                    />
+
+                    <label>
+                      Category
+                      <CustomDropdown
+                        ariaLabel="Category"
+                        sectionLabel="Filter by Category"
+                        value={category}
+                        options={[
+                          { value: "all", label: "All categories" },
+                          ...categories.map((item) => ({
+                            value: item.key,
+                            label: item.name,
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setCategory(value))
+                        }
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+                    <label>
+                      Screening status
+                      <CustomDropdown
+                        ariaLabel="Screening status"
+                        sectionLabel="Screening Status"
+                        value={status}
+                        options={[
+                          { value: "all", label: "All statuses" },
+                          { value: "attention", label: "Needs attention" },
+                          ...[
+                            "pending",
+                            "processing",
+                            "complete",
+                            "generic",
+                            "needs_review",
+                            "failed",
+                          ].map((value) => ({
+                            value,
+                            label: label(value),
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setStatus(value))
+                        }
+                        align="left"
+                        fullWidth
+                      />
+                    </label>
+                    <label>
+                      Received
+                      <CustomDropdown
+                        ariaLabel="Received"
+                        sectionLabel="Received Date"
+                        value={received}
+                        options={[
+                          { value: "all", label: "All dates" },
+                          { value: "today", label: "Today" },
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setReceived(value))
+                        }
+                        align="right"
+                        fullWidth
+                      />
+                    </label>
+
                   </div>
                   <div className="review-view-controls">
                     <div
@@ -2344,6 +2387,26 @@ export function Workspace({
                       : "No matching"}{" "}
                     reviews
                   </p>
+
+                  <div>
+                    <span className="sr-only">Sort reviews</span>
+                    <CustomDropdown
+                      ariaLabel="Sort reviews"
+                      sectionLabel="Sort Reviews"
+                      value={reviewSort}
+                      options={[
+                        { value: "newest", label: "Newest first" },
+                        { value: "oldest", label: "Oldest first" },
+                        { value: "lowest", label: "Lowest rating" },
+                        { value: "highest", label: "Highest rating" },
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setReviewSort(value))
+                      }
+                      align="right"
+                    />
+                  </div>
+
                 </div>
                 <div className="review-workspace">
                   <div className="review-register-panel">
@@ -2775,21 +2838,29 @@ export function Workspace({
                                       : "Severity sets the issue priority."}
                                 </p>
                               </div>
-                              <ChoiceMenu
-                                label="Severity"
-                                value={String(theme.severity)}
-                                options={[
-                                  { value: "1", label: "Low" },
-                                  { value: "2", label: "Medium" },
-                                  { value: "3", label: "Safety concern" },
-                                ]}
-                                onChange={(value) =>
-                                  void act("severity", {
-                                    themeId: theme.id,
-                                    severity: Number(value),
-                                  })
-                                }
-                              />
+
+                              <label>
+                                Severity
+                                <CustomDropdown
+                                  ariaLabel="Severity"
+                                  sectionLabel="Issue Severity"
+                                  value={String(theme.severity)}
+                                  options={[
+                                    { value: "1", label: "Low" },
+                                    { value: "2", label: "Medium" },
+                                    { value: "3", label: "Safety concern" },
+                                  ]}
+                                  onChange={(value) =>
+                                    void act("severity", {
+                                      themeId: theme.id,
+                                      severity: Number(value),
+                                    })
+                                  }
+                                  align="right"
+                                  fullWidth
+                                />
+                              </label>
+
                             </div>
                             {theme.status === "suggested" && (
                               <div className="issue-decision-actions">
@@ -3326,25 +3397,23 @@ export function Workspace({
                             className="staff-work-update"
                             aria-label="Employee work update"
                           >
-                            <ChoiceMenu
-                              className="staff-employee-picker"
-                              label="Your staff profile"
-                              value={effectiveEmployeeId}
-                              options={state.employees
-                                .filter(
-                                  (employee) =>
-                                    employee.branchId ===
-                                    state.themes.find(
-                                      (item) => item.id === task.themeId,
-                                    )?.branchId,
-                                )
-                                .map((employee) => ({
+
+                            <label className="staff-employee-picker">
+                              Your staff profile
+                              <CustomDropdown
+                                ariaLabel="Your staff profile"
+                                sectionLabel="Staff Profile"
+                                value={effectiveEmployeeId}
+                                options={state.employees.map((employee) => ({
                                   value: employee.id,
-                                  label: employee.name,
-                                  description: employee.jobTitle,
+                                  label: `${employee.name} · ${employee.jobTitle}`,
                                 }))}
-                              onChange={changeEmployee}
-                            />
+                                onChange={(value) => changeEmployee(value)}
+                                align="left"
+                                fullWidth
+                              />
+                            </label>
+
                             {task.assigneeId === effectiveEmployeeId &&
                             ["approved_open", "needs_rework"].includes(
                               task.status,
@@ -3718,9 +3787,12 @@ export function Workspace({
                 tasks={state.tasks}
                 themes={state.themes}
                 reviews={state.reviews}
+                branches={state.branches}
                 replies={state.replies}
               handoffs={state.handoffs}
+                metrics={state.metrics}
                 onOpenTask={openTask}
+                onOpenReview={openReview}
               />
             )}
             {tab === "stats" && <StatsView metrics={state.metrics} />}
@@ -3732,14 +3804,6 @@ export function Workspace({
         <span className="workspace-footer-purpose">
           Customer feedback and operational follow-through
         </span>
-        <button
-          type="button"
-          className="replay-intro-link"
-          onClick={() => setIntroComplete(false)}
-          title="Replay brand loading animation"
-        >
-          Replay intro
-        </button>
       </footer>
       {decision && (
         <div
@@ -3969,7 +4033,19 @@ function TaskEditor({
       return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
         .toISOString()
         .slice(0, 16);
-    });
+    }),
+    [isFirefox, setIsFirefox] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent)) {
+      const timer = window.setTimeout(() => setIsFirefox(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
+
+  const firefoxDate = dueAt ? dueAt.slice(0, 10) : "";
+  const firefoxTime = dueAt && dueAt.length >= 16 ? dueAt.slice(11, 16) : "17:00";
+
   const data = () => ({
     title,
     description,
@@ -4006,41 +4082,51 @@ function TaskEditor({
           onChange={(event) => setDescription(event.target.value)}
         />
       </label>
-      <ChoiceMenu
-        label="Task priority"
-        value={priority}
-        options={[
-          { value: "urgent", label: "Urgent", description: "Needs immediate attention" },
-          { value: "high", label: "High", description: "Address promptly" },
-          { value: "medium", label: "Medium", description: "Standard priority" },
-          { value: "low", label: "Low", description: "When capacity allows" },
-        ]}
-        onChange={setPriority}
-      />
-      <ChoiceMenu
-        label="Assign to employee"
-        value={assigneeId}
-        options={employees.map((employee) => ({
-          value: employee.id,
-          label: employee.name,
-          description: `${employee.jobTitle} · ${employee.orbyteStaffId}`,
-        }))}
-        onChange={setAssigneeId}
-      />
+      <label>
+        Task priority
+        <CustomDropdown
+          ariaLabel="Task priority"
+          sectionLabel="Task Priority"
+          value={priority}
+          options={[
+            { value: "urgent", label: "Urgent", meta: "Needs immediate attention" },
+            { value: "high", label: "High", meta: "Address promptly" },
+            { value: "medium", label: "Medium", meta: "Standard priority" },
+            { value: "low", label: "Low", meta: "When capacity allows" },
+          ]}
+          onChange={(value) => setPriority(value)}
+          align="left"
+          fullWidth
+        />
+      </label>
+      <label>
+        Assign to employee
+        <CustomDropdown
+          ariaLabel="Assign to employee"
+          sectionLabel="Assign Employee"
+          value={assigneeId}
+          options={employees.map((employee) => ({
+            value: employee.id,
+            label: `${employee.name} · ${employee.jobTitle}`,
+            meta: employee.orbyteStaffId,
+          }))}
+          onChange={(value) => setAssigneeId(value)}
+          align="left"
+          fullWidth
+        />
+      </label>
       <div
         className={`attendance-context attendance-${attendance.state}`}
         role="status"
         aria-live="polite"
       >
         <div>
-          <strong>
-            {selectedEmployee?.name || "No employee"} · {attendance.label}
-          </strong>
+          <strong>{selectedEmployee?.name || "No employee"} · {attendance.label}</strong>
           <span>{attendance.detail}</span>
         </div>
         <small>{attendance.source}</small>
       </div>
-      {!["on_shift", "unknown"].includes(attendance.state) && (
+      {!['on_shift', 'unknown'].includes(attendance.state) && (
         <p className="attendance-warning">
           This employee is not scheduled for the selected date. You can still assign the task.
         </p>
@@ -4054,12 +4140,57 @@ function TaskEditor({
           value={dueAt}
           onChange={(event) => setDueAt(event.target.value)}
         />
-        {!dueAt && (
-          <span id="task-due-hint" className="form-hint">
-            Set a due date before assigning.
-          </span>
-        )}
       </label>
+      {isFirefox ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>
+          <label>
+            Due date
+            <input
+              type="date"
+              aria-label="Due date"
+              aria-describedby={!dueAt ? "task-due-hint" : undefined}
+              value={firefoxDate}
+              onChange={(event) => {
+                const newDate = event.target.value;
+                setDueAt(newDate ? `${newDate}T${firefoxTime || "17:00"}` : "");
+              }}
+            />
+            {!dueAt && (
+              <span id="task-due-hint" className="form-hint">
+                Set a due date before assigning.
+              </span>
+            )}
+          </label>
+          <label>
+            Due time
+            <input
+              type="time"
+              aria-label="Due time"
+              value={firefoxTime}
+              onChange={(event) => {
+                const newTime = event.target.value;
+                setDueAt(firefoxDate ? `${firefoxDate}T${newTime || "17:00"}` : "");
+              }}
+            />
+          </label>
+        </div>
+      ) : (
+        <label>
+          Due date
+          <input
+            type="datetime-local"
+            aria-label="Due date"
+            aria-describedby={!dueAt ? "task-due-hint" : undefined}
+            value={dueAt}
+            onChange={(event) => setDueAt(event.target.value)}
+          />
+          {!dueAt && (
+            <span id="task-due-hint" className="form-hint">
+              Set a due date before assigning.
+            </span>
+          )}
+        </label>
+      )}
       <div className="controls">
         <button className="secondary" onClick={() => save(data())}>
           Save edits
