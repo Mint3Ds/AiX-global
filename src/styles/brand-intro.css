@@ -364,3 +364,89 @@
     opacity: 1;
   }
 }
+
+/*
+ * Logo loading state:
+ * Displayed when no animation is running or prefers-reduced-motion is active.
+ * Shows the full logo lockup centered with an ambient breathing pulse while workspace data loads.
+ */
+.brand-loading-screen.no-animation .brand-loading-symbol-wrap,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-symbol-wrap {
+    opacity: 1 !important;
+    transform: translate3d(0, -8px, 0) scale(1) !important;
+    animation: brandFallbackLogoPulse 2.4s ease-in-out infinite !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-svg path,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-svg path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-wordmark-mask,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-wordmark-mask {
+    transform: translate3d(0, 0, 0) !important;
+    clip-path: inset(0 0% 0 0) !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-wordmark-track,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-wordmark-track {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-title span,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-title span {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-sub,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-sub {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-halo,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-halo {
+    opacity: 0.25 !important;
+    transform: translateZ(0) scale(0.95) !important;
+    animation: none !important;
+  }
+}
+
+.brand-loading-screen.no-animation .brand-loading-meta,
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-meta {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
+@keyframes brandFallbackLogoPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate3d(0, -8px, 0) scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translate3d(0, -8px, 0) scale(0.96);
+  }
+}

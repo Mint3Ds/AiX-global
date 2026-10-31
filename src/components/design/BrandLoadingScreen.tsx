@@ -23,6 +23,8 @@ export function BrandLoadingScreen({
 }: BrandLoadingScreenProps) {
   const [animationFinished, setAnimationFinished] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [noAnimationFallback, setNoAnimationFallback] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
   const completedRef = useRef(false);
 
   const finishAndExit = useCallback(() => {
@@ -35,13 +37,36 @@ export function BrandLoadingScreen({
     return () => clearTimeout(exitTimer);
   }, [onComplete]);
 
-  // Set animationFinished after minDurationMs so the full intro is appreciated
+  // Detect if no animation is playing (e.g. reduced-motion or suppressed keyframes)
   useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setNoAnimationFallback(true);
+      return;
+    }
+
+    // Watchdog: If CSS animation hasn't started within 350ms, switch to logo loading fallback
+    const watchdog = setTimeout(() => {
+      setAnimationStarted((started) => {
+        if (!started) {
+          setNoAnimationFallback(true);
+        }
+        return started;
+      });
+    }, 350);
+    return () => clearTimeout(watchdog);
+  }, []);
+
+  // Set animationFinished after duration so the intro or loading state is appreciated
+  useEffect(() => {
+    const duration = noAnimationFallback ? 700 : minDurationMs;
     const timer = setTimeout(() => {
       setAnimationFinished(true);
-    }, minDurationMs);
+    }, duration);
     return () => clearTimeout(timer);
-  }, [minDurationMs]);
+  }, [minDurationMs, noAnimationFallback]);
 
   // When animation has finished AND backend data is ready (and no blocking error), smoothly exit
   useEffect(() => {
@@ -65,7 +90,7 @@ export function BrandLoadingScreen({
 
   return (
     <div
-      className={`brand-loading-screen ${isExiting ? "is-exiting" : ""}`}
+      className={`brand-loading-screen ${isExiting ? "is-exiting" : ""} ${noAnimationFallback ? "no-animation" : ""}`}
       role="status"
       aria-label="Loading Clarity review workspace"
       aria-live="polite"
@@ -74,7 +99,10 @@ export function BrandLoadingScreen({
       <div className="brand-loading-halo" aria-hidden="true" />
 
       <div className="brand-loading-lockup">
-        <div className="brand-loading-symbol-wrap">
+        <div
+          className="brand-loading-symbol-wrap"
+          onAnimationStart={() => setAnimationStarted(true)}
+        >
           <svg
             className="brand-loading-svg"
             viewBox="0 0 64 64"
