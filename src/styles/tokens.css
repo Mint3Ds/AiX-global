@@ -1,22 +1,51 @@
+/* EDIT HERE FIRST: these tokens control the visual language on every page. */
 :root {
-  --paper: #f5f5f7;
-  --paper-light: #ffffff;
-  --paper-deep: #ececef;
+  /* Surfaces and text */
+  --paper: #f3f7fa;
+  --paper-light: #fdfefe;
+  --paper-deep: #e5edf2;
   --surface: #ffffff;
-  --surface-alt: #f8f8fa;
-  --ink: #1d1d1f;
-  --muted: #6e6e73;
-  --line: #d2d2d7;
-  --violet: #292924;
-  --violet-light: #eeede6;
-  --violet-on-dark: #ffffff;
-  --live: #e8f5ea;
-  --warning: #fff4d6;
-  --error: #b42318;
-  --error-bg: #fff0ef;
-  --placeholder: #86868b;
+  --surface-alt: #edf3f7;
+  --ink: #17232d;
+  --muted: #586978;
+  --line: #d4e0e8;
+  --line-strong: #aabac7;
+  --action: #243d52;
+  --action-hover: #172f42;
+  --action-tint: #e6eef4;
+  --on-action: #ffffff;
+  --accent: #496b86;
+  --live: #e7f0f5;
+  --warning: #f3eee3;
+  --warning-ink: #6f5b36;
+  --error: #765b45;
+  --error-bg: #f2eee9;
+  --placeholder: #647787;
   --white: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --selection: #d9e8f1;
+  --focus-ring: #496b861c;
+  --metric-sage: #eaf1f6;
+  --metric-sage-line: #d2e0e9;
+  --metric-lilac: #eff3f6;
+  --metric-lilac-line: #dbe4eb;
+
+  /* Layout, shape, and movement */
+  --site-width: 1536px;
+  --content-width: 1160px;
+  --radius: 2px;
+  --radius-panel: 3px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 140ms;
+  --motion-medium: 220ms;
+  /* Typography: change this stack to change both workspace and launch page. */
+  --font-ui: "Avenir Next", Inter, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --type-page-heading: clamp(29px, 3vw, 40px);
+  --type-section-heading: 22px;
+  --type-body: 14px;
+  --type-label: 10px;
+  font-family: var(--font-ui);
+  font-size: var(--type-body);
   color: var(--ink);
   background: var(--paper);
   font-synthesis: none;
@@ -27,7 +56,8 @@
   box-sizing: border-box;
 }
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  scroll-padding-top: 24px;
 }
 body {
   margin: 0;
@@ -42,11 +72,32 @@ select {
 button {
   cursor: pointer;
 }
+a {
+  color: var(--action);
+}
 :focus-visible {
-  outline: 3px solid var(--violet);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+[data-page-title]:focus,
+#review-detail-title:focus {
+  outline: none;
 }
 ::selection {
-  background: #dfd9c5;
+  background: var(--selection);
   color: var(--ink);
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

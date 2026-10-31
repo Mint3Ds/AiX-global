@@ -10,3 +10,6 @@ coverage/
 .local/
 
 tsconfig.tsbuildinfo
+
+# Local PostgreSQL database files
+.pgdata/

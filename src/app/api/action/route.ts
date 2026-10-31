@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertDatabaseConfigured } from "@/data/db";
-import { publicActionError } from "@/domain/public-errors";
+import { publicActionError, publicActionCode } from "@/domain/public-errors";
 import {
   intake,
   analyzeReview,
@@ -21,6 +21,8 @@ import {
   startTask,
   reportTask,
   verifyTask,
+  rejectTaskReport,
+  rejectReply,
   simulatePublish,
   approveReplyBatch,
 } from "@/domain/service";
@@ -74,6 +76,7 @@ export async function POST(request: NextRequest) {
           String(body.taskId),
           role,
           String(body.note || ""),
+          Number(body.reportVersion),
         );
         break;
       case "start_task":
@@ -89,6 +92,7 @@ export async function POST(request: NextRequest) {
           role,
           String(body.employeeId || ""),
           String(body.note || ""),
+          body.attachments || [],
         );
         break;
       case "verify_task":
@@ -96,6 +100,15 @@ export async function POST(request: NextRequest) {
           String(body.taskId),
           role,
           String(body.note || ""),
+          Number(body.reportVersion),
+        );
+        break;
+      case "reject_task_report":
+        result = await rejectTaskReport(
+          String(body.taskId),
+          role,
+          String(body.reason || ""),
+          Number(body.reportVersion),
         );
         break;
       case "draft_reply":
@@ -113,6 +126,7 @@ export async function POST(request: NextRequest) {
           String(body.replyId),
           role,
           String(body.text || ""),
+          Number(body.draftVersion),
         );
         break;
       case "approve_reply":
@@ -120,6 +134,15 @@ export async function POST(request: NextRequest) {
           String(body.replyId),
           role,
           Boolean(body.partialApproved),
+          Number(body.draftVersion),
+        );
+        break;
+      case "reject_reply":
+        result = await rejectReply(
+          String(body.replyId),
+          role,
+          String(body.reason || ""),
+          Number(body.draftVersion),
         );
         break;
       case "approve_reply_batch":
@@ -140,6 +163,7 @@ export async function POST(request: NextRequest) {
       {
         ok: false,
         error: publicActionError(error),
+        code: publicActionCode(error),
       },
       { status: 400 },
     );
