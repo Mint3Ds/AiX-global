@@ -206,7 +206,13 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         {/* Panel 2: Response Coverage */}
         <div className="stats-panel">
           <div className="stats-panel-heading">
-            <h3>Response Coverage: 100% vs 31%</h3>
+            <h3>
+              Response Coverage:{" "}
+              {kpis.responseReadinessRatePercent !== null
+                ? `${kpis.responseReadinessRatePercent}%`
+                : "0%"}{" "}
+              vs {kpis.industryBaselineResponseRatePercent}%
+            </h3>
             <p>
               Percentage of guest feedback receiving a verified managerial
               response.
@@ -253,8 +259,18 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
           <div className="stats-callout">
             <strong>Coverage Advantage:</strong> Over 68% of guest reviews go
-            unanswered in standard hospitality operations. Clarity prepares
-            verified responses backed by completed staff work.
+            unanswered across the hospitality industry (31.5% average). With
+            Clarity, verified response coverage is currently{" "}
+            <strong>
+              {kpis.responseReadinessRatePercent !== null
+                ? `${kpis.responseReadinessRatePercent}%`
+                : "0%"}
+            </strong>
+            {kpis.responseRateMultiplier !== null &&
+            kpis.responseRateMultiplier > 1
+              ? ` (${kpis.responseRateMultiplier}x higher)`
+              : ""}
+            , backed directly by completed staff tasks.
           </div>
         </div>
       </div>
