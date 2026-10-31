@@ -24,14 +24,12 @@ const THEME_COLORS = {
   specific: "#2e7d5b", // Refined forest green for actionable feedback
   generic: "#7d8d9b", // Neutral slate for low-signal reviews
   needsAttention: "#c27a2b", // Warm amber for pending attention
-  unverified: "#765b45", // Warm brown (var(--error))
 };
 
 export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(false);
     const timer = setTimeout(() => setMounted(true), 10);
     return () => clearTimeout(timer);
   }, []);
@@ -43,19 +41,20 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           index="07"
           eyebrow="Empirical benchmarks"
           title="Operational statistics"
-          description="Live server telemetry, active dwell tracking, and peer-reviewed hospitality benchmarks."
+          description="Real server dwell telemetry, response readiness benchmarks, and operational time saved with Clarity."
         />
         <div className="empty-state-card">
           <p className="empty-state-title">Loading telemetry data…</p>
           <p className="empty-state-copy">
-            Querying server database for real time-tracking timestamps and funnel data.
+            Querying server database for real time-tracking timestamps and
+            funnel data.
           </p>
         </div>
       </section>
     );
   }
 
-  const { timeTracking, funnel, evidenceIntegrity, kpis } = metrics;
+  const { timeTracking, funnel, kpis } = metrics;
 
   // Chart 1: Time Tracking Comparison (Seconds)
   const timeComparisonData = [
@@ -121,14 +120,14 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         index="07"
         eyebrow="Empirical benchmarks"
         title="Operational statistics"
-        description="Real server dwell telemetry, review screening funnel, and peer-reviewed hospitality benchmarks."
+        description="Real server dwell telemetry, response readiness benchmarks, and operational time saved with Clarity."
       >
         <span className="page-count">
           <strong>{timeTracking.totalTriagedReviews}</strong> triaged
         </span>
       </PageHeading>
 
-      {/* Top Ledger Summary Row */}
+      {/* Top Ledger Summary Row: The Three Core Metrics */}
       <div className="stats-summary" aria-label="Key statistical totals">
         <div>
           <span className="stat-label">Active Triage Dwell</span>
@@ -149,15 +148,6 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         </div>
 
         <div>
-          <span className="stat-label">Evidence Grounding</span>
-          <strong>{evidenceIntegrity.traceabilityRatePercent}%</strong>
-          <span className="stat-hint">
-            {evidenceIntegrity.exactSubstringVerifiedCount} of{" "}
-            {evidenceIntegrity.totalObservations} quotes verbatim verified
-          </span>
-        </div>
-
-        <div>
           <span className="stat-label">Response Readiness</span>
           <strong>
             {kpis.responseReadinessRatePercent !== null
@@ -172,7 +162,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         </div>
 
         <div>
-          <span className="stat-label">Labor Hours Reclaimed</span>
+          <span className="stat-label">Hours Saved to Clarity</span>
           <strong>{kpis.hoursReclaimed}h</strong>
           <span className="stat-hint">
             Across {funnel.specificReviewsCount} actionable reviews
@@ -187,8 +177,9 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           <div className="stats-panel-heading">
             <h3>Active Triage Dwell vs Academic Baseline</h3>
             <p>
-              Comparison of standard manual triage duration against Clarity&apos;s
-              server-measured active manager dwell time (seconds).
+              Comparison of standard manual triage duration against
+              Clarity&apos;s server-measured active manager dwell time
+              (seconds).
             </p>
           </div>
 
@@ -234,9 +225,10 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
           <div className="stats-callout">
             <strong>Academic Reference:</strong> Johnston, R. (2001),{" "}
-            <em>International Journal of Service Industry Management</em>, 12(1),
-            60–84. Standard manual intake, root-cause diagnosis, and department
-            dispatching takes 10–15 minutes (conservative lower bound: 600 seconds).
+            <em>International Journal of Service Industry Management</em>,
+            12(1), 60–84. Standard manual intake, root-cause diagnosis, and
+            department dispatching takes 10–15 minutes (conservative lower
+            bound: 600 seconds).
           </div>
         </div>
 
@@ -245,8 +237,8 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           <div className="stats-panel-heading">
             <h3>Time Tracking Telemetry Details</h3>
             <p>
-              Optimistic server dwell recorded between the manager&apos;s last view
-              and the formal decision timestamp.
+              Optimistic server dwell recorded between the manager&apos;s last
+              view and the formal decision timestamp.
             </p>
           </div>
 
@@ -291,24 +283,34 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
               </tr>
               <tr>
                 <td className="table-label">Empirical Time Reduction</td>
-                <td
-                  className="table-value"
-                  style={{ color: "#1f6b4d" }}
-                >
+                <td className="table-value" style={{ color: "#1f6b4d" }}>
                   {timeTracking.measuredTimeReductionPercent !== null
                     ? `${timeTracking.measuredTimeReductionPercent}%`
                     : "—"}
                 </td>
               </tr>
               <tr>
-                <td className="table-label">Tracked vs Total Triaged Reviews</td>
+                <td className="table-label">Hours Saved to Clarity</td>
+                <td
+                  className="table-value"
+                  style={{ color: "#1f6b4d", fontWeight: 600 }}
+                >
+                  {kpis.hoursReclaimed}h
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">
+                  Tracked vs Total Triaged Reviews
+                </td>
                 <td className="table-value">
                   {timeTracking.trackedReviewsCount} tracked /{" "}
                   {timeTracking.totalTriagedReviews} triaged
                 </td>
               </tr>
               <tr>
-                <td className="table-label">End-to-End Operational Turnaround</td>
+                <td className="table-label">
+                  End-to-End Operational Turnaround
+                </td>
                 <td className="table-value">
                   {timeTracking.averageEndToEndResolutionMinutes !== null
                     ? `${timeTracking.averageEndToEndResolutionMinutes} min`
@@ -319,8 +321,9 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           </table>
 
           <div className="stats-callout">
-            <strong>Timezone Invariant:</strong> Durations are calculated entirely
-            on the server in UTC from postgres timestamps when managers confirm work tasks.
+            <strong>Timezone Invariant:</strong> Durations are calculated
+            entirely on the server in UTC from postgres timestamps when managers
+            confirm work tasks.
           </div>
         </div>
       </div>
@@ -332,8 +335,8 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           <div className="stats-panel-heading">
             <h3>Reviews Intake &amp; Screening Funnel</h3>
             <p>
-              Distribution of incoming reviews screened into actionable operational
-              feedback vs generic text.
+              Distribution of incoming reviews screened into actionable
+              operational feedback vs generic text.
             </p>
           </div>
 
@@ -360,7 +363,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                   </Pie>
                   <Tooltip
                     contentStyle={tooltipStyle}
-                    formatter={(val: unknown, name: any) => [
+                    formatter={(val: unknown, name: unknown) => [
                       `${val} reviews`,
                       String(name),
                     ]}
@@ -418,8 +421,8 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           <div className="stats-panel-heading">
             <h3>Management Response Readiness</h3>
             <p>
-              Verified response rate backed by physical task completion compared to
-              hospitality benchmarks.
+              Verified response rate backed by physical task completion compared
+              to hospitality benchmarks.
             </p>
           </div>
 
@@ -463,99 +466,14 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
           <div className="stats-callout">
             <strong>Academic Reference:</strong> Proserpio, M., &amp; Zervas, G.
-            (2017), <em>Marketing Science</em>, 36(5), 645–665. Across TripAdvisor,
-            only 31.5% of reviews receive managerial responses due to staff
-            time limitations.
+            (2017), <em>Marketing Science</em>, 36(5), 645–665. Across
+            TripAdvisor, only 31.5% of reviews receive managerial responses due
+            to staff time limitations.
           </div>
         </div>
       </div>
 
-      {/* Row 3: Evidence Grounding & Hallucination Elimination */}
-      <div className="stats-panel" style={{ marginBottom: "24px" }}>
-        <div className="stats-panel-heading">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
-            <div>
-              <h3>Evidence Grounding &amp; Hallucination Elimination</h3>
-              <p>
-                Every extracted observation quote is programmatically verified as an
-                exact, character-for-character substring of the guest&apos;s review.
-              </p>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <span
-                style={{
-                  fontSize: "26px",
-                  fontWeight: 600,
-                  letterSpacing: "-0.04em",
-                  color: "var(--action, #243d52)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {evidenceIntegrity.traceabilityRatePercent}%
-              </span>
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: "var(--muted)",
-                  marginLeft: "6px",
-                }}
-              >
-                Verbatim Grounded
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="stats-quad-grid">
-          <div className="stats-quad-card">
-            <div className="quad-label">Extracted Quotes</div>
-            <strong>{evidenceIntegrity.totalObservations}</strong>
-          </div>
-          <div className="stats-quad-card">
-            <div className="quad-label">Verbatim Verified</div>
-            <strong style={{ color: "#1f6b4d" }}>
-              {evidenceIntegrity.exactSubstringVerifiedCount}
-            </strong>
-          </div>
-          <div className="stats-quad-card">
-            <div className="quad-label">AI Hallucinations</div>
-            <strong
-              style={{
-                color:
-                  evidenceIntegrity.unverifiedCount > 0
-                    ? "var(--error)"
-                    : "var(--muted)",
-              }}
-            >
-              {evidenceIntegrity.unverifiedCount}
-            </strong>
-          </div>
-          <div className="stats-quad-card">
-            <div className="quad-label">Grounded Ratio</div>
-            <strong style={{ color: "var(--action)" }}>
-              {evidenceIntegrity.traceabilityRatePercent}%
-            </strong>
-          </div>
-        </div>
-
-        <div className="stats-callout">
-          <strong>What is an exact verbatim substring?</strong> A substring is an
-          untouched, word-for-word excerpt matching the customer&apos;s original
-          review text letter-for-letter (<code>reviewText.includes(quote)</code>).
-          Clarity verifies this programmatically to guarantee 0% LLM hallucination—managers
-          can trust that every flagged complaint is real guest feedback, never synthesized.
-        </div>
-      </div>
-
-      {/* Row 4: Operational Loop Closure */}
+      {/* Row 3: Operational Loop Closure */}
       <div className="stats-panel">
         <div className="stats-panel-heading">
           <h3>Operational Loop Closure</h3>
