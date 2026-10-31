@@ -373,16 +373,3 @@
     opacity: 1;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .brand-loading-symbol-wrap,
-  .brand-loading-wordmark-mask,
-  .brand-loading-wordmark-track,
-  .brand-loading-title span,
-  .brand-loading-sub,
-  .brand-loading-svg .path-left,
-  .brand-loading-svg .path-right {
-    animation-duration: 0.01s !important;
-    animation-delay: 0s !important;
-  }
-}
