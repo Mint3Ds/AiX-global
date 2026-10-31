@@ -19,9 +19,33 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 > npm run db:migrate
 > npm run db:seed
 > ```
->
-> Or to cleanly reset and reseed the database from scratch:
->
-> ```sh
-> npm run db:reset
-> ```
+
+### Seeding Legacy / Historical Demo Reviews
+
+Ordinary `npm run db:seed` provisions base businesses, properties, employees, and operational themes. To also populate the 240+ historical synthetic demo reviews and pre-labeled analysis fixtures across properties:
+
+- **Bash / macOS / Linux / Replit:**
+  ```sh
+  SEED_LEGACY_REVIEWS=yes npm run db:seed
+  ```
+- **Windows PowerShell:**
+  ```powershell
+  $env:SEED_LEGACY_REVIEWS="yes"; npm run db:seed; Remove-Item Env:\SEED_LEGACY_REVIEWS
+  ```
+
+### Full Clean Reset & Reseed
+
+To completely drop all tables and re-seed from a pristine state, pass `CONFIRM_DEMO_RESET=yes` (required by `scripts/reset.ts` to prevent accidental loss):
+
+- **Bash / macOS / Linux / Replit:**
+  ```sh
+  CONFIRM_DEMO_RESET=yes npm run db:reset
+  npm run db:migrate
+  SEED_LEGACY_REVIEWS=yes npm run db:seed
+  ```
+- **Windows PowerShell:**
+  ```powershell
+  $env:CONFIRM_DEMO_RESET="yes"; npm run db:reset; Remove-Item Env:\CONFIRM_DEMO_RESET
+  npm run db:migrate
+  $env:SEED_LEGACY_REVIEWS="yes"; npm run db:seed; Remove-Item Env:\SEED_LEGACY_REVIEWS
+  ```
