@@ -3455,22 +3455,23 @@ function TaskEditor({
         employees[0]?.id ||
         "",
     ),
-    [dueDate, setDueDate] = useState(() => {
+    [dueAt, setDueAt] = useState(() => {
       if (!task.dueAt) return "";
       const value = new Date(task.dueAt);
       return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
         .toISOString()
-        .slice(0, 10);
+        .slice(0, 16);
     }),
-    [dueTime, setDueTime] = useState(() => {
-      if (!task.dueAt) return "17:00";
-      const value = new Date(task.dueAt);
-      return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
-        .toISOString()
-        .slice(11, 16);
-    });
+    [isFirefox, setIsFirefox] = useState(false);
 
-  const dueAt = dueDate ? `${dueDate}T${dueTime || "17:00"}` : "";
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent)) {
+      setIsFirefox(true);
+    }
+  }, []);
+
+  const firefoxDate = dueAt ? dueAt.slice(0, 10) : "";
+  const firefoxTime = dueAt && dueAt.length >= 16 ? dueAt.slice(11, 16) : "17:00";
 
   const data = () => ({
     title,
@@ -3511,32 +3512,56 @@ function TaskEditor({
           ))}
         </select>
       </label>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>
+      {isFirefox ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>
+          <label>
+            Due date
+            <input
+              type="date"
+              aria-label="Due date"
+              aria-describedby={!dueAt ? "task-due-hint" : undefined}
+              value={firefoxDate}
+              onChange={(event) => {
+                const newDate = event.target.value;
+                setDueAt(newDate ? `${newDate}T${firefoxTime || "17:00"}` : "");
+              }}
+            />
+            {!dueAt && (
+              <span id="task-due-hint" className="form-hint">
+                Set a due date before assigning.
+              </span>
+            )}
+          </label>
+          <label>
+            Due time
+            <input
+              type="time"
+              aria-label="Due time"
+              value={firefoxTime}
+              onChange={(event) => {
+                const newTime = event.target.value;
+                setDueAt(firefoxDate ? `${firefoxDate}T${newTime || "17:00"}` : "");
+              }}
+            />
+          </label>
+        </div>
+      ) : (
         <label>
           Due date
           <input
-            type="date"
+            type="datetime-local"
             aria-label="Due date"
             aria-describedby={!dueAt ? "task-due-hint" : undefined}
-            value={dueDate}
-            onChange={(event) => setDueDate(event.target.value)}
+            value={dueAt}
+            onChange={(event) => setDueAt(event.target.value)}
           />
-          {!dueDate && (
+          {!dueAt && (
             <span id="task-due-hint" className="form-hint">
-              Select a date before assigning.
+              Set a due date before assigning.
             </span>
           )}
         </label>
-        <label>
-          Due time
-          <input
-            type="time"
-            aria-label="Due time"
-            value={dueTime}
-            onChange={(event) => setDueTime(event.target.value)}
-          />
-        </label>
-      </div>
+      )}
       <div className="controls">
         <button className="secondary" onClick={() => save(data())}>
           Save edits
