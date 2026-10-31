@@ -77,6 +77,8 @@ export function BrandLoadingScreen({
         <div className="brand-loading-symbol-wrap">
           <svg
             className="brand-loading-svg"
+            width="84"
+            height="84"
             viewBox="0 0 64 64"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -85,10 +87,22 @@ export function BrandLoadingScreen({
             <path
               className="path-left"
               d="M26 8C17 14 9 24 5 32c4 10 12 19 22 25l11-10c-7-5-13-11-16-15 4-8 9.5-15.5 17.5-21.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="5.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength="160"
             />
             <path
               className="path-right"
               d="M38 56c9-6 17-16 21-24-4-10-12-19-22-25L26 17c7 5 13 11 16 15-4 8-9.5 15.5-17.5 21.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="5.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength="160"
             />
           </svg>
         </div>

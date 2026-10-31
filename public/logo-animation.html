@@ -174,11 +174,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--ink);
       opacity: 0;
-      transform: translate3d(132px, -8px, 0) scale(2.05);
-      will-change: transform, opacity;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
+      transform: translate(132px, -8px) scale(2.05);
     }
 
     .is-playing .logo-mark-wrap {
@@ -186,20 +184,20 @@
     }
 
     .logo-svg {
-      width: 100%;
-      height: 100%;
+      display: block;
+      width: 84px;
+      height: 84px;
       overflow: visible;
-      transform: translateZ(0);
     }
 
     .logo-svg path {
-      stroke: var(--ink);
+      fill: none;
+      stroke: currentColor;
       stroke-width: 5.2;
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 160;
       stroke-dashoffset: 160;
-      will-change: stroke-dashoffset;
     }
 
     .is-playing .logo-svg .path-left {
@@ -344,17 +342,17 @@
     @keyframes logoFadeAndZoomPull {
       0% {
         opacity: 0;
-        transform: translate3d(132px, -8px, 0) scale(2.05);
+        transform: translate(132px, -8px) scale(2.05);
         animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
       }
       32% {
         opacity: 1;
-        transform: translate3d(132px, -8px, 0) scale(1.75);
+        transform: translate(132px, -8px) scale(1.75);
         animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
       }
       100% {
         opacity: 1;
-        transform: translate3d(0px, -8px, 0) scale(1);
+        transform: translate(0px, -8px) scale(1);
       }
     }
 
@@ -369,11 +367,11 @@
 
     @keyframes wordmarkTowAndUnmask {
       0% {
-        transform: translate3d(163.5px, 0, 0);
+        transform: translate(163.5px, 0);
         clip-path: inset(0 100% 0 0);
       }
       100% {
-        transform: translate3d(0px, 0, 0);
+        transform: translate(0px, 0);
         clip-path: inset(0 0% 0 0);
       }
     }
@@ -381,36 +379,36 @@
     @keyframes wordmarkPullOut {
       0% {
         opacity: 0;
-        transform: translate3d(-22px, 0, 0);
+        transform: translate(-22px, 0);
       }
       18% {
         opacity: 1;
       }
       100% {
         opacity: 1;
-        transform: translate3d(0px, 0, 0);
+        transform: translate(0px, 0);
       }
     }
 
     @keyframes letterSettle {
       0% {
         opacity: 0;
-        transform: translate3d(-10px, 0, 0);
+        transform: translate(-10px, 0);
       }
       100% {
         opacity: 1;
-        transform: translate3d(0px, 0, 0);
+        transform: translate(0px, 0);
       }
     }
 
     @keyframes subFadeIn {
       0% {
         opacity: 0;
-        transform: translate3d(0, 6px, 0);
+        transform: translate(0, 6px);
       }
       100% {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate(0, 0);
       }
     }
 
@@ -433,6 +431,38 @@
     body.compact-mode .brand-lockup {
       transform: scale(0.42);
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .is-playing .logo-mark-wrap {
+        opacity: 1 !important;
+        transform: translate(0px, -8px) scale(1) !important;
+        animation: none !important;
+      }
+      .is-playing .logo-svg path {
+        stroke-dashoffset: 0 !important;
+        animation: none !important;
+      }
+      .is-playing .wordmark-mask {
+        transform: translate(0px, 0) !important;
+        clip-path: inset(0 0% 0 0) !important;
+        animation: none !important;
+      }
+      .is-playing .wordmark-track {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+      .is-playing .wordmark-title span {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+      .is-playing .wordmark-sub {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 <body class="is-playing">
@@ -454,14 +484,26 @@
 
     <div class="brand-lockup" aria-label="Clarity Review workspace">
       <div class="logo-mark-wrap">
-        <svg class="logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="logo-svg" width="84" height="84" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             class="path-left"
             d="M26 8C17 14 9 24 5 32c4 10 12 19 22 25l11-10c-7-5-13-11-16-15 4-8 9.5-15.5 17.5-21.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="5.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            pathLength="160"
           />
           <path
             class="path-right"
             d="M38 56c9-6 17-16 21-24-4-10-12-19-22-25L26 17c7 5 13 11 16 15-4 8-9.5 15.5-17.5 21.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="5.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            pathLength="160"
           />
         </svg>
       </div>
