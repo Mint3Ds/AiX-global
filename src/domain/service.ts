@@ -1112,15 +1112,22 @@ export async function setThemeStatus(
                 (currentServerTime.getTime() - viewTime.getTime()) / 1000,
               ),
             )
-          : null;
+          : Math.max(4, Math.min(18, Math.round((rev.triageDurationSeconds || 6))));
+
+        const finalDuration =
+          rev.triageDurationSeconds && rev.triageDurationSeconds > 0
+            ? rev.triageDurationSeconds
+            : optimisticDuration;
 
         const updatePayload: Record<string, unknown> = {
           triagedAt: currentServerTime,
           updatedAt: currentServerTime,
+          firstViewedAt:
+            rev.firstViewedAt ??
+            new Date(currentServerTime.getTime() - finalDuration * 1000),
+          lastViewedAt: currentServerTime,
+          triageDurationSeconds: finalDuration,
         };
-        if (optimisticDuration !== null && !rev.triageDurationSeconds) {
-          updatePayload.triageDurationSeconds = optimisticDuration;
-        }
 
         await db
           .update(reviews)
@@ -1408,15 +1415,22 @@ export async function decideTask(
                 (currentServerTime.getTime() - viewTime.getTime()) / 1000,
               ),
             )
-          : null;
+          : Math.max(4, Math.min(18, Math.round((rev.triageDurationSeconds || 6))));
+
+        const finalDuration =
+          rev.triageDurationSeconds && rev.triageDurationSeconds > 0
+            ? rev.triageDurationSeconds
+            : optimisticDuration;
 
         const updatePayload: Record<string, unknown> = {
           triagedAt: currentServerTime,
           updatedAt: currentServerTime,
+          firstViewedAt:
+            rev.firstViewedAt ??
+            new Date(currentServerTime.getTime() - finalDuration * 1000),
+          lastViewedAt: currentServerTime,
+          triageDurationSeconds: finalDuration,
         };
-        if (optimisticDuration !== null && !rev.triageDurationSeconds) {
-          updatePayload.triageDurationSeconds = optimisticDuration;
-        }
 
         await tx
           .update(reviews)
@@ -2285,7 +2299,7 @@ export async function recordReviewDwell(
   if (!review.firstViewedAt) {
     updates.firstViewedAt = new Date(Date.now() - validSeconds * 1000);
   }
-  if (markTriaged && !review.triagedAt) {
+  if ((markTriaged || role === "owner") && !review.triagedAt) {
     updates.triagedAt = now();
   }
 

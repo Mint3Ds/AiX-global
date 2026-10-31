@@ -684,7 +684,9 @@ export function Workspace({
               reviewId,
               durationSeconds: totalSeconds,
             }),
-          }).catch(() => {});
+          })
+            .then(() => void refresh())
+            .catch(() => {});
         }
         activeReviewTimerRef.current = null;
       }
