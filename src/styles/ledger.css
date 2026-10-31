@@ -1167,10 +1167,12 @@ main .issue-category-tabs button:hover:not(.review-row) {
 .tasks-page .staff-assignment-note {
   color: var(--muted);
 }
-.staff-dashboard .page-heading {
+.staff-dashboard .page-heading,
+.tasks-page .page-heading {
   align-items: end;
 }
-.staff-dashboard-profile {
+.staff-dashboard-profile,
+.staff-header-picker {
   display: grid;
   min-width: 205px;
   gap: 7px;
@@ -1180,7 +1182,8 @@ main .issue-category-tabs button:hover:not(.review-row) {
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
-.staff-dashboard-profile select {
+.staff-dashboard-profile select,
+.staff-header-picker select {
   min-height: 40px;
   padding: 8px 36px 8px 11px;
   border: 1px solid var(--line);
