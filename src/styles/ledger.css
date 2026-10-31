@@ -1630,9 +1630,9 @@ main .issue-category-tabs button:hover:not(.review-row) {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 0;
-  padding: 0;
-  border-bottom: 0;
+  margin: 0 0 34px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--line);
 }
 main .activity-filters button:not(.link) {
   min-height: 38px;
@@ -1928,7 +1928,7 @@ main .activity-filters button:not(.link):hover {
   margin: 4px 0 0;
 }
 .activity-event-subject {
-  margin: 0;
+  margin: 3px 0 0;
   color: var(--action);
   font-size: 11px;
   line-height: 1.5;
