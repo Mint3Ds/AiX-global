@@ -2144,20 +2144,17 @@ export function Workspace() {
                             className={`review-row ${selectedTheme === item.id ? "chosen" : ""}`}
                             onClick={() => openTheme(item.id)}
                           >
-                            <span className="issue-row-top">
+                            <span className="issue-row-heading">
+                              <b className="issue-row-title">{item.title}</b>
                               <span
                                 className={`priority-chip priority-chip-${item.priority.toLowerCase()}`}
                               >
                                 {item.priority}
                               </span>
-                              <span className="neutral-chip">
-                                {branchName(item.branchId)}
-                              </span>
-                              <small>{label(item.status)}</small>
                             </span>
-                            <b className="issue-row-title">{item.title}</b>
                             <span className="issue-row-bottom">
-                              <span>
+                              <span className="issue-row-meta">
+                                {branchName(item.branchId)} ·{" "}
                                 {state.themeSupport[item.id] || 0} reviews
                               </span>
                               {issueTaskByTheme.has(item.id) ? (
@@ -2168,7 +2165,9 @@ export function Workspace() {
                                   )}
                                 </span>
                               ) : (
-                                <small>{item.priority} priority</small>
+                                <small className="issue-row-state">
+                                  {label(item.status)}
+                                </small>
                               )}
                             </span>
                           </button>

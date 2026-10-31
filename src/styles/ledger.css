@@ -657,28 +657,37 @@ main .issue-category-tabs button:hover:not(.review-row) {
   background: var(--paper-deep);
   font-size: 10px;
 }
-.issue-row-top {
+.issue-row-heading {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 5px 9px;
-}
-.issue-row-top small {
   width: 100%;
-  color: var(--muted);
-  font-size: 10px;
-  text-transform: capitalize;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 .issue-row-title {
   font-size: 14px;
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 .issue-row-bottom {
   display: flex;
+  width: 100%;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   color: var(--muted);
   font-size: 11px;
+}
+.issue-row-meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.issue-row-state {
+  flex: 0 0 auto;
+  font-size: 10px;
+  text-transform: capitalize;
 }
 .issue-row-bottom small {
   font-size: 10px;
@@ -704,7 +713,8 @@ main .issue-category-tabs button:hover:not(.review-row) {
 }
 .issues-page .issue-list-paginated .review-row {
   margin-bottom: 0;
-  padding: 20px 14px;
+  gap: 8px;
+  padding: 14px 12px;
   border: 0;
   border-bottom: 1px solid var(--line);
   border-radius: 0;

@@ -217,9 +217,9 @@ main .reply-navigation button.secondary:hover {
 }
 .issue-list-paginated {
   display: grid;
-  height: 620px;
-  grid-template-rows: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  height: auto;
+  grid-template-rows: none;
+  gap: 0;
   max-height: none;
   overflow: visible;
   padding-right: 0;
