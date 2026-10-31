@@ -57,6 +57,7 @@ const titles: Record<string, string> = {
   membership_corrected: "Evidence updated",
   possible_recurrence: "Possible recurrence",
   theme_confirmed: "Issue confirmed",
+  suggestion_confirmed: "Suggestion confirmed",
   theme_dismissed: "Issue dismissed",
   theme_reopened: "Issue reopened",
   priority_adjusted: "Priority changed",
@@ -106,6 +107,8 @@ type EventRowProps = {
   event: ActivityEvent;
   actor: string;
   subject?: string;
+  title?: string;
+  description?: string;
   handoff?: {
     id: string;
     payload: Record<string, unknown>;
@@ -114,7 +117,7 @@ type EventRowProps = {
   };
 };
 
-function EventRow({ event, actor, subject, handoff }: EventRowProps) {
+function EventRow({ event, actor, subject, title, description, handoff }: EventRowProps) {
   const metadata =
     event.metadata && typeof event.metadata === "object"
       ? (event.metadata as Record<string, unknown>)
@@ -124,14 +127,14 @@ function EventRow({ event, actor, subject, handoff }: EventRowProps) {
       <span className="activity-event-marker" aria-hidden="true" />
       <div className="activity-event-content">
         <div className="activity-event-topline">
-          <strong>{titles[event.type] || toSentenceCase(event.type)}</strong>
+          <strong>{title || titles[event.type] || toSentenceCase(event.type)}</strong>
           <time dateTime={event.createdAt}>
             {date(event.createdAt)} · {time(event.createdAt)}
           </time>
         </div>
         {subject && <p className="activity-event-subject">{subject}</p>}
         <p className="activity-event-description">
-          {formatEventDescription(event.description)}
+          {description || formatEventDescription(event.description)}
         </p>
         <p className="activity-event-actor">By {actor}</p>
         {typeof metadata.reason === "string" && (
@@ -175,7 +178,7 @@ export function ActivityView({
   events: ActivityEvent[];
   employees: { id: string; name: string }[];
   tasks: ActivityTask[];
-  themes: { id: string; title: string }[];
+  themes: { id: string; title: string; type: string }[];
   reviews: { id: string; originalText: string }[];
   replies: ActivityReply[];
   handoffs: {
@@ -189,7 +192,7 @@ export function ActivityView({
 }) {
   const [selectedKind, setSelectedKind] = useState<ActivityKind>("all");
   const [visibleThreads, setVisibleThreads] = useState(6);
-  const [visibleOther, setVisibleOther] = useState(30);
+  const [visibleOther, setVisibleOther] = useState(12);
   const replyReviews = new Map(
     replies.map((reply) => [reply.id, reply.reviewId]),
   );
@@ -198,6 +201,18 @@ export function ActivityView({
   );
   const taskNames = new Map(tasks.map((task) => [task.id, task.title]));
   const issueNames = new Map(themes.map((theme) => [theme.id, theme.title]));
+  const themeTypes = new Map(themes.map((theme) => [theme.id, theme.type]));
+  const themeEventCopy = (event: ActivityEvent) => {
+    if (event.entityType !== "theme" || themeTypes.get(event.entityId) !== "suggestion")
+      return {};
+    if (event.type === "theme_confirmed")
+      return { title: "Suggestion confirmed", description: "Owner confirmed the guest suggestion for a possible trial." };
+    if (event.type === "theme_dismissed")
+      return { title: "Suggestion dismissed" };
+    if (event.type === "theme_reopened")
+      return { title: "Suggestion reopened" };
+    return {};
+  };
   const reviewNames = new Map(
     reviews.map((review) => [
       review.id,
@@ -256,8 +271,8 @@ export function ActivityView({
       <PageHeading
         index="06"
         eyebrow="Workspace history"
-        title="Work, with its history."
-        description="Task decisions and linked replies stay together. Review and issue updates remain visible below."
+        title="Activity"
+        description="A clear record of reviews, decisions, and work completed."
       >
         <span className="page-count">
           <strong>{events.length}</strong> updates
@@ -277,7 +292,7 @@ export function ActivityView({
             onClick={() => {
               setSelectedKind(id);
               setVisibleThreads(6);
-              setVisibleOther(30);
+              setVisibleOther(12);
             }}
           >
             {label} <span>{counts[id]}</span>
@@ -291,8 +306,8 @@ export function ActivityView({
         >
           <div className="activity-section-heading">
             <div>
-              <p className="eyebrow">Connected by task</p>
-              <h2 id="activity-work-title">Work threads</h2>
+              <p className="eyebrow">Connected history</p>
+              <h2 id="activity-work-title">Work by task</h2>
             </div>
             <span>
               {threads.length} {threads.length === 1 ? "task" : "tasks"}
@@ -310,17 +325,20 @@ export function ActivityView({
                   <header className="activity-thread-heading">
                     <div>
                       <p className="activity-thread-kicker">
-                        Work task · {issueNames.get(task.themeId) || "Issue"}
+                        {issueNames.get(task.themeId) || "Work task"}
                       </p>
                       <h3 id={`thread-${task.id}`}>{task.title}</h3>
-                      <span className="activity-thread-status">
-                        {taskStatuses[task.status] ||
-                          task.status.replaceAll("_", " ")}
-                      </span>
-                      <span className="activity-thread-count">
-                        {threadEvents.length}{" "}
-                        {threadEvents.length === 1 ? "update" : "updates"}
-                      </span>
+                      <p className="activity-thread-meta">
+                        <span className="activity-thread-status">
+                          {taskStatuses[task.status] || task.status.replaceAll("_", " ")}
+                        </span>
+                        <span className="activity-thread-count">
+                          {threadEvents.length} {threadEvents.length === 1 ? "event" : "events"}
+                        </span>
+                        <time dateTime={threadEvents[0].createdAt}>
+                          Latest {titles[threadEvents[0].type] || toSentenceCase(threadEvents[0].type)} · {date(threadEvents[0].createdAt)}
+                        </time>
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -330,13 +348,10 @@ export function ActivityView({
                       View task
                     </button>
                   </header>
-                  <details
-                    className="activity-history"
-                    open={task.status !== "resolved"}
-                  >
+                  <details className="activity-history">
                     <summary>
-                      <span>Activity history</span>
-                      <span>{threadEvents.length} updates</span>
+                      <span>Timeline</span>
+                      <span>{threadEvents.length} {threadEvents.length === 1 ? "event" : "events"}</span>
                     </summary>
                     <ol
                       className="activity-thread-events"
@@ -378,8 +393,8 @@ export function ActivityView({
         >
           <div className="activity-section-heading">
             <div>
-              <p className="eyebrow">Review and issue trail</p>
-              <h2 id="activity-other-title">Other updates</h2>
+              <p className="eyebrow">Review and issue history</p>
+              <h2 id="activity-other-title">Workspace events</h2>
             </div>
             <span>
               {other.length} {other.length === 1 ? "update" : "updates"}
@@ -392,6 +407,7 @@ export function ActivityView({
                 event={event}
                 actor={actorName(event)}
                 subject={subject(event)}
+                {...themeEventCopy(event)}
                 handoff={handoffFor(event)}
               />
             ))}
@@ -399,7 +415,7 @@ export function ActivityView({
           {visibleOther < other.length && (
             <button
               className="secondary activity-more"
-              onClick={() => setVisibleOther((count) => count + 30)}
+              onClick={() => setVisibleOther((count) => count + 12)}
             >
               Show more updates
             </button>

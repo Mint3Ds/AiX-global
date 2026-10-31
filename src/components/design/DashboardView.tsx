@@ -38,6 +38,7 @@ type WorkItem = {
   description: string;
   priority: string;
   relatedIssue: string;
+  relatedType: string;
   assignee: string;
   assigneeId: string | null;
   dueAt: string | null;
@@ -347,7 +348,7 @@ function DashboardTask({
       </div>
       <h4>{task.title}</h4>
       {task.description && <p className="dashboard-task-description">{task.description}</p>}
-      {task.relatedIssue && <p className="dashboard-task-related">Issue · {task.relatedIssue}</p>}
+      {task.relatedIssue && <p className="dashboard-task-related">{task.relatedType === "suggestion" ? "Suggestion" : "Issue"} · {task.relatedIssue}</p>}
       {!needsApproval && <p className="dashboard-task-assignee">{task.assignee}</p>}
 
       {needsApproval ? (

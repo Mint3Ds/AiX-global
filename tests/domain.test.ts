@@ -6,6 +6,7 @@ import {
   requireTransition,
   canDraftReply,
   decisionReason,
+  taskProposalForTheme,
 } from "../src/domain/workflow";
 import {
   candidateThemes,
@@ -15,6 +16,44 @@ import {
 import { detectReviewLanguage } from "../src/domain/language";
 
 describe("review and workflow rules", () => {
+  it("turns a confirmed suggestion into a trial task without treating it as a repair", () => {
+    const suggestion = {
+      type: "suggestion",
+      status: "owner_confirmed",
+      title: "Offer a quieter room option",
+      priority: "insight",
+    };
+    expect(taskProposalForTheme(suggestion)).toEqual({
+      title: "Try: Offer a quieter room option",
+      description:
+        "Try this guest suggestion where practical: Offer a quieter room option. Record what was tried, what happened, and whether it should continue.",
+      priority: "low",
+    });
+    expect(() =>
+      taskProposalForTheme({ ...suggestion, status: "suggested" }),
+    ).toThrow("Confirm this suggestion");
+    expect(() =>
+      taskProposalForTheme({ ...suggestion, status: "dismissed" }),
+    ).toThrow("Confirm this suggestion");
+    expect(() =>
+      taskProposalForTheme({ ...suggestion, type: "positive_pattern" }),
+    ).toThrow("Only an active issue or confirmed suggestion");
+  });
+  it("keeps the existing repair-task proposal for an operational issue", () => {
+    expect(
+      taskProposalForTheme({
+        type: "operational_issue",
+        status: "owner_confirmed",
+        title: "Room AC not cooling",
+        priority: "high",
+      }),
+    ).toEqual({
+      title: "Inspect room ac not cooling",
+      description:
+        "Inspect the evidence for room ac not cooling and record what was actually done.",
+      priority: "high",
+    });
+  });
   it("keeps distinct observations and exact source-language quotes", () => {
     const text =
       "The booth rocked when I leaned back, but the fried rice was beautifully smoky.";

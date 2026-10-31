@@ -29,6 +29,7 @@ import {
   requireTransition,
   canDraftReply,
   decisionReason,
+  taskProposalForTheme,
   WorkflowError,
 } from "./workflow";
 import { fixtureForExactText, type FixtureAnalysis } from "@/data/fixtures";
@@ -1197,14 +1198,18 @@ export async function setThemeStatus(
       ? "theme_dismissed"
       : status === "suggested"
         ? "theme_reopened"
-        : "theme_confirmed",
+        : theme.type === "suggestion"
+          ? "suggestion_confirmed"
+          : "theme_confirmed",
     "theme",
     themeId,
     status === "dismissed"
       ? "Owner dismissed the suggested theme."
       : status === "suggested"
         ? "Owner reopened the dismissed theme for review."
-        : "Owner confirmed the suggested theme.",
+        : theme.type === "suggestion"
+          ? "Owner confirmed the guest suggestion for a possible trial."
+          : "Owner confirmed the suggested issue.",
     "demo owner",
     "owner",
   );
@@ -1235,12 +1240,9 @@ export async function setSeverity(
 export async function proposeTask(themeId: string, role: string) {
   requireOwner(role);
   const theme = await oneTheme(themeId);
-  if (theme.type !== "operational_issue" || theme.status === "dismissed")
-    throw new Error("Only an active operational issue can have a repair task.");
+  const proposal = taskProposalForTheme(theme);
   if ((await recalculatePriority(themeId)) < 1)
-    throw new Error(
-      "An operational task needs at least one supporting source review.",
-    );
+    throw new Error("A work task needs at least one supporting source review.");
   const { id, created } = await db.transaction(async (tx) => {
     await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${themeId}))`);
     const existingRows = await tx
@@ -1267,9 +1269,9 @@ export async function proposeTask(themeId: string, role: string) {
       id,
       themeId,
       branchId: theme.branchId,
-      title: `Inspect ${theme.title.toLowerCase()}`,
-      description: `Inspect the evidence for ${theme.title.toLowerCase()} and record what was actually done.`,
-      priority: theme.priority,
+      title: proposal.title,
+      description: proposal.description,
+      priority: proposal.priority,
       assigneeRole: "floor manager",
       status: "proposed",
       recurrenceOfTaskId: existing?.status === "resolved" ? existing.id : null,
@@ -1281,7 +1283,9 @@ export async function proposeTask(themeId: string, role: string) {
     "task_proposed",
     "task",
     id,
-    "Owner created a proposed operational task.",
+    theme.type === "suggestion"
+      ? "Owner created a trial task from a confirmed guest suggestion."
+      : "Owner created a proposed operational task.",
     "demo owner",
     "owner",
   );

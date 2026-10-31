@@ -50,6 +50,7 @@ export function TaskEvidencePanel({
   taskId,
   themeId,
   themeTitle,
+  themeType,
   reviews,
   observations,
   memberships,
@@ -59,6 +60,7 @@ export function TaskEvidencePanel({
   taskId: string;
   themeId: string;
   themeTitle: string;
+  themeType: string;
   reviews: SourceReview[];
   observations: EvidencePoint[];
   memberships: Membership[];
@@ -81,7 +83,8 @@ export function TaskEvidencePanel({
       <div className="task-source-heading">
         <span>Review {String(index + 1).padStart(2, "0")}</span>
         <span>
-          <RatingStars rating={review.rating} /> · {reviewDate(review.reviewedAt)}
+          <RatingStars rating={review.rating} /> ·{" "}
+          {reviewDate(review.reviewedAt)}
         </span>
       </div>
       <div className="task-source-quotes">
@@ -117,10 +120,13 @@ export function TaskEvidencePanel({
           className="link"
           onClick={() => onOpenTheme(themeId)}
         >
-          View issue
+          {themeType === "suggestion" ? "View suggestion" : "View issue"}
         </button>
       </header>
-      <p className="task-evidence-topic">Related issue · {themeTitle}</p>
+      <p className="task-evidence-topic">
+        Related {themeType === "suggestion" ? "suggestion" : "issue"} ·{" "}
+        {themeTitle}
+      </p>
       {evidence.length ? (
         <>
           <ol className="task-source-list">

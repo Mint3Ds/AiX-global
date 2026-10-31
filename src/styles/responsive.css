@@ -67,6 +67,10 @@
   }
 }
 @media (max-width: 900px) {
+  .staff-dashboard-columns {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
   .shell {
     padding: 0 22px;
   }
@@ -248,6 +252,25 @@
   }
 }
 @media (max-width: 640px) {
+  .staff-focus-task {
+    gap: 19px;
+    padding: 26px 22px;
+  }
+  .staff-focus-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .staff-focus-title {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+  .staff-focus-bottomline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .staff-focus-empty {
+    padding: 30px 22px;
+  }
   main .dashboard button.dashboard-overview-item:nth-child(2),
   main .dashboard button.dashboard-overview-item:nth-child(3) {
     grid-template-columns: minmax(0, 1fr);
@@ -289,11 +312,22 @@
     align-self: end;
     margin-top: 18px;
   }
-  .orbyte-handoff-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .orbyte-handoff > summary { align-items: flex-start; }
-  .orbyte-handoff-summary-copy small { line-height: 1.4; }
-  .evidence-reassign > ul > li { align-items: flex-start; flex-direction: column; }
-  .choice-menu-options { max-height: 45vh; }
+  .orbyte-handoff-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .orbyte-handoff > summary {
+    align-items: flex-start;
+  }
+  .orbyte-handoff-summary-copy small {
+    line-height: 1.4;
+  }
+  .evidence-reassign > ul > li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .choice-menu-options {
+    max-height: 45vh;
+  }
   .orbyte-handoff-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -302,7 +336,9 @@
     flex-direction: column;
     gap: 4px;
   }
-  .orbyte-handoff-status { text-align: left; }
+  .orbyte-handoff-status {
+    text-align: left;
+  }
   .attendance-context {
     align-items: flex-start;
     flex-direction: column;
@@ -605,26 +641,38 @@
   .staff-dashboard-profile {
     width: 100%;
   }
+  .staff-dashboard-columns {
+    gap: 36px;
+  }
+  .staff-dashboard-rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 28px;
+  }
   .staff-dashboard-summary {
-    margin: 22px 0 31px;
+    margin: 0;
   }
-  .staff-dashboard-summary > div {
-    padding: 15px 12px;
+  .staff-dashboard-waiting {
+    border-top: 1px solid var(--line-strong);
   }
-  .staff-dashboard-summary strong {
-    font-size: 25px;
-  }
-  .staff-dashboard-summary span {
-    font-size: 13px;
-    line-height: 1.4;
+  .staff-all-tasks {
+    grid-column: 2;
+    margin-top: 5px;
   }
   .staff-dashboard-queue li > button {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
   }
   .staff-queue-meta {
-    justify-content: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+  }
+  .staff-dashboard-completed summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
   .task-report-attempt {
     grid-template-columns: 1fr;
@@ -679,23 +727,22 @@
     gap: 10px;
   }
   .activity-filters {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 18px;
+    gap: 18px;
   }
-  main .activity-filters button {
+  main .activity-filters button:not(.link) {
     flex-shrink: 0;
-    min-height: 40px;
+    min-height: 44px;
   }
   .activity-thread-heading {
     flex-direction: column;
-    padding: 18px;
+    align-items: flex-start;
+    padding: 20px 0 14px;
   }
   .activity-thread-events {
-    padding: 0 16px 8px 28px;
+    padding-left: 14px;
   }
   .activity-thread-events li {
-    padding-left: 18px;
+    padding-left: 16px;
   }
   .activity-event-topline {
     align-items: flex-start;
@@ -779,6 +826,16 @@
   .role-switcher {
     padding-left: 0;
     border-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .staff-dashboard-rail {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .staff-all-tasks {
+    grid-column: 1;
+    margin-top: -10px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -285,6 +285,7 @@ const labelDictionary: Record<string, string> = {
   membership_corrected: "Evidence updated",
   possible_recurrence: "Possible recurrence",
   theme_confirmed: "Issue confirmed",
+  suggestion_confirmed: "Suggestion confirmed",
   theme_dismissed: "Issue dismissed",
   theme_reopened: "Issue reopened",
   priority_adjusted: "Priority changed",
@@ -1899,6 +1900,8 @@ export function Workspace({
                       priority: item.priority,
                       relatedIssue:
                         state.themes.find((theme) => theme.id === item.themeId)?.title || "",
+                      relatedType:
+                        state.themes.find((theme) => theme.id === item.themeId)?.type || "operational_issue",
                       status: item.status,
                       assigneeId: item.assigneeId,
                       dueAt: item.dueAt,
@@ -2800,7 +2803,7 @@ export function Workspace({
                                   {theme.status === "suggested"
                                     ? theme.type === "operational_issue"
                                       ? "Confirm this issue to make a work task available."
-                                      : "Confirm to keep this suggestion for follow-up."
+                                      : "Confirm this suggestion to make a trial task available."
                                     : theme.status === "dismissed"
                                       ? "Dismissed feedback remains available in Reviews and Activity."
                                       : "Severity sets the issue priority."}
@@ -2833,7 +2836,9 @@ export function Workspace({
                                     })
                                   }
                                 >
-                                  Confirm issue
+                                  {theme.type === "suggestion"
+                                    ? "Confirm suggestion"
+                                    : "Confirm issue"}
                                 </button>
                                 <button
                                   className="secondary"
@@ -2860,7 +2865,9 @@ export function Workspace({
                                     })
                                   }
                                 >
-                                  Reopen issue
+                                  {theme.type === "suggestion"
+                                    ? "Reopen suggestion"
+                                    : "Reopen issue"}
                                 </button>
                               </div>
                             )}
@@ -2969,11 +2976,11 @@ export function Workspace({
                         ) : (
                           <p>No evidence linked yet.</p>
                         )}
-                        {theme.type === "operational_issue" &&
+                        {["operational_issue", "suggestion"].includes(theme.type) &&
                           owner &&
-                          ["owner_confirmed", "recurrence"].includes(
-                            theme.status,
-                          ) &&
+                          (theme.status === "owner_confirmed" ||
+                            (theme.type === "operational_issue" &&
+                              theme.status === "recurrence")) &&
                           (!issueTask ||
                             (issueTask.status === "resolved" &&
                               theme.status === "recurrence")) && (
@@ -2986,7 +2993,9 @@ export function Workspace({
                                 if (result) openTask(result.id);
                               }}
                             >
-                              Create work task
+                              {theme.type === "suggestion"
+                                ? "Create trial task"
+                                : "Create work task"}
                             </button>
                           )}
                       </>
@@ -3208,6 +3217,11 @@ export function Workspace({
                             state.themes.find(
                               (item) => item.id === task.themeId,
                             )?.title || "Related issue"
+                          }
+                          themeType={
+                            state.themes.find(
+                              (item) => item.id === task.themeId,
+                            )?.type || "operational_issue"
                           }
                           reviews={state.reviews}
                           observations={state.observations}

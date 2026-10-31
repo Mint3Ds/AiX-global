@@ -13,7 +13,7 @@ export function priorityFor(
   if (type !== "operational_issue")
     return {
       priority: "insight",
-      reason: `${distinctReviews} distinct reviews; this is an insight for the owner, not a repair task.`,
+      reason: `${distinctReviews} distinct source reviews; this remains an insight. A confirmed suggestion can become a separate trial task.`,
     };
   const priority =
     severity >= 3
