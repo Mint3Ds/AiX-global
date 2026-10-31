@@ -3463,13 +3463,23 @@ function TaskEditor({
         employees[0]?.id ||
         "",
     ),
-    [dueAt, setDueAt] = useState(() => {
+    [dueDate, setDueDate] = useState(() => {
       if (!task.dueAt) return "";
       const value = new Date(task.dueAt);
       return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
         .toISOString()
-        .slice(0, 16);
+        .slice(0, 10);
+    }),
+    [dueTime, setDueTime] = useState(() => {
+      if (!task.dueAt) return "17:00";
+      const value = new Date(task.dueAt);
+      return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
+        .toISOString()
+        .slice(11, 16);
     });
+
+  const dueAt = dueDate ? `${dueDate}T${dueTime || "17:00"}` : "";
+
   const data = () => ({
     title,
     description,
@@ -3509,21 +3519,32 @@ function TaskEditor({
           ))}
         </select>
       </label>
-      <label>
-        Due date
-        <input
-          type="datetime-local"
-          aria-label="Due date"
-          aria-describedby={!dueAt ? "task-due-hint" : undefined}
-          value={dueAt}
-          onChange={(event) => setDueAt(event.target.value)}
-        />
-        {!dueAt && (
-          <span id="task-due-hint" className="form-hint">
-            Set a due date before assigning.
-          </span>
-        )}
-      </label>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>
+        <label>
+          Due date
+          <input
+            type="date"
+            aria-label="Due date"
+            aria-describedby={!dueAt ? "task-due-hint" : undefined}
+            value={dueDate}
+            onChange={(event) => setDueDate(event.target.value)}
+          />
+          {!dueDate && (
+            <span id="task-due-hint" className="form-hint">
+              Select a date before assigning.
+            </span>
+          )}
+        </label>
+        <label>
+          Due time
+          <input
+            type="time"
+            aria-label="Due time"
+            value={dueTime}
+            onChange={(event) => setDueTime(event.target.value)}
+          />
+        </label>
+      </div>
       <div className="controls">
         <button className="secondary" onClick={() => save(data())}>
           Save edits
