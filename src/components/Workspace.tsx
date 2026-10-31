@@ -1734,33 +1734,14 @@ export function Workspace({
                       hint: "All saved reviews",
                       destination: "reviews",
                       visual: {
-                        type: "review_mix" as const,
-                        segments: [
-                          {
-                            label: "Positive",
-                            value: state.reviews.filter((review) => review.rating >= 4).length,
-                            tone: "positive",
-                          },
-                          {
-                            label: "Negative",
-                            value: state.reviews.filter((review) => review.rating <= 2).length,
-                            tone: "negative",
-                          },
-                          {
-                            label: "General",
-                            value: state.reviews.filter(
-                              (review) =>
-                                ["generic", "complete"].includes(review.processingStatus) &&
-                                !analyzedReviewIds.has(review.id),
-                            ).length,
-                            tone: "general",
-                          },
-                          {
-                            label: "Actionable",
-                            value: analyzedReviewIds.size,
-                            tone: "actionable",
-                          },
-                        ],
+                        type: "ratings" as const,
+                        segments: [1, 2, 3, 4, 5].map((rating) => ({
+                          label: `${rating} star${rating === 1 ? "" : "s"}`,
+                          value: state.reviews.filter(
+                            (review) => Math.round(review.rating) === rating,
+                          ).length,
+                          tone: "cool",
+                        })),
                       },
                     },
                     {
@@ -1773,10 +1754,6 @@ export function Workspace({
                       ).length,
                       hint: "Received today",
                       destination: "reviews",
-                      visual: {
-                        type: "daily_meter" as const,
-                        days: dailyReviewSeries,
-                      },
                     },
                     {
                       title: "Specific feedback",
@@ -1800,8 +1777,26 @@ export function Workspace({
                       hint: "Ready for your review",
                       destination: "issues",
                       visual: {
-                        type: "priority_meter" as const,
-                        segments: issuePrioritySegments,
+                        type: "distribution" as const,
+                        segments: [
+                          { label: "Urgent", priority: "urgent", tone: "deep" },
+                          { label: "High", priority: "high", tone: "mid" },
+                          { label: "Medium", priority: "medium", tone: "soft" },
+                          { label: "Low", priority: "low", tone: "pale" },
+                        ].map((priority) => ({
+                          label: priority.label,
+                          tone: priority.tone,
+                          value: state.themes.filter(
+                            (theme) =>
+                              theme.type === "operational_issue" &&
+                              isOwnerVisibleTheme(
+                                theme,
+                                state.themeSupport[theme.id] || 0,
+                              ) &&
+                              ["suggested", "recurrence"].includes(theme.status) &&
+                              theme.priority === priority.priority,
+                          ).length,
+                        })),
                       },
                     },
                     {
@@ -1817,8 +1812,19 @@ export function Workspace({
                       hint: "Work in progress",
                       destination: "tasks",
                       visual: {
-                        type: "task_flow" as const,
-                        segments: taskFlowSegments,
+                        type: "distribution" as const,
+                        segments: [
+                          { label: "Assigned", status: "approved_open", tone: "pale" },
+                          { label: "In progress", status: "in_progress", tone: "mid" },
+                          { label: "Awaiting verification", status: "reported", tone: "deep" },
+                          { label: "Needs rework", status: "needs_rework", tone: "warm" },
+                        ].map((status) => ({
+                          label: status.label,
+                          tone: status.tone,
+                          value: state.tasks.filter(
+                            (task) => task.status === status.status,
+                          ).length,
+                        })),
                       },
                     },
                     {

@@ -153,10 +153,11 @@ export function LogoAnimationPreview({
         }
         .clarity-wordmark-title {
           display: flex;
+          font-family: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           font-size: 68px;
-          font-weight: 720;
+          font-weight: 500;
           line-height: 1.14;
-          letter-spacing: -0.055em;
+          letter-spacing: -0.025em;
           color: var(--ink, #17232d);
         }
         .clarity-wordmark-title span {

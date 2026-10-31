@@ -1,21 +1,20 @@
 import { useMemo, useState } from "react";
 import { getSimulatedAttendance } from "@/integrations/orbyte/attendance";
-import { ChoiceMenu } from "./ChoiceMenu";
+import { CustomDropdown } from "./CustomDropdown";
 import { PageHeading } from "./PageHeading";
 
 type Destination = "reviews" | "issues" | "tasks" | "replies" | "activity";
+type MetricVisual = {
+  type: "ratings" | "distribution";
+  segments: { label: string; value: number; tone: string }[];
+};
 type MetricItem = {
   title: string;
   value: number;
   hint: string;
   destination: Destination;
-  visual?: unknown;
+  visual?: MetricVisual;
 };
-type MetricSegment = { label: string; value: number; tone: string };
-type MetricGraphic =
-  | { type: "review_mix"; segments: MetricSegment[] }
-  | { type: "daily_meter"; days: { label: string; value: number }[] }
-  | { type: "priority_meter" | "task_flow"; segments: MetricSegment[] };
 type IssueItem = {
   id: string;
   title: string;
@@ -76,33 +75,113 @@ export function DashboardView({
   onApproveTask: (task: WorkItem, assigneeId: string, dueAt: string) => void;
   busy: string;
 }) {
-  const headlineMetrics = ["Total reviews", "New today", "Issues needing attention", "Open approved tasks"]
-    .map((title) => metrics.find((metric) => metric.title === title))
-    .filter((metric): metric is MetricItem => !!metric);
+  const primary = [metrics[0], metrics[3], metrics[4], metrics[5]].filter(
+    (metric): metric is MetricItem => !!metric,
+  );
+  const attention = metrics[3]?.value || 0;
 
   return (
-    <section className="dashboard dashboard-focused">
-      <PageHeading title="Dashboard" description="Urgent feedback and work awaiting your decision.">
+    <section className="dashboard">
+      <PageHeading
+        title="Your workspace"
+        description="Guest feedback, the evidence behind it, and the work that follows."
+      >
         <button onClick={onNewReview}>Add a review</button>
       </PageHeading>
-
-      <nav className="dashboard-overview" aria-label="Workspace overview">
-        {headlineMetrics.map((metric) => {
-          const visual = metric.visual as MetricGraphic | undefined;
-          return (
-            <button
-              className="dashboard-overview-item"
-              key={metric.title}
-              onClick={() => onNavigate(metric.destination, metric.title)}
-            >
-              <span>{metric.title}</span>
-              <strong>{metric.value.toLocaleString()}</strong>
-              <small>{metric.hint}</small>
-              {visual && <DashboardMetricGraphic visual={visual} title={metric.title} />}
-            </button>
-          );
-        })}
+      <div className="dashboard-context">
+        <span>Across all properties</span>
+      </div>
+      <nav className="metrics" aria-label="Workspace totals">
+        {primary.map((metric, index) => (
+          <button
+            className={`metric metric-${index}`}
+            key={metric.title}
+            onClick={() => onNavigate(metric.destination, metric.title)}
+          >
+            <span className="metric-top">{metric.title}</span>
+            <strong>{metric.value.toLocaleString()}</strong>
+            <span className="metric-hint">{metric.hint}</span>
+            {metric.visual && (
+              <span
+                className={`metric-visual metric-visual-${metric.visual.type}`}
+                role="img"
+                aria-label={metric.visual.segments
+                  .map((segment) => `${segment.label}: ${segment.value}`)
+                  .join(", ")}
+              >
+                {metric.visual.type === "ratings" ? (
+                  metric.visual.segments.map((segment) => {
+                    const maximum = Math.max(
+                      1,
+                      ...metric.visual!.segments.map((item) => item.value),
+                    );
+                    return (
+                      <span
+                        className="metric-rating-bar"
+                        key={segment.label}
+                        title={`${segment.label}: ${segment.value}`}
+                      >
+                        <i
+                          style={{
+                            height: `${Math.max(8, (segment.value / maximum) * 100)}%`,
+                          }}
+                        />
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="metric-distribution-track">
+                    {metric.visual.segments.map((segment) => (
+                      <i
+                        className={`metric-segment metric-segment-${segment.tone}`}
+                        key={segment.label}
+                        title={`${segment.label}: ${segment.value}`}
+                        style={{
+                          flexGrow: segment.value,
+                          flexBasis: 0,
+                          minWidth: segment.value ? 2 : 0,
+                        }}
+                      />
+                    ))}
+                  </span>
+                )}
+              </span>
+            )}
+          </button>
+        ))}
       </nav>
+      <div className="dashboard-summary">
+        <p>
+          <span className="summary-dot" aria-hidden="true" />
+          {attention ? (
+            <>
+              <strong>
+                {attention} {attention === 1 ? "issue needs" : "issues need"}{" "}
+                attention.
+              </strong>{" "}
+              Review the original evidence before deciding.
+            </>
+          ) : (
+            <>
+              <strong>Your issue queue is clear.</strong> New feedback will
+              appear here.
+            </>
+          )}
+        </p>
+        <div>
+          {[metrics[1], metrics[2]]
+            .filter((metric): metric is MetricItem => !!metric)
+            .map((metric) => (
+              <button
+                className="summary-metric"
+                key={metric.title}
+                onClick={() => onNavigate(metric.destination, metric.title)}
+              >
+                <strong>{metric.value}</strong> {metric.title}
+              </button>
+            ))}
+        </div>
+      </div>
 
       <div className="dashboard-grid">
         <section className="priority-panel" aria-labelledby="urgent-review-heading">
@@ -179,103 +258,6 @@ export function DashboardView({
   );
 }
 
-function DashboardMetricGraphic({
-  visual,
-  title,
-}: {
-  visual: MetricGraphic;
-  title: string;
-}) {
-  if (visual.type === "review_mix") {
-    const maximum = Math.max(1, ...visual.segments.map((segment) => segment.value));
-    return (
-      <div
-        className="dashboard-graphic review-mix-graphic"
-        role="img"
-        aria-label={`Review mix for ${title}. Categories can overlap. ${visual.segments
-          .map((segment) => `${segment.label}: ${segment.value}`)
-          .join(", ")}`}
-      >
-        {visual.segments.map((segment) => (
-          <div className="review-mix-column" key={segment.label}>
-            <span className="review-mix-value">{segment.value.toLocaleString()}</span>
-            <span className="review-mix-bar">
-              <i
-                className={`mix-${segment.tone}`}
-                style={{ height: segment.value ? `${Math.max(5, (segment.value / maximum) * 100)}%` : "0%" }}
-              />
-            </span>
-            <small>{segment.label}</small>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (visual.type === "daily_meter") {
-    const maximum = Math.max(1, ...visual.days.map((day) => day.value));
-    return (
-      <div
-        className="dashboard-graphic daily-meter-graphic"
-        role="img"
-        aria-label={`New reviews over the last seven days: ${visual.days
-          .map((day) => `${day.label}: ${day.value}`)
-          .join(", ")}`}
-      >
-        {visual.days.map((day) => (
-          <div className={`daily-meter-day ${day.label === "Today" ? "today" : ""}`} key={day.label}>
-            <span className="daily-meter-bar">
-              <i style={{ height: `${Math.max(4, (day.value / maximum) * 100)}%` }} />
-            </span>
-            <small>{day.label === "Today" ? "Today" : day.label.slice(0, 1)}</small>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (visual.type === "priority_meter") {
-    const total = visual.segments.reduce((sum, segment) => sum + segment.value, 0);
-    return (
-      <div className="dashboard-graphic priority-meter-graphic">
-        <div className="priority-meter-track" role="img" aria-label={`Issue priority distribution: ${visual.segments.map((segment) => `${segment.label} ${segment.value}`).join(", ")}`}>
-          {visual.segments.map((segment) => (
-            <i
-              className={`priority-meter-segment tone-${segment.tone}`}
-              key={segment.label}
-              style={{ flexGrow: segment.value, flexBasis: 0, opacity: segment.value ? 1 : 0.25 }}
-            />
-          ))}
-        </div>
-        <div className="dashboard-graphic-legend">
-          {visual.segments.map((segment) => (
-            <span key={segment.label}>
-              <i className={`legend-${segment.tone}`} />
-              <b>{segment.value}</b> {segment.label}
-            </span>
-          ))}
-          {!total && <span className="graphic-quiet-label">No issues in queue</span>}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dashboard-graphic task-flow-graphic" role="img" aria-label={`Task stages: ${visual.segments.map((segment) => `${segment.label} ${segment.value}`).join(", ")}`}>
-      {visual.segments.map((segment, index) => (
-        <div className={`task-flow-stage stage-${segment.tone}`} key={segment.label}>
-          <span className="task-flow-node-wrap">
-            {index > 0 && <i className="task-flow-connector" />}
-            <i className="task-flow-node" />
-          </span>
-          <b>{segment.value}</b>
-          <small>{segment.label}</small>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function DashboardTask({
   task,
   busy,
@@ -337,18 +319,22 @@ function DashboardTask({
       {needsApproval ? (
         <div className="dashboard-assign-form">
           <div className="dashboard-assign-fields">
-            <ChoiceMenu
-              label="Assign to"
-              value={assigneeId}
-              options={task.employees.map((item) => ({
-                value: item.id,
-                label: item.name,
-                description: item.jobTitle,
-              }))}
-              onChange={setAssigneeId}
-              disabled={!task.employees.length || !!busy}
-              className="dashboard-assignee-choice"
-            />
+            <label className="dashboard-due-field">
+              Assign to
+              <CustomDropdown
+                ariaLabel="Assign to"
+                sectionLabel="Assign Employee"
+                value={assigneeId}
+                options={task.employees.map((item) => ({
+                  value: item.id,
+                  label: `${item.name} · ${item.jobTitle}`,
+                }))}
+                onChange={setAssigneeId}
+                disabled={!task.employees.length || !!busy}
+                align="left"
+                fullWidth
+              />
+            </label>
             <label className="dashboard-due-field">
               Due date
               <input

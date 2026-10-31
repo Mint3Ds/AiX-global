@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Clarity — Domain 2 Grand Finals</title>
+<meta name="description" content="Clarity turns scattered customer feedback into evidence-backed, owner-approved business improvements." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Reusable brand mark as an inline SVG symbol (the product's mirrored-lens mark) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="clarity-mark" viewBox="0 0 64 64">
+    <g stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M26 8C17 14 9 24 5 32c4 10 12 19 22 25l11-10c-7-5-13-11-16-15 4-8 10-14 18-20"/>
+      <path d="M38 56c9-6 17-16 21-24-4-10-12-19-22-25L26 17c7 5 13 11 16 15-4 8-10 14-18 20"/>
+    </g>
+  </symbol>
+</svg>
+
+<div id="stage-wrap">
+  <div id="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div id="stage">
+
+    <!-- ============ 0 · COLD OPEN ============ -->
+    <section class="slide" id="s-hook" data-name="Cold open">
+      <canvas id="hook-canvas"></canvas>
+      <div id="hook-copy">
+        <div class="hook-lines">
+          <div class="hook-line one">Every review is a signal.</div>
+          <div class="hook-line two">Only action creates value.</div>
+        </div>
+      </div>
+      <div id="hook-brand">
+        <div class="brand-lockup">
+          <svg class="brand-mark" style="color:var(--on-stage)"><use href="#clarity-mark"/></svg>
+          <span class="wordmark">Clarity</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 1 · TITLE ============ -->
+    <section class="slide" id="s-title" data-name="Title">
+      <div class="title-grid">
+        <div class="title-top">
+          <p class="eyebrow">Domain 2 · Orbyte Smart SME Challenge</p>
+          <p class="disclaimer">Grand Finals · Synthetic demo</p>
+        </div>
+        <div class="title-mid">
+          <div class="brand-lockup">
+            <svg class="brand-mark" style="color:var(--on-stage)"><use href="#clarity-mark"/></svg>
+            <span class="wordmark">Clarity</span>
+          </div>
+          <p class="title-pos">Turn scattered customer feedback into <span class="dim">evidence-backed, owner-approved</span> business improvements.</p>
+          <div class="title-tags">
+            <span class="tag"><span class="dot"></span>Review &rarr; Resolution workspace</span>
+            <span class="tag"><span class="dot"></span>Human-in-command</span>
+            <span class="tag sim"><span class="dot"></span>SDG 8 · Decent work</span>
+          </div>
+        </div>
+        <div class="title-bottom">
+          <span>Team <b>AiX Global</b> · Monash · Sunway · Nottingham Malaysia</span>
+          <span>Less busywork. <b>Better business.</b></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2 · PROBLEM ============ -->
+    <section class="slide" id="s-problem" data-name="The problem">
+      <p class="eyebrow">01 / The feedback-to-action gap</p>
+      <div class="two-col">
+        <div class="col-copy">
+          <h2 class="display">The problem isn't a<br>lack of feedback.</h2>
+          <p class="lede">It's what happens <span style="color:var(--on-stage)">after</span> the feedback arrives. An SME owner drowns in scattered reviews across platforms — and the recurring, fixable problems stay buried.</p>
+          <div class="stat-row">
+            <div class="stat frag" data-frag>
+              <b>10&ndash;15<span style="font-size:20px"> min</span></b>
+              <span>to manually log, triage and route a single complaint</span>
+              <cite>Johnston, 2001 · Int. J. Service Industry Mgmt</cite>
+            </div>
+            <div class="stat frag" data-frag>
+              <b>31.5<span style="font-size:20px">%</span></b>
+              <span>of reviews ever receive a management response</span>
+              <cite>Proserpio &amp; Zervas, 2017 · Marketing Science</cite>
+            </div>
+          </div>
+        </div>
+        <div class="funnel" id="problem-funnel">
+          <div class="src-chip" data-x="4"  data-y="10"><span class="lbl">Simulated Map Reviews</span>"The AC never cooled our room…"</div>
+          <div class="src-chip" data-x="150" data-y="70"><span class="lbl">Simulated Guest Form</span>"Saw a small insect by the sink."</div>
+          <div class="src-chip" data-x="20"  data-y="140"><span class="lbl">Simulated Stay Portal</span>"Front desk was lovely, room was warm."</div>
+          <div class="src-chip" data-x="168" data-y="190"><span class="lbl">Simulated Map Reviews</span>"Kerusi saya tak stabil."</div>
+          <div class="funnel-pile">
+            <div class="count" id="funnel-count">244</div>
+            <div class="cap">reviews · 3 sources · 2 properties · no clear owner</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Harbour House Hotel · fictional pilot</span>
+        <span class="disclaimer">All reviews &amp; sources synthetic · no platform scraped</span>
+      </div>
+    </section>
+
+    <!-- ============ 3 · ONE REVIEW, TWO TRUTHS ============ -->
+    <section class="slide" id="s-split" data-name="One review, two truths">
+      <p class="eyebrow">02 / The insight</p>
+      <div class="split-wrap">
+        <div>
+          <h2 class="display" style="font-size:56px;margin-bottom:26px">One review.<br><span class="dim">Three truths.</span></h2>
+          <div class="review-card" id="split-review">
+            <div class="rc-meta"><span>Review · R-226</span><span>Simulated Guest Form</span><span>★★☆☆☆</span></div>
+            <div class="rc-text">“The <mark class="m-fix">AC in room 226 blew warm air all night</mark>. We also <mark class="m-fix">saw a small insect near the bathroom sink</mark>. The <mark class="m-keep">front desk was patient and helpful</mark>.”</div>
+          </div>
+          <p class="disclaimer" style="margin-top:16px">Not one sentiment score — each point kept with its exact quote</p>
+        </div>
+        <div class="obs-stack">
+          <div class="obs fix" data-frag>
+            <span class="kind">Fix<br>Issue</span>
+            <div><div class="obs-text"><b>Room air conditioning not cooling</b></div><div class="obs-quote">“…blew warm air all night”</div></div>
+          </div>
+          <div class="obs fix" data-frag>
+            <span class="kind">Fix<br>Pest · sev 3</span>
+            <div><div class="obs-text"><b>Insect sighting — bathroom</b></div><div class="obs-quote">“…a small insect near the bathroom sink”</div></div>
+          </div>
+          <div class="obs keep" data-frag>
+            <span class="kind">Keep<br>Praise</span>
+            <div><div class="obs-text"><b>Helpful front desk</b></div><div class="obs-quote">“…patient and helpful”</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Exact-substring evidence · English &amp; Malay preserved</span>
+        <span class="disclaimer">verifyEvidence rejects any invented or paraphrased quote</span>
+      </div>
+    </section>
+
+    <!-- ============ 4 · INTRODUCING CLARITY ============ -->
+    <section class="slide" id="s-solution" data-name="Introducing Clarity">
+      <div class="solution-grid">
+        <div>
+          <p class="eyebrow">03 / The product</p>
+          <h2 class="display" style="margin-top:18px">Not another sentiment dashboard.</h2>
+          <p class="lede" style="margin-top:18px;max-width:58ch">Clarity reads every review, keeps the evidence, surfaces the recurring problems — then hands the owner a decision, not an autopilot.</p>
+        </div>
+        <div class="pillars">
+          <div class="pillar" data-frag>
+            <span class="pnum">01</span>
+            <h3>Evidence,<br>not guesswork</h3>
+            <p>Every observation retains the customer's <span style="color:var(--on-stage)">exact quote</span>, in its original language. The source review is one click away.</p>
+          </div>
+          <div class="pillar" data-frag>
+            <span class="pnum">02</span>
+            <h3>Patterns,<br>not noise</h3>
+            <p>Counts are <span style="color:var(--on-stage)">distinct source reviews</span> — editable, branch-specific, and never inflated by duplicate observations.</p>
+          </div>
+          <div class="pillar" data-frag>
+            <span class="pnum">03</span>
+            <h3>Action,<br>not just insight</h3>
+            <p>Tasks and public replies <span style="color:var(--on-stage)">require human approval</span>. Nothing is auto-posted. Every step is logged.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Next.js · React · PostgreSQL · Drizzle · Zod</span>
+        <span class="disclaimer">Jev + OpenAI in live mode · deterministic fixture mode for demos</span>
+      </div>
+    </section>
+
+    <!-- ============ 5 · THE SYSTEM (pipeline) ============ -->
+    <section class="slide" id="s-system" data-name="The system">
+      <div class="pipe-head">
+        <div>
+          <p class="eyebrow">04 / From words to work</p>
+          <h2 class="display" style="font-size:46px;margin-top:14px">Six connected steps.<br><span class="dim">Human decisions where they matter.</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="tag live" style="margin-bottom:8px"><span class="dot"></span>Implemented &amp; enforced server-side</div><br>
+          <div class="tag sim"><span class="dot"></span>Simulated handoff · no external API</div>
+        </div>
+      </div>
+      <div class="pipeline" id="pipeline">
+        <div class="human-band" id="human-band"><span class="hb-label">Human control point</span></div>
+        <div class="pipe-track"><div id="pipe-progress"></div></div>
+
+        <div class="pstage" style="left:7%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H7l-3 3z"/></svg></div>
+          <span class="pnum">01</span><h4>Intake</h4><p>Review + source + property saved verbatim</p>
+          <span class="ptag live">Stored as-is</span>
+        </div>
+        <div class="pstage" style="left:24%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18" transform="rotate(45 12 12)"/><circle cx="12" cy="12" r="8"/></svg></div>
+          <span class="pnum">02</span><h4>Extract</h4><p>Praise, issues &amp; ideas — each with exact quote</p>
+          <span class="ptag live">Jev → OpenAI</span>
+        </div>
+        <div class="pstage" style="left:41%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="16" cy="15" r="3"/><path d="M10 8h4M8 11v2"/></svg></div>
+          <span class="pnum">03</span><h4>Group</h4><p>Recurring, same-property, distinct counts</p>
+          <span class="ptag live">Priority rules</span>
+        </div>
+        <div class="pstage human" style="left:58.5%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></div>
+          <span class="pnum">04</span><h4>Approve</h4><p>Owner edits or authorises the work</p>
+          <span class="ptag">Owner only</span>
+        </div>
+        <div class="pstage" style="left:76%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+          <span class="pnum">05</span><h4>Log</h4><p>Staff report, owner verifies, activity trail</p>
+          <span class="ptag live">Append-only</span>
+        </div>
+        <div class="pstage human" style="left:93%" data-frag>
+          <div class="node"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-4 3z"/></svg></div>
+          <span class="pnum">06</span><h4>Reply</h4><p>Owner reviews each draft before posting</p>
+          <span class="ptag">No auto-post</span>
+        </div>
+
+        <div class="pipe-legend">
+          <span class="lg"><span class="tag live" style="padding:3px 9px"><span class="dot"></span>Automated</span></span>
+          <span class="lg"><span class="tag" style="padding:3px 9px;border-color:rgba(212,180,131,.4)"><span class="dot" style="background:var(--amber)"></span>Human-gated</span></span>
+          <span class="lg" style="color:var(--on-stage-faint)">Partial-reply warnings surface unresolved concerns before any reply is approved</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6 · LIVE DEMO ============ -->
+    <section class="slide" id="s-demo" data-name="Live demo">
+      <div class="demo-wrap">
+        <div class="demo-left">
+          <p class="eyebrow">05 / Live product demonstration</p>
+          <h2 class="display" style="font-size:46px">One issue.<br><span class="dim">One owner. One trail.</span></h2>
+          <a class="demo-cta" id="demo-launch" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>
+            Open the live Clarity workspace
+          </a>
+          <p class="demo-meta">Default: <code>Harbour House Hotel</code> · press <kbd>D</kbd> to launch · <kbd>Esc</kbd> returns here</p>
+        </div>
+        <div>
+          <p class="disclaimer" style="margin-bottom:14px">The end-to-end journey judges will see</p>
+          <ol class="demo-steps">
+            <li>Open an <b>Issue</b> &mdash; 24 distinct reviews behind the AC problem<span>Inspect exact quotes, dates, ratings, source labels</span></li>
+            <li>Paste the <b>new synthetic review</b><span>Saved first, then extracted into 3 labelled observations</span></li>
+            <li><b>Approve</b> a task &amp; assign a staff member<span>Owner-only · snapshot sent to simulated Orbyte handoff</span></li>
+            <li>Staff <b>reports</b> → owner <b>verifies</b> the work<span>Task moves to completed; resolution note recorded</span></li>
+            <li><b>Reply</b> with the partial-warning intact<span>Unresolved insect concern flagged before approval</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Real running application · not a mock-up</span>
+        <span class="disclaimer">Backup screen recording ready if the network fails</span>
+      </div>
+    </section>
+
+    <!-- ============ 7 · IMPACT ============ -->
+    <section class="slide" id="s-impact" data-name="Impact">
+      <div class="impact-grid">
+        <div>
+          <p class="eyebrow">06 / Measured, not claimed</p>
+          <h2 class="display" style="font-size:44px;margin-top:12px">Faster triage. <span class="dim">Honest numbers.</span></h2>
+        </div>
+        <div class="ba">
+          <div class="ba-card">
+            <div class="ba-cap">Today · manual</div>
+            <div class="ba-big">10&ndash;15<span style="font-size:22px"> min</span></div>
+            <div class="ba-sub">per complaint to log, triage, diagnose and route — the published benchmark we measure against.</div>
+          </div>
+          <div class="ba-arrow"><svg viewBox="0 0 40 20"><path d="M2 10h34M30 4l6 6-6 6"/></svg></div>
+          <div class="ba-card after">
+            <div class="ba-cap">With Clarity · measured in-app</div>
+            <div class="ba-big">Seconds<span style="font-size:22px"> to triage</span></div>
+            <div class="ba-sub">Evidence is pre-linked; the owner decides. The Stats page computes the real reduction from tracked dwell time — no hard-coded figure.</div>
+          </div>
+        </div>
+        <div class="method">
+          <div class="frag" data-frag><b>How we count</b>Hours reclaimed = specific reviews × (600s benchmark − measured triage). Response readiness is benchmarked against the 31.5% industry baseline.</div>
+          <div class="frag" data-frag><b>SDG 8 · Decent work</b>Less low-value busywork, more time on the operational fixes that retain staff and grow a small business.</div>
+          <div class="frag" data-frag><b>What this is not</b>A pilot target, not a result. We validate with timed review batches, quote-accuracy checks and approved-task completion.</div>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Benchmarks: Johnston 2001 · Proserpio &amp; Zervas 2017</span>
+        <span class="disclaimer">Metrics computed from synthetic data · no real-world result claimed</span>
+      </div>
+    </section>
+
+    <!-- ============ 8 · ORBYTE / ECOSYSTEM ============ -->
+    <section class="slide" id="s-eco" data-name="Orbyte ecosystem">
+      <div class="eco-wrap">
+        <div>
+          <p class="eyebrow">07 / Built to be reused</p>
+          <h2 class="display" style="font-size:46px;margin:16px 0 20px">A feedback-to-work<br>module for Orbyte.</h2>
+          <p class="lede" style="max-width:40ch">Clarity is business-scoped from the ground up. The same review → issue → approval → log pipeline already runs three different SME types on one database.</p>
+          <div style="margin-top:26px;display:flex;flex-direction:column;gap:12px">
+            <div class="tag live" style="align-self:flex-start"><span class="dot"></span>Live today · Hotel · Restaurant · Salon</div>
+            <div class="tag sim" style="align-self:flex-start"><span class="dot"></span>Orbyte handoff · simulated payload, no live API</div>
+          </div>
+        </div>
+        <div class="eco-diagram" id="eco-diagram">
+          <svg width="100%" height="100%" style="position:absolute;inset:0" id="eco-svg"></svg>
+          <div class="hub">
+            <div>
+              <svg class="brand-mark" style="width:30px;height:30px;color:var(--on-stage);margin:0 auto 4px;display:block"><use href="#clarity-mark"/></svg>
+              <span class="wordmark" style="font-size:15px">Clarity</span>
+              <small>on Orbyte</small>
+            </div>
+          </div>
+          <div class="spoke active" style="left:0;top:8%" data-frag><h4>Harbour House</h4><small>Hotel · 244 reviews</small></div>
+          <div class="spoke active" style="right:0;top:8%" data-frag><h4>Nusa Table</h4><small>Restaurant · 80 reviews</small></div>
+          <div class="spoke active" style="left:0;bottom:8%" data-frag><h4>Luma Salon</h4><small>Salon · 18 reviews</small></div>
+          <div class="spoke future" style="right:0;bottom:8%" data-frag><h4>Next SME</h4><small>Same module · new data</small></div>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <span>Second SME onboards by selecting a business &mdash; not rebuilding</span>
+        <span class="disclaimer">Production needs authorised source access &amp; a real Orbyte integration</span>
+      </div>
+    </section>
+
+    <!-- ============ 9 · CLOSE ============ -->
+    <section class="slide" id="s-close" data-name="Close">
+      <div class="close-wrap">
+        <div class="brand-lockup frag" data-frag>
+          <svg class="brand-mark" style="color:var(--on-stage)"><use href="#clarity-mark"/></svg>
+          <span class="wordmark">Clarity</span>
+        </div>
+        <h2 class="close-line">Every review.<br><span class="accent">A clearer next step.</span></h2>
+        <p class="close-mission frag" data-frag>We don't replace the owner's judgement — we give it evidence, and the time to use it. That's less busywork, and better business.</p>
+        <div class="close-tags frag" data-frag>
+          <span class="tag"><span class="dot"></span>AiX Global · Domain 2</span>
+          <span class="tag sim"><span class="dot"></span>SDG 8 · Decent Work &amp; Economic Growth</span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /#stage -->
+</div><!-- /#stage-wrap -->
+
+<!-- Chrome -->
+<div id="rail"><div id="rail-fill"></div></div>
+<div id="slide-counter">01 / 10</div>
+<div id="hint">→ / Space to advance · ? for controls</div>
+
+<div id="help">
+  <div class="help-card">
+    <h3>Presenter controls</h3>
+    <div class="help-row"><span>Next step / slide</span><span><kbd>→</kbd> <kbd>Space</kbd> <kbd>↓</kbd></span></div>
+    <div class="help-row"><span>Previous</span><span><kbd>←</kbd> <kbd>↑</kbd></span></div>
+    <div class="help-row"><span>Replay this slide's animation</span><span><kbd>R</kbd></span></div>
+    <div class="help-row"><span>Jump to first / last</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>
+    <div class="help-row"><span>Open live demo workspace</span><span><kbd>D</kbd></span></div>
+    <div class="help-row"><span>Hide / show progress rail</span><span><kbd>P</kbd></span></div>
+    <div class="help-row"><span>Overview grid</span><span><kbd>O</kbd></span></div>
+    <div class="help-row"><span>Toggle reduced motion</span><span><kbd>M</kbd></span></div>
+    <div class="help-row"><span>This help</span><span><kbd>?</kbd> <kbd>Esc</kbd></span></div>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/gsap.min.js"></script>
+<script src="deck.js"></script>
+</body>
+</html>
