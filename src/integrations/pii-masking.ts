@@ -1,10 +1,9 @@
 import { scrubPII } from "@/domain/privacy";
 
 /**
- * Masks guest personally identifiable information (PII) before transmission
- * across third-party LLM or integration boundaries.
+ * Mask guest personal identifiers at the integration/provider boundary before
+ * payloads leave the system or are sent to external services.
  */
 export function maskGuestPii(text: string): string {
   return scrubPII(text).sanitizedText;
 }
-

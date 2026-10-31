@@ -685,7 +685,9 @@ export function Workspace({
               reviewId,
               durationSeconds: totalSeconds,
             }),
-          }).catch(() => {});
+          })
+            .then(() => void refresh())
+            .catch(() => {});
         }
         activeReviewTimerRef.current = null;
       }
@@ -2903,18 +2905,10 @@ export function Workspace({
                                 ariaLabel="Your staff profile"
                                 sectionLabel="Staff Profile"
                                 value={effectiveEmployeeId}
-                                options={state.employees
-                                  .filter(
-                                    (employee) =>
-                                      employee.branchId ===
-                                      state.themes.find(
-                                        (item) => item.id === task.themeId,
-                                      )?.branchId,
-                                  )
-                                  .map((employee) => ({
-                                    value: employee.id,
-                                    label: `${employee.name} · ${employee.jobTitle}`,
-                                  }))}
+                                options={state.employees.map((employee) => ({
+                                  value: employee.id,
+                                  label: `${employee.name} · ${employee.jobTitle}`,
+                                }))}
                                 onChange={(value) => changeEmployee(value)}
                                 align="left"
                                 fullWidth
@@ -3301,8 +3295,11 @@ export function Workspace({
                 tasks={state.tasks}
                 themes={state.themes}
                 reviews={state.reviews}
+                branches={state.branches}
                 replies={state.replies}
+                metrics={state.metrics}
                 onOpenTask={openTask}
+                onOpenReview={openReview}
               />
             )}
             {tab === "stats" && <StatsView metrics={state.metrics} />}

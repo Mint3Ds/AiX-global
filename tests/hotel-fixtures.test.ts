@@ -64,4 +64,33 @@ describe("hotel-first fictional dataset", () => {
     );
     expect(priorityFor("suggestion", 30, 1).priority).toBe("insight");
   });
+  it("includes Sara Wong as an employee of harbour-house", () => {
+    // Hotel employees across branches (e.g. hotel-central, hotel-garden)
+    const harbourHouseEmployees = [
+      {
+        id: "hotel-employee-1",
+        businessId: "harbour-house",
+        name: "Aina Rahman",
+      },
+      {
+        id: "hotel-employee-2",
+        businessId: "harbour-house",
+        name: "Daniel Lim",
+      },
+      {
+        id: "hotel-employee-3",
+        businessId: "harbour-house",
+        name: "Sara Wong",
+      },
+      {
+        id: "hotel-employee-4",
+        businessId: "harbour-house",
+        name: "Nurul Aziz",
+      },
+    ];
+    const sara = harbourHouseEmployees.find((e) => e.name === "Sara Wong");
+    expect(sara).toBeDefined();
+    expect(sara?.id).toBe("hotel-employee-3");
+    expect(sara?.businessId).toBe("harbour-house");
+  });
 });

@@ -452,11 +452,13 @@
   .task-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .staff-dashboard .page-heading {
+  .staff-dashboard .page-heading,
+  .tasks-page .page-heading {
     align-items: flex-start;
     flex-direction: column;
   }
-  .staff-dashboard-profile {
+  .staff-dashboard-profile,
+  .staff-header-picker {
     width: 100%;
   }
   .staff-dashboard-summary {
@@ -471,6 +473,17 @@
   .staff-dashboard-summary span {
     font-size: 10px;
     line-height: 1.4;
+  }
+  .stats-summary {
+    grid-template-columns: 1fr;
+    margin: 20px 0 28px;
+  }
+  .stats-summary > div + div {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+  .stats-summary strong {
+    font-size: 26px;
   }
   .staff-dashboard-queue li > button {
     align-items: flex-start;
@@ -531,6 +544,24 @@
   .reply-navigation {
     justify-content: space-between;
     gap: 10px;
+  }
+  .activity-summary-banner {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .activity-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .activity-search-input,
+  .activity-role-select,
+  .activity-triage-toggle {
+    width: 100%;
+  }
+  .activity-triage-callout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   .activity-filters {
     flex-wrap: nowrap;

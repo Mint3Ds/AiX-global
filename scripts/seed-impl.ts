@@ -273,44 +273,32 @@ try {
       })
       .onConflictDoNothing();
   if (seedLegacyReviews) {
-    const seedEvents: (typeof events.$inferInsert)[] = [
-      {
-        id: "event-seed-nusa-table",
-        actor: "seed process",
-        role: "system",
-        type: "dataset_seeded",
-        entityType: "business",
-        entityId: "nusa-table",
-        description:
-          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-        businessId: "nusa-table",
-        metadata: { reviewCount: seedReviews.length },
-      },
-      {
-        id: "event-seed-harbour-house",
-        actor: "seed process",
-        role: "system",
-        type: "dataset_seeded",
-        entityType: "business",
-        entityId: "harbour-house",
-        description:
-          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-        businessId: "harbour-house",
-        metadata: { reviewCount: hotelSeedReviews.length },
-      },
-      {
-        id: "event-seed-luma-salon",
-        actor: "seed process",
-        role: "system",
-        type: "dataset_seeded",
-        entityType: "business",
-        entityId: "luma-salon",
-        description:
-          "Loaded synthetic seed reviews and labelled fixture analysis subset.",
-        businessId: "luma-salon",
-        metadata: { reviewCount: salonSeedReviews.length },
-      },
-    ];
+for (const config of businessConfigs) {
+      const reviewCount = [
+        ...seedReviews,
+        ...hotelSeedReviews,
+        ...salonSeedReviews,
+      ].filter((review) => review.businessId === config.businessId).length;
+      await db
+        .insert(events)
+        .values({
+          id:
+            config.businessId === restaurantConfig.businessId
+              ? "event-seed-v1"
+              : `event-seed-v1-${config.businessId}`,
+          actor: "seed process",
+          role: "system",
+          type: "dataset_seeded",
+          entityType: "business",
+          entityId: config.businessId,
+          description: `${reviewCount} historical synthetic reviews are available with labelled fixture analyses. This entry records dataset setup, not customer or staff activity.`,
+          businessId: config.businessId,
+          metadata: { reviewCount },
+        })
+        .onConflictDoNothing();
+    }
+
+    const seedEvents: (typeof events.$inferInsert)[] = [];
 
     const recentHotel = [...hotelSeedReviews]
       .sort(
