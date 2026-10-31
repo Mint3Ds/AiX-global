@@ -11,6 +11,10 @@ coverage/
 
 tsconfig.tsbuildinfo
 
+# Office lock and temporary files
+~$*
+*.tmp
+
 # Local PostgreSQL database files
 .pgdata/
 

@@ -35,7 +35,7 @@ Ordinary `npm run db:seed` provisions base businesses, properties, employees, an
 
 ### Full Clean Reset & Reseed
 
-To completely drop all tables and re-seed from a pristine state, pass `CONFIRM_DEMO_RESET=yes` (required by `scripts/reset.ts` to prevent accidental loss):
+To completely drop all tables and re-seed from a pristine state, pass `CONFIRM_DEMO_RESET=yes` (required by `scripts/reset.ts` to prevent accidental loss). Do this if you're having troubles with the database.
 
 - **Bash / macOS / Linux / Replit:**
   ```sh
