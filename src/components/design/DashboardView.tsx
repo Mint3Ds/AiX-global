@@ -32,6 +32,18 @@ type WorkItem = {
   due: string;
   status: string;
 };
+type PropertyItem = {
+  id: string;
+  name: string;
+  rating: string;
+  reviewsCount: number;
+  issuesCount: number;
+};
+type ReplyStatus = {
+  draftCount: number;
+  approvedCount: number;
+  publishedCount: number;
+};
 
 export function DashboardView({
   metrics,
@@ -40,6 +52,9 @@ export function DashboardView({
   work,
   onNewReview,
   onInspect,
+  properties,
+  replyStatus,
+  onSelectBranch,
   onOpenTask,
   onNavigate,
 }: {
@@ -49,6 +64,9 @@ export function DashboardView({
   work: WorkItem[];
   onNewReview: () => void;
   onInspect: (id: string) => void;
+  properties?: PropertyItem[];
+  replyStatus?: ReplyStatus;
+  onSelectBranch?: (branchId: string) => void;
   onOpenTask: (id: string) => void;
   onNavigate: (destination: Destination, metricTitle?: string) => void;
 }) {
@@ -302,6 +320,79 @@ export function DashboardView({
               </button>
             </div>
           )}
+          {properties && properties.length > 0 && (
+            <div className="dashboard-property-section">
+              <div className="panel-subheading">
+                <div>
+                  <p className="eyebrow">Property signals</p>
+                  <h4>Locations &amp; coverage</h4>
+                </div>
+                <button
+                  type="button"
+                  className="link"
+                  onClick={() => onNavigate("reviews")}
+                >
+                  All reviews
+                </button>
+              </div>
+              <div className="property-preview-grid">
+                {properties.map((prop) => (
+                  <button
+                    key={prop.id}
+                    type="button"
+                    className="property-preview-card"
+                    onClick={() =>
+                      onSelectBranch
+                        ? onSelectBranch(prop.id)
+                        : onNavigate("reviews")
+                    }
+                  >
+                    <div className="property-preview-top">
+                      <strong>{prop.name}</strong>
+                      <span className="property-rating-tag">{prop.rating} ★</span>
+                    </div>
+                    <div className="property-preview-meta">
+                      <span>{prop.reviewsCount} reviews</span>
+                      <span className="dot-sep">·</span>
+                      <span>
+                        {prop.issuesCount}{" "}
+                        {prop.issuesCount === 1 ? "issue" : "issues"}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="dashboard-reply-section">
+            <div className="reply-preview-card">
+              <div className="reply-preview-top">
+                <span className="eyebrow">Guest follow-through</span>
+                {replyStatus && replyStatus.draftCount > 0 ? (
+                  <span className="reply-badge attention">
+                    {replyStatus.draftCount} draft
+                    {replyStatus.draftCount === 1 ? "" : "s"} ready
+                  </span>
+                ) : (
+                  <span className="reply-badge neutral">Workflow ready</span>
+                )}
+              </div>
+              <p className="reply-preview-copy">
+                {replyStatus && replyStatus.draftCount > 0
+                  ? `${replyStatus.draftCount} guest ${replyStatus.draftCount === 1 ? "reply is" : "replies are"} waiting for owner sign-off after verified work.`
+                  : "Verified work tasks automatically draft responses for linked guest reviews."}
+              </p>
+              <button
+                type="button"
+                className="link reply-action-link"
+                onClick={() => onNavigate("replies")}
+              >
+                {replyStatus && replyStatus.draftCount > 0
+                  ? "Inspect & approve replies ↗"
+                  : "Manage guest replies ↗"}
+              </button>
+            </div>
+          </div>
         </section>
       </div>
     </section>

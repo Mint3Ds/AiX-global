@@ -1,0 +1,268 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 4428 >>
+stream
+BT /F2 15 Tf 50 742.0 Td (Clarity \(visit2value\) - Backend Technical Dossier & Feature Specification) Tj ET
+BT /F1 10 Tf 50 719.0 Td (Structured Evaluation Reference for Gemini Argon | Team AiX Global \(Domain 2, SDG 8\)) Tj ET
+BT /F2 13 Tf 50 685.0 Td (1. Executive Summary & System Overview) Tj ET
+BT /F1 9.5 Tf 62 664.0 Td (* Application Name: Clarity \(internal package name: visit2value\)) Tj ET
+BT /F1 9.5 Tf 62 648.0 Td (* Purpose: A multi-tenant, evidence-backed review-to-resolution operational workspace for) Tj ET
+BT /F1 9.5 Tf 72 635.0 Td (small-to-medium businesses \(demonstrated across a multi-property hotel 'harbour-house', a) Tj ET
+BT /F1 9.5 Tf 72 622.0 Td (multi-branch restaurant 'nusa-table', and a salon 'luma-salon'\).) Tj ET
+BT /F1 9.5 Tf 62 606.0 Td (* Core Architectural Philosophy \(Evidence First, Truthful Action\): Raw customer reviews are) Tj ET
+BT /F1 9.5 Tf 72 593.0 Td (persisted immutably before any AI processing occurs. Every AI-extracted observation must be) Tj ET
+BT /F1 9.5 Tf 72 580.0 Td (anchored to a verified exact substring quote from the source text. Public replies cannot be) Tj ET
+BT /F1 9.5 Tf 72 567.0 Td (drafted until an assigned operational task has been reported by staff and verified by an owner,) Tj ET
+BT /F1 9.5 Tf 72 554.0 Td (and replies are programmatically guarded against claiming all issues are fixed when secondary) Tj ET
+BT /F1 9.5 Tf 72 541.0 Td (complaints remain unresolved.) Tj ET
+BT /F2 11 Tf 50 517.0 Td (Technology Stack) Tj ET
+BT /F1 9.5 Tf 62 499.0 Td (* Runtime & Framework: Next.js 16.0.1 \(App Router, nodejs runtime\), React 19.2.0, TypeScript) Tj ET
+BT /F1 9.5 Tf 72 486.0 Td (5.9.3) Tj ET
+BT /F1 9.5 Tf 62 470.0 Td (* Database & ORM: PostgreSQL 16+ with Drizzle ORM \(0.45.4\) and pg \(8.16.3\) connection pooling) Tj ET
+BT /F1 9.5 Tf 62 454.0 Td (* Validation: Zod \(4.1.12\) for runtime request validation and structured LLM output parsing) Tj ET
+BT /F1 9.5 Tf 62 438.0 Td (* AI Providers: Jev / TypeSafe API \(jev-latest via https://api.typesafe.ai/v1/systemone\) +) Tj ET
+BT /F1 9.5 Tf 72 425.0 Td (OpenAI Responses API \(gpt-5-mini default, via openai SDK 6.8.0\)) Tj ET
+BT /F1 9.5 Tf 62 409.0 Td (* Testing: Vitest \(5.0.5\) covering unit, domain, fixture, screening fallback, evidence span,) Tj ET
+BT /F1 9.5 Tf 72 396.0 Td (rejection workflow, and HTTP route integration tests) Tj ET
+BT /F2 13 Tf 50 370.0 Td (2. API Layer & HTTP Contract) Tj ET
+BT /F1 9.5 Tf 50 349.0 Td (All backend endpoints execute exclusively on the server \(runtime = 'nodejs'\), keeping database) Tj ET
+BT /F1 9.5 Tf 50 336.0 Td (credentials and AI API keys isolated from the browser.) Tj ET
+BT /F2 11 Tf 50 311.0 Td (Endpoints) Tj ET
+BT /F1 9.5 Tf 62 293.0 Td (* GET /api/state \(src/app/api/state/route.ts\): Accepts ?businessId=... \(defaults to) Tj ET
+BT /F1 9.5 Tf 72 280.0 Td ('harbour-house'\). Executes parallel scoped queries via getState\(\) and returns the complete) Tj ET
+BT /F1 9.5 Tf 72 267.0 Td (workspace snapshot: branches, employees, reviews, runs, observations, themes, memberships,) Tj ET
+BT /F1 9.5 Tf 72 254.0 Td (tasks, taskReportAttempts \(with attachment URLs\), handoffs, replies, events, and themeSupport) Tj ET
+BT /F1 9.5 Tf 72 241.0 Td (\(distinct source review counts\).) Tj ET
+BT /F1 9.5 Tf 62 225.0 Td (* POST /api/action \(src/app/api/action/route.ts\): Unified command dispatcher for 21 domain) Tj ET
+BT /F1 9.5 Tf 72 212.0 Td (mutations. Runs assertActionScope\(businessId, body\) BEFORE executing any business logic to) Tj ET
+BT /F1 9.5 Tf 72 199.0 Td (prevent cross-tenant \(cross-business\) ID tampering. Returns { ok: true, result } or HTTP 400 {) Tj ET
+BT /F1 9.5 Tf 72 186.0 Td (ok: false, error, code } via publicActionError\(\).) Tj ET
+BT /F1 9.5 Tf 62 170.0 Td (* GET /api/task-attachments/[id] \(src/app/api/task-attachments/[id]/route.ts\): Decodes base64) Tj ET
+BT /F1 9.5 Tf 72 157.0 Td (image evidence stored in task_report_attachments and streams binary image bytes with strict) Tj ET
+BT /F1 9.5 Tf 72 144.0 Td (security headers \(X-Content-Type-Options: nosniff, Cache-Control: private, no-store\).) Tj ET
+BT /F1 9.5 Tf 62 128.0 Td (* GET /api/prepared-reviews \(src/app/api/prepared-reviews/route.ts\): Stub endpoint returning []) Tj ET
+BT /F1 9.5 Tf 72 115.0 Td (to ensure no external scraping or unverified feed ingestion.) Tj ET
+BT /F2 11 Tf 50 91.0 Td (Supported Mutation Actions \(POST /api/action\)) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 5244 >>
+stream
+BT /F1 9.5 Tf 62 742.0 Td (* Ingestion & Analysis: intake, analyze, analyze_batch \(up to 5 pending reviews per call\),) Tj ET
+BT /F1 9.5 Tf 72 729.0 Td (manual_classify) Tj ET
+BT /F1 9.5 Tf 62 713.0 Td (* Evidence & Triage Management: membership \(move or remove observation-to-theme link\),) Tj ET
+BT /F1 9.5 Tf 72 700.0 Td (theme_status \(owner_confirmed, dismissed, suggested\), severity \(1, 2, or 3\)) Tj ET
+BT /F1 9.5 Tf 62 684.0 Td (* Task Lifecycle: propose_task, edit_task, decide_task \(approve, reject, defer\), start_task,) Tj ET
+BT /F1 9.5 Tf 72 671.0 Td (report_task \(with image attachments\), verify_task / resolve_task, reject_task_report) Tj ET
+BT /F1 9.5 Tf 62 655.0 Td (* Reply Lifecycle: draft_reply, prepare_replies \(concurrency-bounded batch of 6\), edit_reply,) Tj ET
+BT /F1 9.5 Tf 72 642.0 Td (approve_reply, reject_reply, approve_reply_batch \(1 to 300 safe drafts\), simulate_publish) Tj ET
+BT /F2 13 Tf 50 616.0 Td (3. Database Schema & Persistence Architecture) Tj ET
+BT /F1 9.5 Tf 50 595.0 Td (Defined in src/data/schema.ts and managed through 5 additive, idempotent SQL migrations) Tj ET
+BT /F1 9.5 Tf 50 582.0 Td (\(0001_initial.sql through 0005_task_report_attachments_and_analysis_timings.sql\):) Tj ET
+BT /F1 9.5 Tf 62 565.0 Td (* 1. Multi-Tenant Hierarchy: businesses -> branches \(properties/locations\) -> employees) Tj ET
+BT /F1 9.5 Tf 72 552.0 Td (\(branch-scoped staff\).) Tj ET
+BT /F1 9.5 Tf 62 536.0 Td (* 2. Immutable Review Evidence \(reviews\): Stores originalText, rating \(1-5\), reviewedAt,) Tj ET
+BT /F1 9.5 Tf 72 523.0 Td (language \(en | ms | mixed | unknown\), isSynthetic, isHistoricalImport, processingStatus) Tj ET
+BT /F1 9.5 Tf 72 510.0 Td (\(pending, processing, complete, generic, needs_review, failed\), and processingStage. Enforces) Tj ET
+BT /F1 9.5 Tf 72 497.0 Td (unique constraint on \(business_id, source, source_review_id\).) Tj ET
+BT /F1 9.5 Tf 62 481.0 Td (* 3. AI Provenance & Telemetry \(analysis_runs & observations\): analysis_runs tracks every) Tj ET
+BT /F1 9.5 Tf 72 468.0 Td (attempt per review \(decision, screeningProvider, screeningModel, extractionProvider,) Tj ET
+BT /F1 9.5 Tf 72 455.0 Td (extractionModel, matchingProvider, matchingModel, promptVersion, mode, safeError, and) Tj ET
+BT /F1 9.5 Tf 72 442.0 Td (stageTimings JSONB\). observations stores individual extracted points \(category, aspect, kind,) Tj ET
+BT /F1 9.5 Tf 72 429.0 Td (sentiment, summary, normalizedDescription, exact evidenceQuote, startOffset, endOffset, and) Tj ET
+BT /F1 9.5 Tf 72 416.0 Td (model provenance\).) Tj ET
+BT /F1 9.5 Tf 62 400.0 Td (* 4. Issue Grouping \(themes & theme_memberships\): themes are branch-scoped clusters) Tj ET
+BT /F1 9.5 Tf 72 387.0 Td (\(operational_issue, suggestion, positive_pattern\) with status \(suggested, owner_confirmed,) Tj ET
+BT /F1 9.5 Tf 72 374.0 Td (dismissed, recurrence\), severity \(1-3\), computed priority \(urgent, high, medium, low, insight\),) Tj ET
+BT /F1 9.5 Tf 72 361.0 Td (and priorityReason. theme_memberships links an observation to at most one theme \(uniqueIndex on) Tj ET
+BT /F1 9.5 Tf 72 348.0 Td (observation_id\), tracking whether the link is an ai_suggestion, fixture, or owner_correction.) Tj ET
+BT /F1 9.5 Tf 62 332.0 Td (* 5. Operational Workflows \(tasks, task_report_attempts, task_report_attachments, handoffs\):) Tj ET
+BT /F1 9.5 Tf 72 319.0 Td (tasks tracks title, description, assignee, due date, status, reportVersion, approvalSnapshot) Tj ET
+BT /F1 9.5 Tf 72 306.0 Td (\(JSONB\), verification metadata, rejection metadata, and recurrenceOfTaskId. task_report_attempts) Tj ET
+BT /F1 9.5 Tf 72 293.0 Td (stores an immutable versioned log of staff completion reports \(version, note, decision,) Tj ET
+BT /F1 9.5 Tf 72 280.0 Td (decisionReason\). task_report_attachments stores up to 5 validated base64 image attachments per) Tj ET
+BT /F1 9.5 Tf 72 267.0 Td (report attempt. handoffs stores simulated external task handoff payloads \(simulated_queued\).) Tj ET
+BT /F1 9.5 Tf 62 251.0 Td (* 6. Public Replies \(replies & reply_draft_versions\): replies is 1-to-1 with reviews \(unique on) Tj ET
+BT /F1 9.5 Tf 72 238.0 Td (review_id\), linked to a verified task_id and theme_id. Tracks draftVersion, approvedVersion,) Tj ET
+BT /F1 9.5 Tf 72 225.0 Td (partialWarning, partialApproved, and publishedAt. reply_draft_versions maintains an immutable) Tj ET
+BT /F1 9.5 Tf 72 212.0 Td (version history of every AI-generated and owner-edited reply draft.) Tj ET
+BT /F1 9.5 Tf 62 196.0 Td (* 7. Audit Log \(activity_events\): Append-only, business-scoped event ledger recording actor,) Tj ET
+BT /F1 9.5 Tf 72 183.0 Td (role, entity type/ID, description, and structured metadata.) Tj ET
+BT /F2 13 Tf 50 157.0 Td (4. Core Backend Features & Domain Invariants) Tj ET
+BT /F2 11 Tf 50 128.0 Td (Feature 1: Idempotent Intake & Source-Evidence Conflict Detection) Tj ET
+BT /F1 9.5 Tf 62 110.0 Td (* Implemented in intake\(\) \(src/domain/service.ts\) and intakeSchema \(src/domain/analysis.ts\).) Tj ET
+BT /F1 9.5 Tf 62 94.0 Td (* Validates branch ownership against the business, integer rating \(1-5\), ISO timestamp with) Tj ET
+BT /F1 9.5 Tf 72 81.0 Td (timezone offset, text length \(5-3000 chars\), and isSynthetic: true.) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 5309 >>
+stream
+BT /F1 9.5 Tf 62 742.0 Td (* Idempotency vs. Tamper Detection: If a review with the same \(business_id, source,) Tj ET
+BT /F1 9.5 Tf 72 729.0 Td (source_review_id\) arrives with identical text, branch, rating, and timestamp, it returns {) Tj ET
+BT /F1 9.5 Tf 72 716.0 Td (reviewId, duplicate: true }. If any of those fields differ under the same source ID, it throws a) Tj ET
+BT /F1 9.5 Tf 72 703.0 Td (Feed Conflict error and preserves the original evidence untouched.) Tj ET
+BT /F2 11 Tf 50 679.0 Td (Feature 2: Dual-Mode AI Pipeline \(live vs. fixture\) with Provider Fallback) Tj ET
+BT /F1 9.5 Tf 62 661.0 Td (* Controlled by AI_MODE \('live' or 'fixture'\) in analyzeReview\(\) \(src/domain/service.ts\).) Tj ET
+BT /F1 9.5 Tf 62 645.0 Td (* Stage 1 - Screening \(screenWithFallback in src/domain/screening.ts\): In live mode, calls Jev) Tj ET
+BT /F1 9.5 Tf 72 632.0 Td (\(screenWithJev\) with an 8-second timeout and up to 2 attempts. Jev returns a 'noul' probability) Tj ET
+BT /F1 9.5 Tf 72 619.0 Td (score [0, 1]. Scores >= 0.6 are true \(contains specific feedback\), <= 0.4 are false \(generic\).) Tj ET
+BT /F1 9.5 Tf 72 606.0 Td (Scores between 0.4 and 0.6 are treated as uncertain, automatically triggering an OpenAI Fallback) Tj ET
+BT /F1 9.5 Tf 72 593.0 Td (\(screenWithOpenAI\). Network or HTTP failures on Jev also fall back seamlessly to OpenAI while) Tj ET
+BT /F1 9.5 Tf 72 580.0 Td (recording the Jev failure in safeError.) Tj ET
+BT /F1 9.5 Tf 62 564.0 Td (* Stage 2 - Span-Grounded Extraction & Anti-Hallucination Guard \(extractWithOpenAI &) Tj ET
+BT /F1 9.5 Tf 72 551.0 Td (verifyEvidence\): Instead of letting the LLM free-generate quotes \(which risks paraphrasing or) Tj ET
+BT /F1 9.5 Tf 72 538.0 Td (hallucination\), evidenceSpans\(\) segments the original review into numbered sentences \(s1, s2,) Tj ET
+BT /F1 9.5 Tf 72 525.0 Td (...\) using Intl.Segmenter. OpenAI is constrained via a dynamic z.enum\(ids\) schema to select an) Tj ET
+BT /F1 9.5 Tf 72 512.0 Td (exact evidenceSpanId for each observation. verifyEvidence\(\) then verifies that every quote is a) Tj ET
+BT /F1 9.5 Tf 72 499.0 Td (literal character-for-character substring of originalText \(normalizing only straight/curly) Tj ET
+BT /F1 9.5 Tf 72 486.0 Td (quotes\) and slices the exact substring from the original review.) Tj ET
+BT /F1 9.5 Tf 62 470.0 Td (* Stage 3 - Context-Aware Theme Matching \(candidateThemes & matchObservationsWithOpenAI\):) Tj ET
+BT /F1 9.5 Tf 72 457.0 Td (Filters existing themes to the same branch and compatible feedback type \(operational_complaint) Tj ET
+BT /F1 9.5 Tf 72 444.0 Td (-> operational_issue, suggestion -> suggestion, praise -> positive_pattern\). Ranks candidates by) Tj ET
+BT /F1 9.5 Tf 72 431.0 Td (lexical overlap and boosts themes that have active tasks. Short-circuits the LLM call if an) Tj ET
+BT /F1 9.5 Tf 72 418.0 Td (exact multi-word title match exists or no candidates overlap. Validates that OpenAI only returns) Tj ET
+BT /F1 9.5 Tf 72 405.0 Td (candidate IDs from the supplied list \(preventing cross-branch or cross-business injection\).) Tj ET
+BT /F1 9.5 Tf 72 392.0 Td (Unmatched observations in live mode automatically create new suggested themes.) Tj ET
+BT /F1 9.5 Tf 62 376.0 Td (* Per-Stage Performance Telemetry: Tracks jevScreeningMs, openAIFallbackScreeningMs,) Tj ET
+BT /F1 9.5 Tf 72 363.0 Td (screeningMs, extractionMs, issueMatchingMs, databasePersistMs, and pipelineMs in) Tj ET
+BT /F1 9.5 Tf 72 350.0 Td (analysis_runs.stage_timings.) Tj ET
+BT /F2 11 Tf 50 326.0 Td (Feature 3: Distinct-Review Support Counting & Triage Priority Engine) Tj ET
+BT /F1 9.5 Tf 62 308.0 Td (* Implemented in distinctReviewCount\(\) \(src/domain/themes.ts\), recalculatePriority\(\)) Tj ET
+BT /F1 9.5 Tf 72 295.0 Td (\(src/domain/service.ts\), and priorityFor\(\) \(src/config/priority.ts\).) Tj ET
+BT /F1 9.5 Tf 62 279.0 Td (* Anti-Inflation Rule: If a single guest mentions an issue 3 times in one review, or multiple) Tj ET
+BT /F1 9.5 Tf 72 266.0 Td (observations from the same review map to the same theme, it counts as 1 distinct source review:) Tj ET
+BT /F1 9.5 Tf 72 253.0 Td (COUNT\(DISTINCT o.review_id\).) Tj ET
+BT /F1 9.5 Tf 62 237.0 Td (* Priority Matrix: Combines owner-adjustable severity \(1-3\), total distinct reviews, recent) Tj ET
+BT /F1 9.5 Tf 72 224.0 Td (reviews \(within 180 days\), and post-resolution recurrence:) Tj ET
+BT /F1 9.5 Tf 62 208.0 Td (*   - urgent: Severity 3 \(e.g., safety, accessibility, or pests - even with 1 review\).) Tj ET
+BT /F1 9.5 Tf 62 192.0 Td (*   - high: Recurrence detected, OR \(severity >= 2 and >= 5 distinct reviews with recent) Tj ET
+BT /F1 9.5 Tf 72 179.0 Td (activity\), OR >= 10 distinct reviews with recent activity.) Tj ET
+BT /F1 9.5 Tf 62 163.0 Td (*   - medium: >= 2 distinct reviews OR severity >= 2.) Tj ET
+BT /F1 9.5 Tf 62 147.0 Td (*   - low: All other operational issues.) Tj ET
+BT /F1 9.5 Tf 62 131.0 Td (*   - insight: Non-operational themes \(suggestion and positive_pattern\).) Tj ET
+BT /F2 11 Tf 50 107.0 Td (Feature 4: Operational Task Lifecycle, Optimistic Concurrency & Image Evidence) Tj ET
+BT /F1 9.5 Tf 62 89.0 Td (* Implemented in proposeTask\(\), decideTask\(\), reportTask\(\), verifyTask\(\), and rejectTaskReport\(\)) Tj ET
+BT /F1 9.5 Tf 72 76.0 Td (\(src/domain/service.ts\).) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 5308 >>
+stream
+BT /F1 9.5 Tf 62 742.0 Td (* Advisory Locking: proposeTask\(\) acquires a PostgreSQL transaction-level advisory lock) Tj ET
+BT /F1 9.5 Tf 72 729.0 Td (\(pg_advisory_xact_lock\(hashtext\(themeId\)\)\) to prevent race conditions from creating duplicate) Tj ET
+BT /F1 9.5 Tf 72 716.0 Td (active tasks for the same issue.) Tj ET
+BT /F1 9.5 Tf 62 700.0 Td (* Simulated Orbyte Handoff: Task approval requires a same-branch employee and valid due date,) Tj ET
+BT /F1 9.5 Tf 72 687.0 Td (snapshots all supporting { reviewId, quote } pairs into approvalSnapshot, and writes a simulated) Tj ET
+BT /F1 9.5 Tf 72 674.0 Td (payload via localHandoff \(src/integrations/orbyte/handoff.ts\).) Tj ET
+BT /F1 9.5 Tf 62 658.0 Td (* Staff Work Reports & Binary Image Validation: Assigned staff submit a completion report \(>= 10) Tj ET
+BT /F1 9.5 Tf 72 645.0 Td (chars\) and up to 5 image attachments \(image/jpeg, image/png, image/webp, max 2 MB each, max 6 MB) Tj ET
+BT /F1 9.5 Tf 72 632.0 Td (total, validated for strict base64 encoding and sanitized filenames\). Each submission increments) Tj ET
+BT /F1 9.5 Tf 72 619.0 Td (report_version and creates an immutable task_report_attempts record.) Tj ET
+BT /F1 9.5 Tf 62 603.0 Td (* Version-Checked Verification & Rejection: Owners must pass the exact reportVersion they are) Tj ET
+BT /F1 9.5 Tf 72 590.0 Td (reviewing. Conditional SQL WHERE clauses \(eq\(tasks.reportVersion, reportVersion\)\) block stale) Tj ET
+BT /F1 9.5 Tf 72 577.0 Td (approvals/rejections if an employee submits a newer report concurrently. Rejecting a report) Tj ET
+BT /F1 9.5 Tf 72 564.0 Td (requires a 10-500 character reason and transitions the task to needs_rework.) Tj ET
+BT /F1 9.5 Tf 62 548.0 Td (* Automatic Recurrence Detection: If a new review supporting a theme arrives after a task was) Tj ET
+BT /F1 9.5 Tf 72 535.0 Td (resolved \(review.createdAt > task.resolvedAt\), refreshRecurrenceStatus\(\) transitions the theme) Tj ET
+BT /F1 9.5 Tf 72 522.0 Td (to recurrence, elevates priority to high, logs a possible_recurrence event, and unlocks) Tj ET
+BT /F1 9.5 Tf 72 509.0 Td (proposing a new follow-up task linked via recurrenceOfTaskId.) Tj ET
+BT /F2 11 Tf 50 485.0 Td (Feature 5: Truthful Reply Drafting & Partial-Resolution Safeguards) Tj ET
+BT /F1 9.5 Tf 62 467.0 Td (* Implemented in createReply\(\), unresolvedReviewComplaints\(\), assertReplyApproval\(\)) Tj ET
+BT /F1 9.5 Tf 72 454.0 Td (\(src/domain/replies.ts\), and simulatePublish\(\).) Tj ET
+BT /F1 9.5 Tf 62 438.0 Td (* Prerequisites: A reply can only be drafted if the linked task is resolved with a non-empty) Tj ET
+BT /F1 9.5 Tf 72 425.0 Td (resolutionNote and the review has an observation belonging to that task's theme.) Tj ET
+BT /F1 9.5 Tf 62 409.0 Td (* Cross-Complaint Inspection: Before drafting, unresolvedReviewComplaints\(\) inspects all other) Tj ET
+BT /F1 9.5 Tf 72 396.0 Td (operational_complaint observations in the same review. Any complaint that is ungrouped or) Tj ET
+BT /F1 9.5 Tf 72 383.0 Td (belongs to a theme without a resolved task is flagged as unresolved.) Tj ET
+BT /F1 9.5 Tf 62 367.0 Td (* Truthfulness Guardrails:) Tj ET
+BT /F1 9.5 Tf 62 351.0 Td (*   1. Unresolved complaints are passed into the OpenAI reply prompt so the draft explicitly) Tj ET
+BT /F1 9.5 Tf 72 338.0 Td (acknowledges what was fixed while noting other items remain under review.) Tj ET
+BT /F1 9.5 Tf 62 322.0 Td (*   2. A conspicuous partialWarning is stored on the reply record.) Tj ET
+BT /F1 9.5 Tf 62 306.0 Td (*   3. Regex Universal-Claim Blocker \(impliesAllConcernsResolved\): If a review has unresolved) Tj ET
+BT /F1 9.5 Tf 72 293.0 Td (complaints, assertReplyApproval\(\) requires explicit partialApproved: true AND scans the reply) Tj ET
+BT /F1 9.5 Tf 72 280.0 Td (text to reject overbroad claims \(e.g., 'all issues have been resolved', 'everything is fixed',) Tj ET
+BT /F1 9.5 Tf 72 267.0 Td ('no concerns left'\).) Tj ET
+BT /F1 9.5 Tf 62 251.0 Td (*   4. Safe Batch Approval \(approveReplyBatch\): Batch approval \(1-300 replies\) is strictly) Tj ET
+BT /F1 9.5 Tf 72 238.0 Td (restricted to drafts with no partialWarning and theme severity < 3. High-severity or partial) Tj ET
+BT /F1 9.5 Tf 72 225.0 Td (replies must be reviewed and approved individually.) Tj ET
+BT /F1 9.5 Tf 62 209.0 Td (*   5. Version-Locked Publishing: Editing an approved reply increments draft_version, records a) Tj ET
+BT /F1 9.5 Tf 72 196.0 Td (row in reply_draft_versions, and revokes approved_ready status back to draft. simulate_publish) Tj ET
+BT /F1 9.5 Tf 72 183.0 Td (verifies status === 'approved_ready' and approvedVersion === draftVersion, logging a) Tj ET
+BT /F1 9.5 Tf 72 170.0 Td (reply_publish_denied audit event if an unapproved draft is submitted for publishing.) Tj ET
+BT /F2 13 Tf 50 144.0 Td (5. Security, Resilience & Honest Demo Boundaries) Tj ET
+BT /F1 9.5 Tf 62 123.0 Td (* Tenant Isolation: Every GET /api/state and POST /api/action validates businessId and checks) Tj ET
+BT /F1 9.5 Tf 72 110.0 Td (entity ownership across reviews, observations, themes, tasks, and replies via assertActionScope.) Tj ET
+BT /F1 9.5 Tf 72 97.0 Td (Demo Boundary: No session authentication; businessId, role \(owner/staff\), and employeeId are) Tj ET
+BT /F1 9.5 Tf 72 84.0 Td (client-supplied selector values for judge walkthroughs.) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 14 0 R >>
+endobj
+14 0 obj
+<< /Length 1634 >>
+stream
+BT /F1 9.5 Tf 62 742.0 Td (* Prompt Injection Defense: Both Jev and OpenAI system prompts explicitly instruct the model to) Tj ET
+BT /F1 9.5 Tf 72 729.0 Td (treat review and observation text as untrusted data, and all outputs are enforced via strict Zod) Tj ET
+BT /F1 9.5 Tf 72 716.0 Td (schemas \(zodTextFormat\).) Tj ET
+BT /F1 9.5 Tf 62 700.0 Td (* Error Normalization: normalizeOpenAIError\(\) and publicActionError\(\) map raw DB/SDK exceptions) Tj ET
+BT /F1 9.5 Tf 72 687.0 Td (into safe, user-readable messages without leaking API keys, stack traces, or SQL queries.) Tj ET
+BT /F1 9.5 Tf 62 671.0 Td (* External Integrations: Real server-side adapters for Jev and OpenAI with timeouts, retries,) Tj ET
+BT /F1 9.5 Tf 72 658.0 Td (and fallbacks \(Jev -> OpenAI, OpenAI reply -> template_fallback\). Demo Boundary: Review) Tj ET
+BT /F1 9.5 Tf 72 645.0 Td (ingestion, Orbyte task handoff \(localHandoff\), and reply publishing \(simulated_published\) are) Tj ET
+BT /F1 9.5 Tf 72 632.0 Td (local simulations with zero external side effects.) Tj ET
+BT /F1 9.5 Tf 62 616.0 Td (* Scalability & Concurrency: Advisory locks on task proposals; optimistic version locking) Tj ET
+BT /F1 9.5 Tf 72 603.0 Td (\(reportVersion, draftVersion\) on task reports and reply edits/approvals; bounded concurrency \(6\)) Tj ET
+BT /F1 9.5 Tf 72 590.0 Td (on batch reply preparation. Demo Boundary: GET /api/state returns the full business snapshot for) Tj ET
+BT /F1 9.5 Tf 72 577.0 Td (client-side filtering/pagination, and analyze runs synchronously inside the HTTP request rather) Tj ET
+BT /F1 9.5 Tf 72 564.0 Td (than a background worker queue.) Tj ET
+endstream
+endobj
+xref
+0 15
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000147 00000 n 
+0000000217 00000 n 
+0000000292 00000 n 
+0000000428 00000 n 
+0000004908 00000 n 
+0000005044 00000 n 
+0000010340 00000 n 
+0000010477 00000 n 
+0000015839 00000 n 
+0000015977 00000 n 
+0000021338 00000 n 
+0000021476 00000 n 
+trailer
+<< /Size 15 /Root 1 0 R >>
+startxref
+23163
+%%EOF

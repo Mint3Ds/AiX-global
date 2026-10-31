@@ -13,3 +13,7 @@ tsconfig.tsbuildinfo
 
 # Local PostgreSQL database files
 .pgdata/
+
+# Local agents and sub-workspaces
+.agents/
+AiX-global/

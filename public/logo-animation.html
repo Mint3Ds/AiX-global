@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clarity — Brand Logo Animation Preview</title>
+  <style>
+    :root {
+      --paper: #f6f8fa;
+      --paper-light: #fdfefe;
+      --ink: #17232d;
+      --muted: #586978;
+      --accent: #496b86;
+      --line: #d8e1e8;
+      --line-strong: #aabac7;
+      --glow: rgba(73, 107, 134, 0.14);
+      --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html[data-theme="dark"] {
+      --paper: #101820;
+      --paper-light: #16212b;
+      --ink: #edf2f6;
+      --muted: #97a8b7;
+      --accent: #7da2bf;
+      --line: #253443;
+      --line-strong: #385066;
+      --glow: rgba(125, 162, 191, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    /* Subtle architectural ledger grid matching Clarity's aesthetic */
+    .ledger-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, var(--line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.32;
+      mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 78%);
+    }
+
+    /* Top control bar for previewing */
+    .preview-toolbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--paper) 85%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .toolbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .toolbar-badge {
+      padding: 3px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      color: var(--ink);
+      font-size: 11px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line-strong);
+      background: var(--paper-light);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 7px 14px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper-light);
+      border-color: var(--ink);
+    }
+
+    /* Main animation stage */
+    .stage {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    /* Ambient halo behind logo during initial zoom-in */
+    .stage-halo {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+      opacity: 0;
+      transform: scale(0.7);
+      pointer-events: none;
+    }
+
+    .is-playing .stage-halo {
+      animation: haloPulse 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Brand lockup container */
+    .brand-lockup {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    /*
+     * 1. Logo Mark Wrapper (84px × 84px, half-width = 42px)
+     * Raised visually higher relative to the text block using a -8px Y-offset.
+     * - 0.00s -> 0.96s (0% -> 32%): Fades in at center (translateX(132px) translateY(-8px)), gently settling from scale(2.05) to scale(1.75).
+     * - 0.96s -> 3.00s (32% -> 100%): Smoothly zooms out from scale(1.75) to scale(1) while gliding from translateX(132px) to translateX(0px).
+     */
+    .logo-mark-wrap {
+      position: relative;
+      z-index: 3;
+      width: 84px;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translate3d(132px, -8px, 0) scale(2.05);
+      filter: blur(6px);
+      will-change: transform, opacity, filter;
+    }
+
+    .is-playing .logo-mark-wrap {
+      animation: logoFadeAndZoomPull 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .logo-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .logo-svg path {
+      stroke: var(--ink);
+      stroke-width: 5.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 160;
+      stroke-dashoffset: 160;
+    }
+
+    .is-playing .logo-svg .path-left {
+      animation: strokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.06s forwards;
+    }
+
+    .is-playing .logo-svg .path-right {
+      animation: strokeDraw 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.18s forwards;
+    }
+
+    /*
+     * 2. Wordmark Reveal ("Clarity")
+     */
+    .wordmark-mask {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      padding: 6px 12px 14px 2px;
+      transform: translate3d(163.5px, 0, 0);
+      clip-path: inset(0 100% 0 0);
+      will-change: transform, clip-path;
+    }
+
+    .is-playing .wordmark-mask {
+      animation: wordmarkTowAndUnmask 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
+    }
+
+    .wordmark-track {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translate3d(-22px, 0, 0);
+      transform-origin: left center;
+      will-change: transform, opacity;
+    }
+
+    .is-playing .wordmark-track {
+      animation: wordmarkPullOut 2.04s cubic-bezier(0.22, 1, 0.36, 1) 0.96s forwards;
+    }
+
+    .wordmark-title {
+      display: flex;
+      font-size: 74px;
+      font-weight: 720;
+      line-height: 1.14;
+      letter-spacing: -0.055em;
+      color: var(--ink);
+    }
+
+    /* Individual letter stagger synchronized with the mask opening */
+    .wordmark-title span {
+      display: inline-block;
+      opacity: 0;
+      transform: translate3d(-10px, 0, 0);
+      filter: blur(3px);
+      will-change: transform, opacity, filter;
+    }
+
+    .is-playing .wordmark-title span {
+      animation: letterSettle 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .is-playing .wordmark-title span:nth-child(1) { animation-delay: 0.98s; }
+    .is-playing .wordmark-title span:nth-child(2) { animation-delay: 1.06s; }
+    .is-playing .wordmark-title span:nth-child(3) { animation-delay: 1.14s; }
+    .is-playing .wordmark-title span:nth-child(4) { animation-delay: 1.22s; }
+    .is-playing .wordmark-title span:nth-child(5) { animation-delay: 1.30s; }
+    .is-playing .wordmark-title span:nth-child(6) { animation-delay: 1.38s; }
+    .is-playing .wordmark-title span:nth-child(7) { animation-delay: 1.46s; }
+
+    /* Architectural ledger rule + subtitle beneath "Clarity" */
+    .wordmark-sub {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-left: 3px;
+      opacity: 0;
+      transform: translate3d(0, 6px, 0);
+    }
+
+    .is-playing .wordmark-sub {
+      animation: subFadeIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.95s forwards;
+    }
+
+    .wordmark-sub-line {
+      width: 22px;
+      height: 1.5px;
+      background: var(--accent);
+    }
+
+    .wordmark-sub-text {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Timeline breakdown footer */
+    .timeline-footer {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--paper) 85%, transparent);
+    }
+
+    .timeline-steps {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .timeline-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Keyframes */
+    @keyframes logoFadeAndZoomPull {
+      0% {
+        opacity: 0;
+        transform: translate3d(132px, -8px, 0) scale(2.05);
+        filter: blur(6px);
+        animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      /* Phase 1 (0.00s -> 0.96s): Fades in smoothly at large scale in the center */
+      32% {
+        opacity: 1;
+        transform: translate3d(132px, -8px, 0) scale(1.75);
+        filter: blur(0px);
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      /* Phase 2 (0.96s -> 3.00s): Zooms out to 1x while gliding left to pull "Clarity" */
+      100% {
+        opacity: 1;
+        transform: translate3d(0px, -8px, 0) scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    @keyframes strokeDraw {
+      0% {
+        stroke-dashoffset: 160;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes wordmarkTowAndUnmask {
+      0% {
+        transform: translate3d(163.5px, 0, 0);
+        clip-path: inset(0 100% 0 0);
+      }
+      100% {
+        transform: translate3d(0px, 0, 0);
+        clip-path: inset(0 0% 0 0);
+      }
+    }
+
+    @keyframes wordmarkPullOut {
+      0% {
+        opacity: 0;
+        transform: translate3d(-22px, 0, 0);
+      }
+      18% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0px, 0, 0);
+      }
+    }
+
+    @keyframes letterSettle {
+      0% {
+        opacity: 0;
+        transform: translate3d(-10px, 0, 0);
+        filter: blur(3px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0px, 0, 0);
+        filter: blur(0px);
+      }
+    }
+
+    @keyframes subFadeIn {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 6px, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes haloPulse {
+      0% {
+        opacity: 0;
+        transform: scale(0.7);
+      }
+      32% {
+        opacity: 1;
+        transform: scale(1.12);
+      }
+      100% {
+        opacity: 0.35;
+        transform: scale(0.95);
+      }
+    }
+
+    /* Compact header-scale preview toggle */
+    body.compact-mode .brand-lockup {
+      transform: scale(0.42);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .is-playing .logo-mark-wrap,
+      .is-playing .wordmark-mask,
+      .is-playing .wordmark-track,
+      .is-playing .wordmark-title span,
+      .is-playing .wordmark-sub,
+      .is-playing .logo-svg .path-left,
+      .is-playing .logo-svg .path-right {
+        animation-duration: 0.01s !important;
+        animation-delay: 0s !important;
+      }
+    }
+  </style>
+</head>
+<body class="is-playing">
+  <div class="ledger-backdrop" aria-hidden="true"></div>
+
+  <header class="preview-toolbar">
+    <div class="toolbar-meta">
+      <span class="toolbar-badge">Standalone Preview</span>
+      <span>Clarity Brand Intro Animation</span>
+    </div>
+    <div class="toolbar-actions">
+      <button type="button" class="btn" id="scaleBtn">Scale: Hero (1x)</button>
+      <button type="button" class="btn" id="themeBtn">Theme: Dark</button>
+      <button type="button" class="btn btn-primary" id="replayBtn">↻ Replay Animation</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="stage-halo" aria-hidden="true"></div>
+
+    <div class="brand-lockup" aria-label="Clarity Review workspace">
+      <div class="logo-mark-wrap">
+        <svg class="logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            class="path-left"
+            d="M26 8C17 14 9 24 5 32c4 10 12 19 22 25l11-10c-7-5-13-11-16-15 4-8 9.5-15.5 17.5-21.5"
+          />
+          <path
+            class="path-right"
+            d="M38 56c9-6 17-16 21-24-4-10-12-19-22-25L26 17c7 5 13 11 16 15-4 8-9.5 15.5-17.5 21.5"
+          />
+        </svg>
+      </div>
+
+      <div class="wordmark-mask">
+        <div class="wordmark-track">
+          <div class="wordmark-title" aria-hidden="true">
+            <span>C</span><span>l</span><span>a</span><span>r</span><span>i</span><span>t</span><span>y</span>
+          </div>
+          <div class="wordmark-sub">
+            <span class="wordmark-sub-line" aria-hidden="true"></span>
+            <span class="wordmark-sub-text">Review workspace</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="timeline-footer">
+    <div class="timeline-steps">
+      <div class="timeline-step">
+        <span class="step-num">01</span>
+        <span>0.0s–0.96s · Symbol fades in &amp; draws strokes at center</span>
+      </div>
+      <div class="timeline-step">
+        <span class="step-num">02</span>
+        <span>0.96s–3.0s · Symbol zooms out &amp; tows "Clarity" with locked 22px clearance</span>
+      </div>
+      <div class="timeline-step">
+        <span class="step-num">03</span>
+        <span>1.95s–2.8s · Workspace subtitle settles</span>
+      </div>
+    </div>
+    <div>Press <kbd style="padding: 2px 6px; border: 1px solid var(--line-strong); border-radius: 2px;">Space</kbd> or <kbd style="padding: 2px 6px; border: 1px solid var(--line-strong); border-radius: 2px;">R</kbd> to replay</div>
+  </footer>
+
+  <script>
+    const body = document.body;
+    const replayBtn = document.getElementById("replayBtn");
+    const themeBtn = document.getElementById("themeBtn");
+    const scaleBtn = document.getElementById("scaleBtn");
+    const html = document.documentElement;
+
+    function replayAnimation() {
+      body.classList.remove("is-playing");
+      void body.offsetWidth; // Force reflow to restart CSS animations cleanly
+      body.classList.add("is-playing");
+    }
+
+    replayBtn.addEventListener("click", replayAnimation);
+
+    themeBtn.addEventListener("click", () => {
+      const isDark = html.getAttribute("data-theme") === "dark";
+      html.setAttribute("data-theme", isDark ? "light" : "dark");
+      themeBtn.textContent = isDark ? "Theme: Light" : "Theme: Dark";
+    });
+
+    scaleBtn.addEventListener("click", () => {
+      const isCompact = body.classList.toggle("compact-mode");
+      scaleBtn.textContent = isCompact ? "Scale: Header (0.42x)" : "Scale: Hero (1x)";
+      replayAnimation();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        replayAnimation();
+      }
+    });
+  </script>
+</body>
+</html>
