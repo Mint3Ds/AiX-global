@@ -3107,15 +3107,10 @@ export function Workspace() {
         </main>
       )}
       <footer className="workspace-footer">
-        <span>Clarity / Review to resolution</span>
-        <button
-          type="button"
-          className="replay-intro-link"
-          onClick={() => setIntroComplete(false)}
-          title="Replay brand loading animation"
-        >
-          Replay intro
-        </button>
+        <span className="workspace-footer-brand">Clarity</span>
+        <span className="workspace-footer-purpose">
+          Customer feedback and operational follow-through
+        </span>
       </footer>
       {decision && (
         <div

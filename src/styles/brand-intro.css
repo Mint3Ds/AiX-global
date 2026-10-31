@@ -252,27 +252,6 @@
   background: var(--action-hover, #172f42);
 }
 
-/* Replay intro link in workspace footer */
-.replay-intro-link {
-  appearance: none;
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 0.055em;
-  color: var(--muted, #586978);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--line-strong, #aabac7);
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
-}
-
-.replay-intro-link:hover {
-  color: var(--ink, #17232d);
-  text-decoration-color: var(--accent, #496b86);
-}
 
 /* Keyframes */
 @keyframes brandLogoFadeAndZoomPull {
