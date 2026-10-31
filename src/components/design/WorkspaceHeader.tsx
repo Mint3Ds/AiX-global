@@ -1,4 +1,6 @@
 import { BrandIdentity } from "./BrandIdentity";
+import { CustomDropdown } from "./CustomDropdown";
+
 export type WorkspaceTab =
   | "dashboard"
   | "reviews"
@@ -8,7 +10,9 @@ export type WorkspaceTab =
   | "replies"
   | "activity"
   | "stats";
+
 type DemoRole = "owner" | "staff";
+
 const tabs: { id: WorkspaceTab; label: string }[] = [
   // Edit navigation labels here. IDs also control which workspace screen opens.
   { id: "dashboard", label: "Dashboard" },
@@ -31,7 +35,7 @@ export function WorkspaceHeader({
   onTabChange,
   onRoleChange,
 }: {
-  businesses: { id: string; name: string }[];
+  businesses: { id: string; name: string; issueCount?: number }[];
   businessId: string;
   onBusinessChange: (id: string) => void;
   tab: WorkspaceTab;
@@ -73,32 +77,46 @@ export function WorkspaceHeader({
               </button>
             ))}
         </nav>
-        <div className="workspace-controls">
-          <label className="workspace-control business-switcher">
-            <span>Business</span>
-            <select
+        <div className="workspace-controls gap-2">
+          <div className="workspace-control business-switcher">
+            <CustomDropdown
               value={businessId}
               disabled={busy}
-              onChange={(event) => onBusinessChange(event.target.value)}
-            >
-              {businesses.map((business) => (
-                <option key={business.id} value={business.id}>
-                  {business.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="workspace-control role-switcher">
-            <span>View as</span>
-            <select
+              ariaLabel="Switch Property"
+              sectionLabel="Switch Property"
+              align="right"
+              options={businesses.map((business) => ({
+                value: business.id,
+                label: business.name,
+                meta:
+                  business.issueCount !== undefined
+                    ? business.issueCount
+                    : undefined,
+              }))}
+              onChange={(id) => onBusinessChange(id)}
+            />
+          </div>
+          <div className="workspace-control role-switcher">
+            <CustomDropdown<DemoRole>
               value={role}
               disabled={busy}
-              onChange={(event) => onRoleChange(event.target.value as DemoRole)}
-            >
-              <option value="owner">Owner</option>
-              <option value="staff">Staff</option>
-            </select>
-          </label>
+              ariaLabel="Workspace Role"
+              sectionLabel="Workspace Role"
+              align="right"
+              options={[
+                { value: "owner", label: "Owner" },
+                { value: "staff", label: "Staff" },
+              ]}
+              renderTriggerContent={(selected) => (
+                <span className="clarity-role-trigger-inner">
+                  <span className="clarity-role-badge bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">
+                    {selected?.label ?? (role === "owner" ? "Owner" : "Staff")}
+                  </span>
+                </span>
+              )}
+              onChange={(nextRole) => onRoleChange(nextRole)}
+            />
+          </div>
         </div>
       </div>
     </header>

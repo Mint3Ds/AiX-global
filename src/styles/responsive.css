@@ -208,21 +208,15 @@
     font-size: 9px;
   }
   .workspace-controls {
-    gap: 10px;
+    gap: 8px;
   }
-  .workspace-control > span {
-    font-size: 8px;
-  }
-  .workspace-control select {
-    max-width: 160px;
-    min-height: 30px;
-    font-size: 11px;
+  .workspace-controls .clarity-dropdown-trigger {
+    max-width: 175px;
+    padding: 5px 11px;
+    font-size: 12px;
   }
   .role-switcher {
-    padding-left: 10px;
-  }
-  .role-switcher select {
-    width: 76px;
+    padding-left: 0;
   }
   .main-nav {
     height: 44px;
@@ -594,18 +588,15 @@
     font-size: 21px;
   }
   .workspace-controls {
-    gap: 8px;
+    gap: 6px;
   }
-  .workspace-control select {
-    max-width: 139px;
-    font-size: 10px;
-    padding-right: 12px;
+  .workspace-controls .clarity-dropdown-trigger {
+    max-width: 148px;
+    padding: 4px 9px;
+    font-size: 11px;
   }
   .role-switcher {
-    padding-left: 8px;
-  }
-  .role-switcher select {
-    width: 70px;
+    padding-left: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {

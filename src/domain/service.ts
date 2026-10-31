@@ -259,6 +259,7 @@ export async function getState(businessId: string = defaultBusinessId) {
     allReplies,
     allEvents,
     allEmployees,
+    allBusinessThemeRows,
   ] = await Promise.all([
     db.select().from(businesses),
     db.select().from(branches).where(eq(branches.businessId, businessId)),
@@ -305,6 +306,13 @@ export async function getState(businessId: string = defaultBusinessId) {
       .where(eq(events.businessId, businessId))
       .orderBy(desc(events.createdAt)),
     db.select().from(employees).where(eq(employees.businessId, businessId)),
+    db
+      .select({
+        businessId: themes.businessId,
+        type: themes.type,
+        status: themes.status,
+      })
+      .from(themes),
   ]);
   const attemptIds = allReportAttempts.map((attempt) => attempt.id);
   const allReportAttachments = attemptIds.length
@@ -334,7 +342,15 @@ export async function getState(businessId: string = defaultBusinessId) {
   return {
     mode: aiMode(),
     synthetic: true,
-    businesses: allBusinesses,
+    businesses: allBusinesses.map((biz) => ({
+      ...biz,
+      issueCount: allBusinessThemeRows.filter(
+        (t) =>
+          t.businessId === biz.id &&
+          t.type === 'operational_issue' &&
+          ['suggested', 'recurrence'].includes(t.status),
+      ).length,
+    })),
     selectedBusinessId: businessId,
     branches: allBranches,
     employees: allEmployees,

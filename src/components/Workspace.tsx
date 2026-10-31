@@ -13,6 +13,7 @@ import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
 } from "@/components/design/WorkspaceHeader";
+import { CustomDropdown } from "@/components/design/CustomDropdown";
 import type { WorkspaceMetrics } from "@/domain/metrics";
 
 type Review = {
@@ -146,7 +147,7 @@ type State = {
   mode: string;
   synthetic: boolean;
   selectedBusinessId: string;
-  businesses: { id: string; name: string; businessType: string }[];
+  businesses: { id: string; name: string; businessType: string; issueCount?: number }[];
   branches: { id: string; businessId: string; name: string }[];
   employees: {
     id: string;
@@ -1274,7 +1275,7 @@ export function Workspace({
           state?.businesses ||
           (cachedBusinesses.length
             ? cachedBusinesses
-            : [{ id: "harbour-house", name: "Harbour House Hotel" }])
+            : [{ id: "harbour-house", name: "Harbour House Hotel", issueCount: 11 }])
         }
         businessId={businessId}
         onBusinessChange={(id) => {
@@ -1589,9 +1590,16 @@ export function Workspace({
                     branchName: branchName(item.branchId),
                     support: state.themeSupport[item.id] || 0,
                     evidenceQuote:
-                      item.id === spotlight?.id
+                      state.observations.find((point) =>
+                        state.memberships.some(
+                          (m) =>
+                            m.themeId === item.id &&
+                            m.observationId === point.id,
+                        ),
+                      )?.evidenceQuote ||
+                      (item.id === spotlight?.id
                         ? spotlightEvidence?.evidenceQuote
-                        : undefined,
+                        : undefined),
                   }))}
                   work={[...openTasks]
                     .sort(
@@ -1683,32 +1691,34 @@ export function Workspace({
                     </div>
                     <label>
                       Property or branch
-                      <select
+                      <CustomDropdown
+                        ariaLabel="Property or branch"
+                        sectionLabel="Select Property"
                         value={newBranch}
-                        onChange={(event) => setNewBranch(event.target.value)}
-                      >
-                        {state.branches.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
+                        options={state.branches.map((item) => ({
+                          value: item.id,
+                          label: item.name,
+                        }))}
+                        onChange={(value) => setNewBranch(value)}
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <label>
                       Rating
-                      <select
-                        value={newRating}
-                        onChange={(event) =>
-                          setNewRating(Number(event.target.value))
-                        }
-                      >
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <option key={value} value={value}>
-                            {"★".repeat(value)}
-                            {"☆".repeat(5 - value)}
-                          </option>
-                        ))}
-                      </select>
+                      <CustomDropdown
+                        ariaLabel="Rating"
+                        sectionLabel="Guest Rating"
+                        value={String(newRating)}
+                        options={[1, 2, 3, 4, 5].map((value) => ({
+                          value: String(value),
+                          label: `${"★".repeat(value)}${"☆".repeat(5 - value)}`,
+                          meta: `${value}/5`,
+                        }))}
+                        onChange={(value) => setNewRating(Number(value))}
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <label className="wide" htmlFor="new-review-text">
                       Original review text
@@ -1852,39 +1862,43 @@ export function Workspace({
                     </label>
                     <label>
                       Property
-                      <select
+                      <CustomDropdown
+                        ariaLabel="Property"
+                        sectionLabel="Filter by Property"
                         value={branch}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setBranch(event.target.value),
-                          )
+                        options={[
+                          { value: "all", label: "All properties" },
+                          ...state.branches.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setBranch(value))
                         }
-                      >
-                        <option value="all">All properties</option>
-                        {state.branches.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <label>
                       Rating
-                      <select
-                        value={rating}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setRating(event.target.value),
-                          )
+                      <CustomDropdown
+                        ariaLabel="Rating"
+                        sectionLabel="Filter by Rating"
+                        value={String(rating)}
+                        options={[
+                          { value: "all", label: "All ratings" },
+                          ...[1, 2, 3, 4, 5].map((value) => ({
+                            value: String(value),
+                            label: `${value} ${value === 1 ? "star" : "stars"}`,
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setRating(value))
                         }
-                      >
-                        <option value="all">All ratings</option>
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <option key={value} value={value}>
-                            {value} {value === 1 ? "star" : "stars"}
-                          </option>
-                        ))}
-                      </select>
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <button
                       className="secondary filter-toggle"
@@ -1908,61 +1922,68 @@ export function Workspace({
                   >
                     <label>
                       Category
-                      <select
+                      <CustomDropdown
+                        ariaLabel="Category"
+                        sectionLabel="Filter by Category"
                         value={category}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setCategory(event.target.value),
-                          )
+                        options={[
+                          { value: "all", label: "All categories" },
+                          ...categories.map((value) => ({
+                            value,
+                            label: label(value),
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setCategory(value))
                         }
-                      >
-                        <option value="all">All categories</option>
-                        {categories.map((value) => (
-                          <option key={value} value={value}>
-                            {label(value)}
-                          </option>
-                        ))}
-                      </select>
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <label>
                       Screening status
-                      <select
+                      <CustomDropdown
+                        ariaLabel="Screening status"
+                        sectionLabel="Screening Status"
                         value={status}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setStatus(event.target.value),
-                          )
+                        options={[
+                          { value: "all", label: "All statuses" },
+                          { value: "attention", label: "Needs attention" },
+                          ...[
+                            "pending",
+                            "processing",
+                            "complete",
+                            "generic",
+                            "needs_review",
+                            "failed",
+                          ].map((value) => ({
+                            value,
+                            label: label(value),
+                          })),
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setStatus(value))
                         }
-                      >
-                        <option value="all">All statuses</option>
-                        <option value="attention">Needs attention</option>
-                        {[
-                          "pending",
-                          "processing",
-                          "complete",
-                          "generic",
-                          "needs_review",
-                          "failed",
-                        ].map((value) => (
-                          <option key={value} value={value}>
-                            {label(value)}
-                          </option>
-                        ))}
-                      </select>
+                        align="left"
+                        fullWidth
+                      />
                     </label>
                     <label>
                       Received
-                      <select
+                      <CustomDropdown
+                        ariaLabel="Received"
+                        sectionLabel="Received Date"
                         value={received}
-                        onChange={(event) =>
-                          changeReviewFilter(() =>
-                            setReceived(event.target.value),
-                          )
+                        options={[
+                          { value: "all", label: "All dates" },
+                          { value: "today", label: "Today" },
+                        ]}
+                        onChange={(value) =>
+                          changeReviewFilter(() => setReceived(value))
                         }
-                      >
-                        <option value="all">All dates</option>
-                        <option value="today">Today</option>
-                      </select>
+                        align="right"
+                        fullWidth
+                      />
                     </label>
                   </div>
                   <div className="review-view-controls">
@@ -2034,22 +2055,24 @@ export function Workspace({
                     reviews
                     {hasReviewFilters && ` · ${state.reviews.length} total`}
                   </p>
-                  <label>
+                  <div>
                     <span className="sr-only">Sort reviews</span>
-                    <select
+                    <CustomDropdown
+                      ariaLabel="Sort reviews"
+                      sectionLabel="Sort Reviews"
                       value={reviewSort}
-                      onChange={(event) =>
-                        changeReviewFilter(() =>
-                          setReviewSort(event.target.value),
-                        )
+                      options={[
+                        { value: "newest", label: "Newest first" },
+                        { value: "oldest", label: "Oldest first" },
+                        { value: "lowest", label: "Lowest rating" },
+                        { value: "highest", label: "Highest rating" },
+                      ]}
+                      onChange={(value) =>
+                        changeReviewFilter(() => setReviewSort(value))
                       }
-                    >
-                      <option value="newest">Newest first</option>
-                      <option value="oldest">Oldest first</option>
-                      <option value="lowest">Lowest rating</option>
-                      <option value="highest">Highest rating</option>
-                    </select>
-                  </label>
+                      align="right"
+                    />
+                  </div>
                 </div>
                 <div className="review-workspace">
                   <div className="review-register-panel">
@@ -2449,19 +2472,24 @@ export function Workspace({
                               </div>
                               <label>
                                 Severity
-                                <select
-                                  value={theme.severity}
-                                  onChange={(event) =>
+                                <CustomDropdown
+                                  ariaLabel="Severity"
+                                  sectionLabel="Issue Severity"
+                                  value={String(theme.severity)}
+                                  options={[
+                                    { value: "1", label: "Low" },
+                                    { value: "2", label: "Medium" },
+                                    { value: "3", label: "Safety concern" },
+                                  ]}
+                                  onChange={(value) =>
                                     void act("severity", {
                                       themeId: theme.id,
-                                      severity: Number(event.target.value),
+                                      severity: Number(value),
                                     })
                                   }
-                                >
-                                  <option value={1}>Low</option>
-                                  <option value={2}>Medium</option>
-                                  <option value={3}>Safety concern</option>
-                                </select>
+                                  align="right"
+                                  fullWidth
+                                />
                               </label>
                             </div>
                             {theme.status === "suggested" && (
@@ -2871,13 +2899,11 @@ export function Workspace({
                           >
                             <label className="staff-employee-picker">
                               Your staff profile
-                              <select
+                              <CustomDropdown
+                                ariaLabel="Your staff profile"
+                                sectionLabel="Staff Profile"
                                 value={effectiveEmployeeId}
-                                onChange={(event) =>
-                                  changeEmployee(event.target.value)
-                                }
-                              >
-                                {state.employees
+                                options={state.employees
                                   .filter(
                                     (employee) =>
                                       employee.branchId ===
@@ -2885,15 +2911,14 @@ export function Workspace({
                                         (item) => item.id === task.themeId,
                                       )?.branchId,
                                   )
-                                  .map((employee) => (
-                                    <option
-                                      key={employee.id}
-                                      value={employee.id}
-                                    >
-                                      {employee.name} · {employee.jobTitle}
-                                    </option>
-                                  ))}
-                              </select>
+                                  .map((employee) => ({
+                                    value: employee.id,
+                                    label: `${employee.name} · ${employee.jobTitle}`,
+                                  }))}
+                                onChange={(value) => changeEmployee(value)}
+                                align="left"
+                                fullWidth
+                              />
                             </label>
                             {task.assigneeId === effectiveEmployeeId &&
                             ["approved_open", "needs_rework"].includes(
@@ -3501,16 +3526,18 @@ function TaskEditor({
       </label>
       <label>
         Assign to employee
-        <select
+        <CustomDropdown
+          ariaLabel="Assign to employee"
+          sectionLabel="Assign Employee"
           value={assigneeId}
-          onChange={(event) => setAssigneeId(event.target.value)}
-        >
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.name} · {employee.jobTitle}
-            </option>
-          ))}
-        </select>
+          options={employees.map((employee) => ({
+            value: employee.id,
+            label: `${employee.name} · ${employee.jobTitle}`,
+          }))}
+          onChange={(value) => setAssigneeId(value)}
+          align="left"
+          fullWidth
+        />
       </label>
       {isFirefox ? (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: "14px" }}>

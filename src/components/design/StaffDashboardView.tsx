@@ -1,4 +1,5 @@
 import { PageHeading } from "./PageHeading";
+import { CustomDropdown } from "./CustomDropdown";
 
 type StaffTask = {
   id: string;
@@ -54,19 +55,20 @@ export function StaffDashboardView({
         title="Know what needs doing."
         description="See your assignments, owner feedback, and submitted reports in one place."
       >
-        <label className="staff-dashboard-profile">
-          Working as
-          <select
+        <div className="staff-dashboard-profile">
+          <span>Working as</span>
+          <CustomDropdown
+            ariaLabel="Working as"
+            sectionLabel="Staff Profile"
             value={employeeId}
-            onChange={(event) => onEmployeeChange(event.target.value)}
-          >
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>
-                {employee.name} · {employee.jobTitle}
-              </option>
-            ))}
-          </select>
-        </label>
+            options={employees.map((employee) => ({
+              value: employee.id,
+              label: `${employee.name} · ${employee.jobTitle}`,
+            }))}
+            onChange={onEmployeeChange}
+            align="right"
+          />
+        </div>
       </PageHeading>
 
       <div className="staff-dashboard-summary" aria-label="Task summary">

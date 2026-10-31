@@ -97,9 +97,15 @@
   transform: translateZ(0);
 }
 
-.brand-loading-svg path {
-  stroke: var(--ink, #17232d);
-  stroke-width: 5.2;
+.brand-loading-svg > path {
+  fill: var(--ink, #17232d);
+  stroke: none;
+}
+
+.brand-loading-svg mask path {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 8.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 160;

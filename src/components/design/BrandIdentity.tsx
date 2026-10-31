@@ -12,9 +12,7 @@ export function BrandIdentity() {
         height={32}
         priority
       />
-      <span className="brand-name">
-        Clarity<span>Review workspace</span>
-      </span>
+      <span className="brand-name">Clarity</span>
     </>
   );
 }
