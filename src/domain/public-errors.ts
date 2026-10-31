@@ -1,4 +1,9 @@
 import { ZodError } from "zod";
+import { WorkflowError } from "./workflow";
+
+export function publicActionCode(error: unknown) {
+  return error instanceof WorkflowError ? error.code : undefined;
+}
 
 export function publicActionError(error: unknown) {
   if (error instanceof ZodError) {

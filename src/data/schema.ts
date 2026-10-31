@@ -93,6 +93,7 @@ export const analysisRuns = pgTable("analysis_runs", {
   promptVersion: text("prompt_version").notNull(),
   mode: text("mode").notNull(),
   safeError: text("safe_error"),
+  stageTimings: jsonb("stage_timings").$type<Record<string, number>>(),
   createdAt: time("created_at"),
 });
 export const observations = pgTable(
@@ -176,6 +177,10 @@ export const tasks = pgTable(
     assigneeId: text("assignee_id").references(() => employees.id),
     dueAt: timestamp("due_at", { withTimezone: true }),
     employeeReport: text("employee_report"),
+    reportVersion: integer("report_version").notNull().default(0),
+    rejectionReason: text("rejection_reason"),
+    rejectedAt: timestamp("rejected_at", { withTimezone: true }),
+    rejectedBy: text("rejected_by"),
     reportedAt: timestamp("reported_at", { withTimezone: true }),
     reportedBy: text("reported_by"),
     verifiedAt: timestamp("verified_at", { withTimezone: true }),
@@ -201,6 +206,38 @@ export const handoffs = pgTable("handoffs", {
   simulatedStatus: text("simulated_status").notNull(),
   createdAt: time("created_at"),
 });
+export const taskReportAttempts = pgTable(
+  "task_report_attempts",
+  {
+    id: text("id").primaryKey(),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => tasks.id),
+    version: integer("version").notNull(),
+    note: text("note").notNull(),
+    reportedAt: timestamp("reported_at", { withTimezone: true }).notNull(),
+    reportedBy: text("reported_by").notNull(),
+    decision: text("decision").notNull().default("pending"),
+    decisionReason: text("decision_reason"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    decidedBy: text("decided_by"),
+  },
+  (t) => [uniqueIndex("task_report_attempt_unique").on(t.taskId, t.version)],
+);
+export const taskReportAttachments = pgTable(
+  "task_report_attachments",
+  {
+    id: text("id").primaryKey(),
+    reportAttemptId: text("report_attempt_id")
+      .notNull()
+      .references(() => taskReportAttempts.id),
+    name: text("name").notNull(),
+    mediaType: text("media_type").notNull(),
+    dataBase64: text("data_base64").notNull(),
+    createdAt: time("created_at"),
+  },
+  (t) => [index("task_report_attachments_attempt_idx").on(t.reportAttemptId)],
+);
 export const replies = pgTable("replies", {
   id: text("id").primaryKey(),
   reviewId: text("review_id")
@@ -215,6 +252,11 @@ export const replies = pgTable("replies", {
     .references(() => themes.id),
   text: text("text").notNull(),
   status: text("status").notNull().default("draft"),
+  draftVersion: integer("draft_version").notNull().default(1),
+  approvedVersion: integer("approved_version"),
+  rejectionReason: text("rejection_reason"),
+  rejectedAt: timestamp("rejected_at", { withTimezone: true }),
+  rejectedBy: text("rejected_by"),
   provider: text("provider").notNull(),
   mode: text("mode").notNull(),
   model: text("model"),
@@ -226,6 +268,20 @@ export const replies = pgTable("replies", {
   partialApproved: boolean("partial_approved").notNull().default(false),
   publishedAt: timestamp("published_at", { withTimezone: true }),
 });
+export const replyDraftVersions = pgTable(
+  "reply_draft_versions",
+  {
+    id: text("id").primaryKey(),
+    replyId: text("reply_id")
+      .notNull()
+      .references(() => replies.id),
+    version: integer("version").notNull(),
+    text: text("text").notNull(),
+    source: text("source").notNull(),
+    createdAt: time("created_at"),
+  },
+  (t) => [uniqueIndex("reply_draft_version_unique").on(t.replyId, t.version)],
+);
 export const events = pgTable("activity_events", {
   id: text("id").primaryKey(),
   actor: text("actor").notNull(),
