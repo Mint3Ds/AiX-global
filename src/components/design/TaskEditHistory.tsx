@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type TaskEditEvent = {
   id: string;
   type: string;
@@ -47,8 +49,14 @@ export function TaskEditHistory({
     role ||
     "Unassigned";
 
+  const [open, setOpen] = useState(true);
+
   return (
-    <details className="task-edit-history">
+    <details
+      open={open}
+      onToggle={(e) => setOpen(e.currentTarget.open)}
+      className="task-edit-history"
+    >
       <summary>
         Task edit history <span>{edits.length}</span>
       </summary>

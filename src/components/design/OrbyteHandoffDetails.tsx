@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 type HandoffPayloadView = {
   businessId?: string;
   propertyId?: string;
@@ -40,8 +42,15 @@ export function OrbyteHandoffDetails({
       : recordStatus === "invalidated"
         ? "Invalidated"
     : "Recorded locally · Not sent to Orbyte";
+
+  const [open, setOpen] = useState(true);
+
   return (
-    <details className={`orbyte-handoff orbyte-handoff-${recordStatus}`}>
+    <details
+      open={open}
+      onToggle={(e) => setOpen(e.currentTarget.open)}
+      className={`orbyte-handoff orbyte-handoff-${recordStatus}`}
+    >
       <summary>
         <span className="orbyte-handoff-mark" aria-hidden="true">O</span>
         <span className="orbyte-handoff-summary-copy">

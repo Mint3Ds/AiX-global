@@ -3354,11 +3354,7 @@ export function Workspace({
                           task.status,
                         ) &&
                           owner && (
-                            <details className="task-revision-disclosure">
-                              <summary>Revise task or assignment</summary>
-                              <p className="form-hint">
-                                Saving a change supersedes the current simulated handoff and returns the task for approval.
-                              </p>
+                            <TaskRevisionDisclosure>
                               <TaskEditor
                                 key={`revise:${task.id}:${task.taskVersion}`}
                                 task={task}
@@ -3396,7 +3392,7 @@ export function Workspace({
                                     });
                                 }}
                               />
-                            </details>
+                            </TaskRevisionDisclosure>
                           )}
                         {[
                           "approved_open",
@@ -3999,6 +3995,27 @@ export function Workspace({
     </>
   );
 }
+function TaskRevisionDisclosure({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(true);
+  return (
+    <details
+      open={open}
+      onToggle={(e) => setOpen(e.currentTarget.open)}
+      className="task-revision-disclosure"
+    >
+      <summary>Revise task or assignment</summary>
+      <p className="form-hint">
+        Saving a change supersedes the current simulated handoff and returns the task for approval.
+      </p>
+      {children}
+    </details>
+  );
+}
+
 function TaskEditor({
   task,
   employees,

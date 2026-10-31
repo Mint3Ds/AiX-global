@@ -1341,6 +1341,48 @@ main .issue-category-tabs button:hover:not(.review-row) {
   color: var(--muted);
   font-size: 11px;
 }
+
+/* Task revision disclosure styling */
+.task-revision-disclosure {
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 16px 20px;
+}
+.task-revision-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  user-select: none;
+  list-style: none;
+}
+.task-revision-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.task-revision-disclosure > summary::marker {
+  content: "";
+  display: none;
+}
+.task-revision-disclosure > summary::before {
+  content: "▸";
+  font-size: 11px;
+  color: var(--muted);
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+.task-revision-disclosure[open] > summary::before {
+  transform: rotate(90deg);
+}
+.task-revision-disclosure .form-hint {
+  margin: 6px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
 .staff-dashboard .page-heading,
 .tasks-page .page-heading {
   align-items: end;
