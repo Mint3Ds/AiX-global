@@ -50,7 +50,7 @@ const titles: Record<string, string> = {
   dataset_seeded: "Demo dataset ready",
   review_intake: "Review added",
   review_viewed: "Review opened",
-  review_triaged: "Review triaged",
+  review_triaged: "Review actioned",
   review_dwell_recorded: "Dwell time recorded",
   analysis_started: "Analysis started",
   analysis_completed: "Review analysed",
@@ -121,7 +121,10 @@ export function formatTriageDuration(seconds: number): string {
 
 export function formatBaselineSavings(seconds: number): string {
   const baseline = 600; // Johnston (2001) 10-minute baseline
-  const savings = Math.max(0, Math.min(99.9, ((baseline - seconds) / baseline) * 100));
+  const savings = Math.max(
+    0,
+    Math.min(99.9, ((baseline - seconds) / baseline) * 100),
+  );
   return `${savings.toFixed(savings >= 99 ? 1 : 0)}% faster than manual baseline`;
 }
 
@@ -218,9 +221,7 @@ function EventRow({
       <div className="activity-event-content">
         <div className="activity-event-topline">
           <div className="activity-event-title-group">
-            <strong>
-              {titles[event.type] || toSentenceCase(event.type)}
-            </strong>
+            <strong>{titles[event.type] || toSentenceCase(event.type)}</strong>
             <span
               className="activity-badge badge-id"
               title={`Audit event ID: ${event.id}`}
@@ -239,9 +240,7 @@ function EventRow({
             {roleBadge.label}
           </span>
           {branchName && (
-            <span className="activity-badge badge-branch">
-              📍 {branchName}
-            </span>
+            <span className="activity-badge badge-branch">📍 {branchName}</span>
           )}
           {review?.rating != null && (
             <span
@@ -249,7 +248,9 @@ function EventRow({
               title={`Rating: ${review.rating} / 5 stars`}
             >
               {"★".repeat(Math.min(5, Math.max(1, review.rating)))}
-              {"☆".repeat(Math.max(0, 5 - Math.min(5, Math.max(1, review.rating))))}
+              {"☆".repeat(
+                Math.max(0, 5 - Math.min(5, Math.max(1, review.rating))),
+              )}
               <span className="rating-numeric"> {review.rating}/5</span>
             </span>
           )}
@@ -261,7 +262,9 @@ function EventRow({
             </span>
           )}
           {task && (
-            <span className={`activity-badge badge-status status-${task.status}`}>
+            <span
+              className={`activity-badge badge-status status-${task.status}`}
+            >
               {taskStatuses[task.status] || task.status.replaceAll("_", " ")}
             </span>
           )}
@@ -271,13 +274,15 @@ function EventRow({
         {triageSeconds != null && (
           <div className="activity-triage-callout">
             <div className="triage-callout-primary">
-              <span className="triage-callout-icon" aria-hidden="true">⏱</span>
+              <span className="triage-callout-icon" aria-hidden="true">
+                ⏱
+              </span>
               <span className="triage-callout-label">
                 {event.type === "review_triaged"
-                  ? "Review Triaged in"
+                  ? "Actioned in"
                   : event.type === "review_dwell_recorded"
-                    ? "Active Inspection Dwell:"
-                    : "Active Triage Time:"}
+                    ? "Review Handling Time:"
+                    : "Review-to-Action Time:"}
               </span>
               <strong className="triage-callout-duration">
                 {formatTriageDuration(triageSeconds)}
@@ -287,9 +292,7 @@ function EventRow({
               <span className="comparison-pct">
                 {formatBaselineSavings(triageSeconds)}
               </span>
-              <span className="comparison-note">
-                (Johnston 2001 baseline: 600s)
-              </span>
+              <span className="comparison-note">(vs 10 min manual review)</span>
             </div>
           </div>
         )}
@@ -356,8 +359,8 @@ function EventRow({
 
         {typeof metadata.linkedReviewsCount === "number" && (
           <p className="activity-event-meta-stat">
-            Triaged Feedback: <strong>{metadata.linkedReviewsCount}</strong>{" "}
-            source review(s) triaged
+            Actioned Reviews: <strong>{metadata.linkedReviewsCount}</strong>{" "}
+            source review(s) turned into action
           </p>
         )}
 
@@ -500,7 +503,8 @@ export function ActivityView({
 
   const subject = (event: ActivityEvent) => {
     if (event.entityType === "task") return taskMap.get(event.entityId)?.title;
-    if (event.entityType === "theme") return themeMap.get(event.entityId)?.title;
+    if (event.entityType === "theme")
+      return themeMap.get(event.entityId)?.title;
     if (event.entityType === "review") return reviewNames.get(event.entityId);
     if (event.entityType === "reply")
       return reviewNames.get(replyReviews.get(event.entityId) || "");
@@ -589,7 +593,8 @@ export function ActivityView({
           event.metadata && typeof event.metadata === "object"
             ? JSON.stringify(event.metadata)
             : "";
-        const hay = `${titleStr} ${subjStr} ${descStr} ${actorStr} ${idStr} ${branchStr} ${metaStr}`.toLowerCase();
+        const hay =
+          `${titleStr} ${subjStr} ${descStr} ${actorStr} ${idStr} ${branchStr} ${metaStr}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
 
@@ -638,7 +643,7 @@ export function ActivityView({
         index="06"
         eyebrow="Workspace history"
         title="Work, with its history."
-        description="Persistent audit log of active triage dwell times, managerial decisions, staff work verification, and simulated handoffs."
+        description="Persistent audit log of review-to-action handling times, managerial decisions, staff work verification, and simulated handoffs."
       >
         <span className="page-count">
           <strong>{events.length}</strong> updates
@@ -653,18 +658,18 @@ export function ActivityView({
           <span className="summary-caption">Total recorded operations</span>
         </div>
         <div className="activity-summary-item highlight-dwell">
-          <span className="summary-eyebrow">Active Triage Dwell</span>
+          <span className="summary-eyebrow">Review-to-Action Time</span>
           <p className="summary-metric">
             {avgTriageSeconds != null ? `${avgTriageSeconds}s` : "0.0s"}
           </p>
           <span className="summary-caption">
             {avgTriageSeconds != null
-              ? `${Math.max(0, Math.round(((600 - avgTriageSeconds) / 600) * 100))}% faster than 600s baseline`
-              : "Awaiting triage session"}
+              ? `${Math.max(0, Math.round(((600 - avgTriageSeconds) / 600) * 100))}% faster than manual (10 min)`
+              : "Awaiting review handling"}
           </span>
         </div>
         <div className="activity-summary-item">
-          <span className="summary-eyebrow">Triaged Reviews</span>
+          <span className="summary-eyebrow">Actioned Reviews</span>
           <p className="summary-metric">{totalTriaged}</p>
           <span className="summary-caption">Customer feedback decisions</span>
         </div>
@@ -716,10 +721,10 @@ export function ActivityView({
               setVisibleThreads(6);
               setVisibleOther(30);
             }}
-            title="Show only updates with active triage dwell recorded"
+            title="Show only updates with review-to-action time recorded"
             aria-pressed={triageOnly}
           >
-            ⏱ Triaged dwell only
+            ⏱ Review-to-action only
           </button>
         </div>
 
@@ -778,7 +783,8 @@ export function ActivityView({
                     <header className="activity-thread-heading">
                       <div>
                         <p className="activity-thread-kicker">
-                          Work task · {themeMap.get(task.themeId)?.title || "Issue"}
+                          Work task ·{" "}
+                          {themeMap.get(task.themeId)?.title || "Issue"}
                           {threadBranch ? ` · 📍 ${threadBranch}` : ""}
                         </p>
                         <h3 id={`thread-${task.id}`}>{task.title}</h3>

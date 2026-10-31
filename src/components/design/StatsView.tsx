@@ -34,7 +34,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
           index="07"
           eyebrow="Business impact"
           title="Executive statistics"
-          description="Key performance indicators on triage speed, response readiness, and operational time saved."
+          description="Key performance indicators on review-to-action speed, response readiness, and operational time saved."
         />
         <div className="empty-state-card">
           <p className="empty-state-title">Loading statistics…</p>
@@ -93,17 +93,17 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
         index="07"
         eyebrow="Business impact"
         title="Executive statistics"
-        description="Key performance indicators on triage speed, response readiness, and operational time saved."
+        description="Key performance indicators on review-to-action speed, response readiness, and operational time saved."
       >
         <span className="page-count">
-          <strong>{timeTracking.totalTriagedReviews}</strong> reviews triaged
+          <strong>{timeTracking.totalTriagedReviews}</strong> reviews actioned
         </span>
       </PageHeading>
 
       {/* Top Summary Row: The Three Core Metrics */}
       <div className="stats-summary" aria-label="Executive summary totals">
         <div>
-          <span className="stat-label">Active Triage Dwell</span>
+          <span className="stat-label">Review-to-Action Time</span>
           <strong>
             {timeTracking.averageTriageSeconds !== null
               ? `${timeTracking.averageTriageSeconds}s`
@@ -116,7 +116,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                 manual (10 min)
               </span>
             ) : (
-              "Awaiting triage session"
+              "Awaiting review handling"
             )}
           </span>
         </div>
@@ -146,10 +146,10 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
       {/* Side-by-Side Value Showcase: Speed & Coverage */}
       <div className="stats-grid-two">
-        {/* Panel 1: Triage Speed */}
+        {/* Panel 1: Review-to-Action Speed */}
         <div className="stats-panel">
           <div className="stats-panel-heading">
-            <h3>Triage Speed: Seconds vs Minutes</h3>
+            <h3>Review-to-Action Speed: Seconds vs Minutes</h3>
             <p>
               Average time spent by managers to read, diagnose, and delegate a
               customer complaint.
@@ -183,7 +183,7 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                     contentStyle={tooltipStyle}
                     formatter={(val: unknown) => [
                       `${val}s (${(Number(val) / 60).toFixed(1)} min)`,
-                      "Triage Time",
+                      "Review-to-Action Time",
                     ]}
                   />
                   <Bar dataKey="seconds" radius={[2, 2, 0, 0]}>
@@ -304,8 +304,9 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
         <div className="stats-callout">
           <strong>Executive Summary:</strong> Clarity filters out low-signal
-          noise, enables triage in seconds, and ensures every verified complaint
-          is physically resolved by staff before guest replies are dispatched.
+          noise, turns reviews into action in seconds, and ensures every
+          verified complaint is physically resolved by staff before guest
+          replies are dispatched.
         </div>
       </div>
     </section>
