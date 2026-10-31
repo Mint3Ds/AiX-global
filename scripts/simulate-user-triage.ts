@@ -115,7 +115,7 @@ async function run() {
 
   // 6. Step 6: Staff completes work and manager verifies
   console.log("\n6. Staff completes maintenance and manager confirms resolution...");
-  await reportTask(
+  const reportedTask = await reportTask(
     proposed.id,
     "staff",
     employee.id,
@@ -125,6 +125,7 @@ async function run() {
     proposed.id,
     "owner",
     "Manager verified room 226 AC unit blowing cold air. Resolved customer complaint.",
+    reportedTask.reportVersion,
   );
   console.log("   ✓ Task verified and marked as resolved.");
 
@@ -132,7 +133,7 @@ async function run() {
   console.log("\n7. Drafting verified public response and approving for publication...");
   const reply = await createReply(reviewId, proposed.id, "owner");
   // Review has partial warning (unresolved insect complaint), so owner acknowledges partial approval
-  await approveReply(reply.id, "owner", true);
+  await approveReply(reply.id, "owner", true, reply.draftVersion);
   await simulatePublish(reply.id, "owner");
   console.log("   ✓ Reply approved with partial warning override and simulated published.");
 
