@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PageHeading } from "./PageHeading";
 import type { WorkspaceMetrics } from "@/domain/metrics";
 import {
   ResponsiveContainer,
@@ -15,12 +16,15 @@ import {
   Cell,
 } from "recharts";
 
-const PIE_COLORS = {
-  specific: "#10b981", // Emerald green
-  generic: "#6b7280", // Slate gray
-  needsReview: "#f59e0b", // Amber
-  verified: "#2563eb", // Royal blue
-  unverified: "#ef4444", // Crimson
+// Ledger theme palette for charts
+const THEME_COLORS = {
+  baseline: "#8fa4b5", // Soft slate for academic baselines
+  clarity: "#243d52", // Deep slate navy (var(--action))
+  accent: "#496b86", // Slate steel blue (var(--accent))
+  specific: "#2e7d5b", // Refined forest green for actionable feedback
+  generic: "#7d8d9b", // Neutral slate for low-signal reviews
+  needsAttention: "#c27a2b", // Warm amber for pending attention
+  unverified: "#765b45", // Warm brown (var(--error))
 };
 
 export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
@@ -34,10 +38,16 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
 
   if (!metrics) {
     return (
-      <section className="stats-container" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ padding: "2rem", background: "white", borderRadius: "12px", border: "1px solid #e5e7eb" }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 600, color: "#1f2937" }}>Loading Empirical Statistics...</h2>
-          <p style={{ color: "#6b7280", marginTop: "0.5rem" }}>
+      <section className="stats-page">
+        <PageHeading
+          index="07"
+          eyebrow="Empirical benchmarks"
+          title="Operational statistics"
+          description="Live server telemetry, active dwell tracking, and peer-reviewed hospitality benchmarks."
+        />
+        <div className="empty-state-card">
+          <p className="empty-state-title">Loading telemetry data…</p>
+          <p className="empty-state-copy">
             Querying server database for real time-tracking timestamps and funnel data.
           </p>
         </div>
@@ -52,24 +62,32 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
     {
       name: "Manual Baseline (Johnston 2001)",
       seconds: timeTracking.literatureBenchmarkSeconds,
-      minutes: Number((timeTracking.literatureBenchmarkSeconds / 60).toFixed(1)),
-      fill: "#6b7280",
+      fill: THEME_COLORS.baseline,
     },
     {
-      name: "Clarity (Server Measured)",
+      name: "Clarity (Server-measured)",
       seconds: timeTracking.averageTriageSeconds ?? 0,
-      minutes: timeTracking.averageTriageSeconds
-        ? Number((timeTracking.averageTriageSeconds / 60).toFixed(2))
-        : 0,
-      fill: "#10b981",
+      fill: THEME_COLORS.clarity,
     },
   ];
 
-  // Chart 2: Reviews Intake & Screening Funnel (Counts)
+  // Chart 2: Reviews Intake & Screening Funnel (without trailing "reviews")
   const funnelPieData = [
-    { name: "Specific & Actionable Reviews", value: funnel.specificReviewsCount, color: PIE_COLORS.specific },
-    { name: "Generic / Filtered Reviews", value: funnel.genericReviewsCount, color: PIE_COLORS.generic },
-    { name: "Needs Attention Reviews", value: funnel.needsReviewReviewsCount, color: PIE_COLORS.needsReview },
+    {
+      name: "Specific & Actionable",
+      value: funnel.specificReviewsCount,
+      color: THEME_COLORS.specific,
+    },
+    {
+      name: "Generic / Filtered",
+      value: funnel.genericReviewsCount,
+      color: THEME_COLORS.generic,
+    },
+    {
+      name: "Needs Attention",
+      value: funnel.needsReviewReviewsCount,
+      color: THEME_COLORS.needsAttention,
+    },
   ].filter((item) => item.value > 0);
 
   // Chart 3: Management Response Readiness vs Industry Baseline (%)
@@ -77,194 +95,134 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
     {
       name: "TripAdvisor Avg (Proserpio 2017)",
       rate: kpis.industryBaselineResponseRatePercent,
-      fill: "#6b7280",
+      fill: THEME_COLORS.baseline,
     },
     {
       name: "Clarity Readiness Rate",
       rate: kpis.responseReadinessRatePercent ?? 0,
-      fill: "#2563eb",
+      fill: THEME_COLORS.clarity,
     },
   ];
 
-  // Chart 4: Evidence Traceability
-  const evidencePieData = [
-    { name: "Verbatim Verified", value: evidenceIntegrity.exactSubstringVerifiedCount, color: PIE_COLORS.verified },
-    { name: "Unverified / Freeform", value: evidenceIntegrity.unverifiedCount, color: PIE_COLORS.unverified },
-  ].filter((item) => item.value > 0);
+  const tooltipStyle = {
+    backgroundColor: "var(--paper-light, #fdfefe)",
+    borderColor: "var(--line, #d4e0e8)",
+    borderRadius: "var(--radius, 2px)",
+    boxShadow: "0 6px 18px rgba(23, 35, 45, 0.08)",
+    fontSize: "12px",
+    color: "var(--ink, #17232d)",
+    fontFamily: "var(--font-ui, sans-serif)",
+    padding: "8px 12px",
+  };
 
   return (
-    <section
-      className="stats-container"
-      style={{
-        padding: "1.5rem",
-        maxWidth: "1280px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.75rem",
-        color: "#1d1d1f",
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          background: "#ffffff",
-          padding: "1.5rem 2rem",
-          borderRadius: "12px",
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-        }}
+    <section className="stats-page" aria-label="Operational statistics">
+      <PageHeading
+        index="07"
+        eyebrow="Empirical benchmarks"
+        title="Operational statistics"
+        description="Real server dwell telemetry, review screening funnel, and peer-reviewed hospitality benchmarks."
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
-              Operational KPI & Empirical Benchmark Statistics
-            </h2>
-            <p style={{ color: "#6b7280", margin: "0.35rem 0 0 0", fontSize: "0.95rem" }}>
-              Live telemetry calculated directly on the server from UTC timestamps and database audit trails.
-            </p>
-          </div>
-          <span
-            style={{
-              fontSize: "0.8rem",
-              background: "#ecfdf5",
-              color: "#065f46",
-              border: "1px solid #a7f3d0",
-              borderRadius: "9999px",
-              padding: "0.35rem 0.75rem",
-              fontWeight: 600,
-            }}
-          >
-            ● Empirical Server Data
+        <span className="page-count">
+          <strong>{timeTracking.totalTriagedReviews}</strong> triaged
+        </span>
+      </PageHeading>
+
+      {/* Top Ledger Summary Row */}
+      <div className="stats-summary" aria-label="Key statistical totals">
+        <div>
+          <span className="stat-label">Active Triage Dwell</span>
+          <strong>
+            {timeTracking.averageTriageSeconds !== null
+              ? `${timeTracking.averageTriageSeconds}s`
+              : "—"}
+          </strong>
+          <span className="stat-hint">
+            {timeTracking.measuredTimeReductionPercent !== null ? (
+              <span className="stat-highlight">
+                ↓ {timeTracking.measuredTimeReductionPercent}% vs 600s baseline
+              </span>
+            ) : (
+              "Awaiting triage session"
+            )}
+          </span>
+        </div>
+
+        <div>
+          <span className="stat-label">Evidence Grounding</span>
+          <strong>{evidenceIntegrity.traceabilityRatePercent}%</strong>
+          <span className="stat-hint">
+            {evidenceIntegrity.exactSubstringVerifiedCount} of{" "}
+            {evidenceIntegrity.totalObservations} quotes verbatim verified
+          </span>
+        </div>
+
+        <div>
+          <span className="stat-label">Response Readiness</span>
+          <strong>
+            {kpis.responseReadinessRatePercent !== null
+              ? `${kpis.responseReadinessRatePercent}%`
+              : "—"}
+          </strong>
+          <span className="stat-hint">
+            {kpis.responseRateMultiplier !== null
+              ? `${kpis.responseRateMultiplier}x vs TripAdvisor (31.5%)`
+              : "Industry baseline: 31.5%"}
+          </span>
+        </div>
+
+        <div>
+          <span className="stat-label">Labor Hours Reclaimed</span>
+          <strong>{kpis.hoursReclaimed}h</strong>
+          <span className="stat-hint">
+            Across {funnel.specificReviewsCount} actionable reviews
           </span>
         </div>
       </div>
 
-      {/* Metric High-Level Cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: "1rem",
-        }}
-      >
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "#6b7280", fontWeight: 500 }}>Active Triage Dwell Time</div>
-          <div style={{ fontSize: "1.85rem", fontWeight: 700, marginTop: "0.25rem", color: "#111827" }}>
-            {timeTracking.averageTriageSeconds !== null ? `${timeTracking.averageTriageSeconds}s` : "—"}
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#10b981", marginTop: "0.25rem", fontWeight: 600 }}>
-            {timeTracking.measuredTimeReductionPercent !== null
-              ? `↓ ${timeTracking.measuredTimeReductionPercent}% vs 600s baseline`
-              : "Awaiting triage session"}
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "#6b7280", fontWeight: 500 }}>Evidence Substring Traceability</div>
-          <div style={{ fontSize: "1.85rem", fontWeight: 700, marginTop: "0.25rem", color: "#111827" }}>
-            {evidenceIntegrity.traceabilityRatePercent}%
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "0.25rem" }}>
-            {evidenceIntegrity.exactSubstringVerifiedCount} / {evidenceIntegrity.totalObservations} quotes verbatim verified
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "#6b7280", fontWeight: 500 }}>Response Readiness Rate</div>
-          <div style={{ fontSize: "1.85rem", fontWeight: 700, marginTop: "0.25rem", color: "#111827" }}>
-            {kpis.responseReadinessRatePercent !== null ? `${kpis.responseReadinessRatePercent}%` : "—"}
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#2563eb", marginTop: "0.25rem", fontWeight: 600 }}>
-            {kpis.responseRateMultiplier !== null
-              ? `${kpis.responseRateMultiplier}x vs 31.5% TripAdvisor baseline`
-              : "Baseline: 31.5%"}
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "#6b7280", fontWeight: 500 }}>Cumulative Hours Reclaimed</div>
-          <div style={{ fontSize: "1.85rem", fontWeight: 700, marginTop: "0.25rem", color: "#111827" }}>
-            {kpis.hoursReclaimed}h
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "0.25rem" }}>
-            From automated screening & triage
-          </div>
-        </div>
-      </div>
-
-      {/* Row 1: Active Triage Time Tracking (Bar Chart & Details) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      {/* Row 1: Active Triage Dwell vs Johnston Baseline */}
+      <div className="stats-grid-two">
         {/* Triage Time Chart */}
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.5rem 0" }}>
-            Triage Time: Measured Active Dwell vs Academic Baseline
-          </h3>
-          <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1.25rem 0" }}>
-            Comparison of manual complaint handling duration against Clarity server-measured review triage duration (seconds).
-          </p>
+        <div className="stats-panel">
+          <div className="stats-panel-heading">
+            <h3>Active Triage Dwell vs Academic Baseline</h3>
+            <p>
+              Comparison of standard manual triage duration against Clarity&apos;s
+              server-measured active manager dwell time (seconds).
+            </p>
+          </div>
 
           <div style={{ flex: 1, minHeight: "260px" }}>
             {mounted && (
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={timeComparisonData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis unit="s" />
+                <BarChart
+                  data={timeComparisonData}
+                  margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="name"
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--muted, #586978)",
+                      fontFamily: "var(--font-ui, sans-serif)",
+                    }}
+                  />
+                  <YAxis
+                    unit="s"
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--muted, #586978)",
+                      fontFamily: "var(--font-ui, sans-serif)",
+                    }}
+                  />
                   <Tooltip
+                    contentStyle={tooltipStyle}
                     formatter={(val: unknown) => [
                       `${val} seconds (${(Number(val) / 60).toFixed(1)} min)`,
                       "Duration",
                     ]}
                   />
-                  <Bar dataKey="seconds" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="seconds" radius={[2, 2, 0, 0]}>
                     {timeComparisonData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -274,136 +232,110 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
             )}
           </div>
 
-          <div
-            style={{
-              marginTop: "1rem",
-              padding: "0.85rem 1rem",
-              background: "#f9fafb",
-              borderRadius: "8px",
-              fontSize: "0.8rem",
-              color: "#4b5563",
-              lineHeight: 1.45,
-            }}
-          >
-            <strong>Academic Reference:</strong> Johnston, R. (2001), <em>International Journal of Service Industry Management</em>, 12(1), 60–84.
-            Empirical findings show manual triage, root cause classification, and department dispatching takes 10 to 15 minutes (conservative baseline: 600s).
+          <div className="stats-callout">
+            <strong>Academic Reference:</strong> Johnston, R. (2001),{" "}
+            <em>International Journal of Service Industry Management</em>, 12(1),
+            60–84. Standard manual intake, root-cause diagnosis, and department
+            dispatching takes 10–15 minutes (conservative lower bound: 600 seconds).
           </div>
         </div>
 
-        {/* Triage Time Statistics Breakdown */}
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.5rem 0" }}>
-              Time Tracking Telemetry Details
-            </h3>
-            <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1.25rem 0" }}>
-              Calculated using optimistic dwell (interval between last manager view and formal triage decision).
+        {/* Telemetry Breakdown Table */}
+        <div className="stats-panel">
+          <div className="stats-panel-heading">
+            <h3>Time Tracking Telemetry Details</h3>
+            <p>
+              Optimistic server dwell recorded between the manager&apos;s last view
+              and the formal decision timestamp.
             </p>
-
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
-              <tbody>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Academic Manual Baseline</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right" }}>
-                    {timeTracking.literatureBenchmarkSeconds}s (10.0 min)
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Measured Average Active Triage</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right", color: "#10b981" }}>
-                    {timeTracking.averageTriageSeconds !== null ? `${timeTracking.averageTriageSeconds}s` : "No sessions yet"}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Measured Median Active Triage</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right" }}>
-                    {timeTracking.medianTriageSeconds !== null ? `${timeTracking.medianTriageSeconds}s` : "—"}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Min / Max Active Triage</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right" }}>
-                    {timeTracking.minTriageSeconds !== null ? `${timeTracking.minTriageSeconds}s` : "—"} /{" "}
-                    {timeTracking.maxTriageSeconds !== null ? `${timeTracking.maxTriageSeconds}s` : "—"}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Triage Time Reduction</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 700, textAlign: "right", color: "#10b981" }}>
-                    {timeTracking.measuredTimeReductionPercent !== null
-                      ? `${timeTracking.measuredTimeReductionPercent}%`
-                      : "—"}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>Tracked vs Total Triaged Reviews</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right" }}>
-                    {timeTracking.trackedReviewsCount} tracked / {timeTracking.totalTriagedReviews} triaged
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "0.6rem 0", color: "#6b7280" }}>End-to-End Operational Turnaround</td>
-                  <td style={{ padding: "0.6rem 0", fontWeight: 600, textAlign: "right" }}>
-                    {timeTracking.averageEndToEndResolutionMinutes !== null
-                      ? `${timeTracking.averageEndToEndResolutionMinutes} min`
-                      : "—"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
 
-          <div
-            style={{
-              marginTop: "1.5rem",
-              padding: "0.75rem 1rem",
-              background: "#f0fdf4",
-              border: "1px solid #bbf7d0",
-              borderRadius: "8px",
-              fontSize: "0.8rem",
-              color: "#166534",
-            }}
-          >
-            ✓ <strong>Zero Guesswork:</strong> Dwell duration is computed on the server in UTC using postgres timestamps recorded when managers actively open and decide tasks.
+          <table className="stats-table">
+            <tbody>
+              <tr>
+                <td className="table-label">Academic Manual Baseline</td>
+                <td className="table-value">
+                  {timeTracking.literatureBenchmarkSeconds}s (10.0 min)
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">Measured Average Active Triage</td>
+                <td
+                  className="table-value"
+                  style={{ color: "var(--action, #243d52)" }}
+                >
+                  {timeTracking.averageTriageSeconds !== null
+                    ? `${timeTracking.averageTriageSeconds}s`
+                    : "No dwell sessions yet"}
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">Measured Median Active Triage</td>
+                <td className="table-value">
+                  {timeTracking.medianTriageSeconds !== null
+                    ? `${timeTracking.medianTriageSeconds}s`
+                    : "—"}
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">Min / Max Recorded Session</td>
+                <td className="table-value">
+                  {timeTracking.minTriageSeconds !== null
+                    ? `${timeTracking.minTriageSeconds}s`
+                    : "—"}{" "}
+                  /{" "}
+                  {timeTracking.maxTriageSeconds !== null
+                    ? `${timeTracking.maxTriageSeconds}s`
+                    : "—"}
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">Empirical Time Reduction</td>
+                <td
+                  className="table-value"
+                  style={{ color: "#1f6b4d" }}
+                >
+                  {timeTracking.measuredTimeReductionPercent !== null
+                    ? `${timeTracking.measuredTimeReductionPercent}%`
+                    : "—"}
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">Tracked vs Total Triaged Reviews</td>
+                <td className="table-value">
+                  {timeTracking.trackedReviewsCount} tracked /{" "}
+                  {timeTracking.totalTriagedReviews} triaged
+                </td>
+              </tr>
+              <tr>
+                <td className="table-label">End-to-End Operational Turnaround</td>
+                <td className="table-value">
+                  {timeTracking.averageEndToEndResolutionMinutes !== null
+                    ? `${timeTracking.averageEndToEndResolutionMinutes} min`
+                    : "—"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="stats-callout">
+            <strong>Timezone Invariant:</strong> Durations are calculated entirely
+            on the server in UTC from postgres timestamps when managers confirm work tasks.
           </div>
         </div>
       </div>
 
-      {/* Row 2: Review Screening Funnel & Response Readiness */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
-        {/* Reviews Screening Funnel (Pie Chart) */}
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.5rem 0" }}>
-            Reviews Intake & Screening Funnel
-          </h3>
-          <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1.25rem 0" }}>
-            Distribution of intake reviews triaged into actionable operational feedback vs generic text.
-          </p>
+      {/* Row 2: Reviews Intake & Screening Funnel + Response Readiness */}
+      <div className="stats-grid-two">
+        {/* Reviews Intake & Screening Funnel (Pie Chart) */}
+        <div className="stats-panel">
+          <div className="stats-panel-heading">
+            <h3>Reviews Intake &amp; Screening Funnel</h3>
+            <p>
+              Distribution of incoming reviews screened into actionable operational
+              feedback vs generic text.
+            </p>
+          </div>
 
           <div style={{ height: "240px" }}>
             {mounted && funnelPieData.length > 0 ? (
@@ -415,8 +347,8 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
-                    innerRadius={45}
+                    outerRadius={78}
+                    innerRadius={44}
                     paddingAngle={3}
                     label={({ percent }: { percent?: number }) =>
                       percent ? `${(percent * 100).toFixed(0)}%` : ""
@@ -426,64 +358,100 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
                       <Cell key={`funnel-cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(val: unknown, name: any) => [`${val} reviews`, String(name)]} />
-                  <Legend />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(val: unknown, name: any) => [
+                      `${val} reviews`,
+                      String(name),
+                    ]}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--ink, #17232d)",
+                      fontFamily: "var(--font-ui, sans-serif)",
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9ca3af" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  color: "var(--muted)",
+                  fontSize: "13px",
+                }}
+              >
                 No reviews funnel data available
               </div>
             )}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-around", marginTop: "1rem", textAlign: "center" }}>
-            <div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.specific }}>
+          {/* Three Summary Pills without trailing "reviews" */}
+          <div className="stats-funnel-pills">
+            <div className="stats-funnel-pill">
+              <strong style={{ color: THEME_COLORS.specific }}>
                 {funnel.specificReviewsCount}
-              </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Actionable Reviews</div>
+              </strong>
+              <span>Specific &amp; Actionable</span>
             </div>
-            <div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.generic }}>
+            <div className="stats-funnel-pill">
+              <strong style={{ color: THEME_COLORS.generic }}>
                 {funnel.genericReviewsCount}
-              </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Generic Reviews</div>
+              </strong>
+              <span>Generic / Filtered</span>
             </div>
-            <div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 700, color: PIE_COLORS.needsReview }}>
+            <div className="stats-funnel-pill">
+              <strong style={{ color: THEME_COLORS.needsAttention }}>
                 {funnel.needsReviewReviewsCount}
-              </div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>Needs Attention Reviews</div>
+              </strong>
+              <span>Needs Attention</span>
             </div>
           </div>
         </div>
 
-        {/* Response Readiness vs Industry Baseline (Bar Chart) */}
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.5rem 0" }}>
-            Management Response Readiness
-          </h3>
-          <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1.25rem 0" }}>
-            Evidence-grounded response readiness compared to hospitality baseline.
-          </p>
+        {/* Management Response Readiness (Bar Chart) */}
+        <div className="stats-panel">
+          <div className="stats-panel-heading">
+            <h3>Management Response Readiness</h3>
+            <p>
+              Verified response rate backed by physical task completion compared to
+              hospitality benchmarks.
+            </p>
+          </div>
 
           <div style={{ height: "240px" }}>
             {mounted && (
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={responseRateData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis unit="%" domain={[0, 100]} />
-                  <Tooltip formatter={(val: unknown) => [`${val}%`, "Response Rate"]} />
-                  <Bar dataKey="rate" radius={[6, 6, 0, 0]}>
+                <BarChart
+                  data={responseRateData}
+                  margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="name"
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--muted, #586978)",
+                      fontFamily: "var(--font-ui, sans-serif)",
+                    }}
+                  />
+                  <YAxis
+                    unit="%"
+                    domain={[0, 100]}
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--muted, #586978)",
+                      fontFamily: "var(--font-ui, sans-serif)",
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(val: unknown) => [`${val}%`, "Response Rate"]}
+                  />
+                  <Bar dataKey="rate" radius={[2, 2, 0, 0]}>
                     {responseRateData.map((entry, index) => (
                       <Cell key={`resp-cell-${index}`} fill={entry.fill} />
                     ))}
@@ -493,138 +461,129 @@ export function StatsView({ metrics }: { metrics?: WorkspaceMetrics }) {
             )}
           </div>
 
+          <div className="stats-callout">
+            <strong>Academic Reference:</strong> Proserpio, M., &amp; Zervas, G.
+            (2017), <em>Marketing Science</em>, 36(5), 645–665. Across TripAdvisor,
+            only 31.5% of reviews receive managerial responses due to staff
+            time limitations.
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3: Evidence Grounding & Hallucination Elimination */}
+      <div className="stats-panel" style={{ marginBottom: "24px" }}>
+        <div className="stats-panel-heading">
           <div
             style={{
-              marginTop: "1rem",
-              padding: "0.85rem 1rem",
-              background: "#f9fafb",
-              borderRadius: "8px",
-              fontSize: "0.8rem",
-              color: "#4b5563",
-              lineHeight: 1.45,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              flexWrap: "wrap",
+              gap: "12px",
             }}
           >
-            <strong>Academic Reference:</strong> Proserpio, M., & Zervas, G. (2017), <em>Marketing Science</em>, 36(5), 645–665.
-            Industry analysis shows only 31.5% of reviews receive managerial responses due to staff bandwidth limitations.
-          </div>
-        </div>
-      </div>
-
-      {/* Row 3: Evidence Grounding & Traceability Integrity */}
-      <div
-        style={{
-          background: "#ffffff",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.35rem 0" }}>
-              Evidence Grounding & Hallucination Elimination
-            </h3>
-            <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: 0 }}>
-              Verifies that every extracted observation quote is an exact, verbatim substring of the customer review text.
-            </p>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <span style={{ fontSize: "1.5rem", fontWeight: 700, color: "#2563eb" }}>
-              {evidenceIntegrity.traceabilityRatePercent}%
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "#6b7280", marginLeft: "0.35rem" }}>Verbatim Grounded</span>
-          </div>
-        </div>
-
-        <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Total Extracted Observations</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
-              {evidenceIntegrity.totalObservations}
+            <div>
+              <h3>Evidence Grounding &amp; Hallucination Elimination</h3>
+              <p>
+                Every extracted observation quote is programmatically verified as an
+                exact, character-for-character substring of the guest&apos;s review.
+              </p>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <span
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 600,
+                  letterSpacing: "-0.04em",
+                  color: "var(--action, #243d52)",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {evidenceIntegrity.traceabilityRatePercent}%
+              </span>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "var(--muted)",
+                  marginLeft: "6px",
+                }}
+              >
+                Verbatim Grounded
+              </span>
             </div>
           </div>
-          <div style={{ background: "#f0fdf4", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#166534" }}>Exact Verbatim Quotes</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#15803d" }}>
+        </div>
+
+        <div className="stats-quad-grid">
+          <div className="stats-quad-card">
+            <div className="quad-label">Extracted Quotes</div>
+            <strong>{evidenceIntegrity.totalObservations}</strong>
+          </div>
+          <div className="stats-quad-card">
+            <div className="quad-label">Verbatim Verified</div>
+            <strong style={{ color: "#1f6b4d" }}>
               {evidenceIntegrity.exactSubstringVerifiedCount}
-            </div>
+            </strong>
           </div>
-          <div style={{ background: "#fef2f2", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#991b1b" }}>Unverified / Hallucinations</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#b91c1c" }}>
+          <div className="stats-quad-card">
+            <div className="quad-label">AI Hallucinations</div>
+            <strong
+              style={{
+                color:
+                  evidenceIntegrity.unverifiedCount > 0
+                    ? "var(--error)"
+                    : "var(--muted)",
+              }}
+            >
               {evidenceIntegrity.unverifiedCount}
-            </div>
+            </strong>
           </div>
-          <div style={{ background: "#f0f9ff", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#0369a1" }}>Verbatim Grounding Rate</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#0284c7" }}>
+          <div className="stats-quad-card">
+            <div className="quad-label">Grounded Ratio</div>
+            <strong style={{ color: "var(--action)" }}>
               {evidenceIntegrity.traceabilityRatePercent}%
-            </div>
+            </strong>
           </div>
         </div>
 
-        <div
-          style={{
-            marginTop: "1rem",
-            padding: "0.85rem 1rem",
-            background: "#f8fafc",
-            borderRadius: "8px",
-            fontSize: "0.8rem",
-            color: "#475569",
-            lineHeight: 1.5,
-            borderLeft: "3px solid #3b82f6",
-          }}
-        >
-          <strong>What is an exact verbatim substring?</strong> A substring is an untouched, word-for-word excerpt matching the customer&apos;s original review text character-for-character (<code>reviewText.includes(quote)</code>). Clarity programmatically checks this to mathematically ensure 0% LLM hallucination—managers can trust that every flagged complaint is 100% genuine guest feedback, never synthetic or embellished.
+        <div className="stats-callout">
+          <strong>What is an exact verbatim substring?</strong> A substring is an
+          untouched, word-for-word excerpt matching the customer&apos;s original
+          review text letter-for-letter (<code>reviewText.includes(quote)</code>).
+          Clarity verifies this programmatically to guarantee 0% LLM hallucination—managers
+          can trust that every flagged complaint is real guest feedback, never synthesized.
         </div>
       </div>
 
-      {/* Row 4: Operational Task Resolution & Loop Closure */}
-      <div
-        style={{
-          background: "#ffffff",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-        }}
-      >
-        <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.35rem 0" }}>
-          Operational Loop Closure
-        </h3>
-        <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: "0 0 1rem 0" }}>
-          End-to-end progression from guest issue extraction to staff task resolution and management reply.
-        </p>
+      {/* Row 4: Operational Loop Closure */}
+      <div className="stats-panel">
+        <div className="stats-panel-heading">
+          <h3>Operational Loop Closure</h3>
+          <p>
+            End-to-end progression from guest issue extraction to physical staff
+            task resolution and verified reply preparation.
+          </p>
+        </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Work Tasks Proposed</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
-              {funnel.tasksProposed}
-            </div>
+        <div className="stats-quad-grid">
+          <div className="stats-quad-card">
+            <div className="quad-label">Tasks Proposed</div>
+            <strong>{funnel.tasksProposed}</strong>
           </div>
-          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Tasks Assigned to Staff</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
-              {funnel.tasksApproved}
-            </div>
+          <div className="stats-quad-card">
+            <div className="quad-label">Assigned to Staff</div>
+            <strong>{funnel.tasksApproved}</strong>
           </div>
-          <div style={{ background: "#f0fdf4", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#166534" }}>Tasks Resolved & Verified</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem", color: "#15803d" }}>
-              {funnel.tasksResolved}
-            </div>
+          <div className="stats-quad-card">
+            <div className="quad-label">Resolved by Staff</div>
+            <strong style={{ color: "#1f6b4d" }}>{funnel.tasksResolved}</strong>
           </div>
-          <div style={{ background: "#f9fafb", padding: "1rem", borderRadius: "8px" }}>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>Verified Replies Prepared</div>
-            <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: "0.2rem" }}>
-              {funnel.repliesApproved}
-            </div>
+          <div className="stats-quad-card">
+            <div className="quad-label">Verified Replies Ready</div>
+            <strong>{funnel.repliesApproved}</strong>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
