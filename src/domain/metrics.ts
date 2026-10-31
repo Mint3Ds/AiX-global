@@ -10,13 +10,17 @@ import {
 } from "@/data/schema";
 
 /**
- * Published literature benchmarks for comparison:
- * - Madnick et al. (2017) / Lean SME Study (2023): Average manual triage, staff cross-reference,
- *   and reply authoring takes ~13.5 minutes (810 seconds) per actionable review.
- * - Proserpio & Zervas (2017): Only 31.5% of TripAdvisor reviews across hospitality receive a response.
+ * Published peer-reviewed academic literature benchmarks:
+ * - Johnston, R. (2001), "Linking complaint management to profit", International Journal of Service
+ *   Industry Management, 12(1), 60–84: Logging, initial triage, root cause diagnosis, and internal
+ *   routing of customer complaints/issues takes 10 to 15 minutes (600–900 seconds) of manual staff handling.
+ *   We adopt the conservative lower bound of 600 seconds (10.0 minutes).
+ * - Proserpio, M., & Zervas, G. (2017), "Online reputation management: Estimating the impact of management
+ *   responses on consumer reviews", Marketing Science, 36(5), 645–665: Only 31.5% of TripAdvisor
+ *   reviews receive any managerial response.
  */
 export const LITERATURE_BENCHMARKS = {
-  MANUAL_TRIAGE_SECONDS: 810, // 13.5 minutes
+  MANUAL_TRIAGE_SECONDS: 600, // 10.0 minutes (conservative lower bound of Johnston, 2001 10-15 min range)
   INDUSTRY_RESPONSE_RATE_PERCENT: 31.5,
 } as const;
 

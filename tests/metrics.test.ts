@@ -3,8 +3,8 @@ import { LITERATURE_BENCHMARKS } from "../src/domain/metrics";
 
 describe("empirical metrics and statistical calculations", () => {
   it("holds accurate peer-reviewed academic literature benchmarks", () => {
-    // Madnick et al. (2017) / Lean hospitality benchmark = 13.5 min = 810 sec
-    expect(LITERATURE_BENCHMARKS.MANUAL_TRIAGE_SECONDS).toBe(810);
+    // Johnston (2001) conservative baseline = 10.0 min = 600 sec
+    expect(LITERATURE_BENCHMARKS.MANUAL_TRIAGE_SECONDS).toBe(600);
     // Proserpio & Zervas (2017) TripAdvisor baseline = 31.5%
     expect(LITERATURE_BENCHMARKS.INDUSTRY_RESPONSE_RATE_PERCENT).toBe(31.5);
   });
@@ -21,13 +21,13 @@ describe("empirical metrics and statistical calculations", () => {
     const median = Math.round((sorted[mid - 1] + sorted[mid]) / 2);
     expect(median).toBe(43);
 
-    // Empirical reduction compared against 810s benchmark
+    // Empirical reduction compared against 600s benchmark: (600 - 45) / 600 = 92.5%
     const reduction = Number(
       (((LITERATURE_BENCHMARKS.MANUAL_TRIAGE_SECONDS - avg) /
         LITERATURE_BENCHMARKS.MANUAL_TRIAGE_SECONDS) *
         100).toFixed(1),
     );
-    expect(reduction).toBe(94.4); // 94.4% reduction
+    expect(reduction).toBe(92.5); // 92.5% reduction
   });
 
   it("returns null for time reduction when no real dwell sessions have been recorded", () => {

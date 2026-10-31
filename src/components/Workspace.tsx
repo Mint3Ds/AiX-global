@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DashboardView } from "@/components/design/DashboardView";
 import { ActivityView } from "@/components/design/ActivityView";
+import { StatsView } from "@/components/design/StatsView";
 import {
   WorkspaceHeader,
   type WorkspaceTab as Tab,
@@ -271,7 +272,11 @@ const isOwnerVisibleTheme = (theme: Theme, support: number) =>
         ["owner_confirmed", "recurrence"].includes(theme.status))
     : support > 0 || theme.status === "owner_confirmed";
 
-export function Workspace() {
+export function Workspace({
+  initialTab = "dashboard",
+}: {
+  initialTab?: Tab;
+} = {}) {
   const [state, setState] = useState<State | null>(null);
   const [error, setError] = useState("");
   const [errorSource, setErrorSource] = useState<"load" | "action" | null>(
@@ -279,7 +284,7 @@ export function Workspace() {
   );
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
-  const [tab, setTab] = useState<Tab>("dashboard");
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [role, setRole] = useState<"owner" | "staff">("owner");
   const [businessId, setBusinessId] = useState("harbour-house");
   const [employeeId, setEmployeeId] = useState("hotel-employee-1");
@@ -2120,6 +2125,7 @@ export function Workspace() {
               replies={state.replies}
             />
           )}
+          {tab === "stats" && <StatsView metrics={state.metrics} />}
         </main>
       )}
     </div>

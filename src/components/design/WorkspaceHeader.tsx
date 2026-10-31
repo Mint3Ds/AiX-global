@@ -1,7 +1,14 @@
 /** Visual shell only. Review state and actions remain in Workspace.tsx. */
 import Image from "next/image";
 export type WorkspaceTab =
-  "dashboard" | "reviews" | "issues" | "new" | "tasks" | "replies" | "activity";
+  | "dashboard"
+  | "reviews"
+  | "issues"
+  | "new"
+  | "tasks"
+  | "replies"
+  | "activity"
+  | "stats";
 
 type DemoRole = "owner" | "staff";
 
@@ -13,6 +20,7 @@ const tabs: WorkspaceTab[] = [
   "tasks",
   "replies",
   "activity",
+  "stats",
 ];
 
 export function WorkspaceHeader({
